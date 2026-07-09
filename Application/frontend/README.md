@@ -1,16 +1,53 @@
-# React + Vite
+# ClubSphere
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, fast, and responsive frontend web application built with [React](https://react.dev/) and [Vite](https://vitejs.dev/). 
 
-Currently, two official plugins are available:
+## 🚀 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+* **Lightning Fast HMR:** Powered by Vite for instant feedback during development.
+* **Component-Based Architecture:** Built using React functional components and hooks.
+* **Modern JavaScript:** Utilizing ES6+ syntax.
 
-## React Compiler
+## 📋 Prerequisites
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Before you begin, ensure you have the following installed on your local machine:
+* [Node.js](https://nodejs.org/en/download) ( v24.18.0 LTS Windows Installer (.msi) )
+* npm ( comes with Node.js )
 
-## Expanding the ESLint configuration
+## 🛠️ Installation & Setup
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/ayush-puhan/MAY2026-Team-073.git
+   cd Application\frontend
+   ```
+2. **Install dependencies**
+    ```bash
+    npm install
+    ```
+3. **Running the Development Server**
+    ```bash
+    npm run dev
+    ```
+
+## 🏗️ Building for Production
+1. **Create an optimized, production-ready build**
+    ```bash
+    npm run build
+    ```
+2. **Preview the production build locally**
+    ```bash
+    npm run preview
+    ```
+
+## 🤝 Contributing
+* Fork the repository
+
+* Create your feature branch ( `git checkout -b feature/AmazingFeature `)
+
+* Commit your changes ( `git commit -m 'Add some AmazingFeature'` )
+
+* Push to the branch (` git push origin feature/AmazingFeature` )
+
+* Open a Pull Request
+

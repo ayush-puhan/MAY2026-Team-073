@@ -1,5 +1,5 @@
 from flask import Flask
-from api import  register_api_paths
+from app.api import  register_api_paths
 
 
 app = Flask(__name__)

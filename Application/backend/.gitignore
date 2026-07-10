@@ -1,0 +1,54 @@
+# =========================
+# Python Cache & Bytecode
+# =========================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# =========================
+# Virtual Environments
+# =========================
+venv/
+env/
+.venv/
+virtualenv/
+Include/
+Lib/
+Scripts/
+
+# =========================
+# Secrets & Environment Variables
+# =========================
+.env
+.flaskenv
+secrets.json
+
+# =========================
+# Local Databases & Instance Folders
+# =========================
+instance/
+*.sqlite
+*.sqlite3
+*.db
+
+# =========================
+# Logs
+# =========================
+*.log
+
+# =========================
+# OS & IDE Files
+# =========================
+.DS_Store
+.idea/
+.vscode/
+__pypackages__/
+
+# =========================
+# Testing & Coverage
+# =========================
+.pytest_cache/
+htmlcov/
+.tox/
+.coverage

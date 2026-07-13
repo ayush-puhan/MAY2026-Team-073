@@ -1,8 +1,8 @@
 """Compact verification script for the ClubConnect SQLite database.
 
-Run from the repository root:
+Run from Application/backend/app/ (see README):
 
-    python -m application.backend.database.verify_db
+    python -m database.verify_db
 """
 
 import sqlalchemy as sa

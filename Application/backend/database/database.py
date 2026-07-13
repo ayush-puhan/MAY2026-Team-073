@@ -4,7 +4,7 @@ The database file path is derived from this file's location (not the
 process's current working directory), so the project behaves consistently
 regardless of where it is launched from.
 """
-
+from typing import Generator
 from pathlib import Path
 from contextlib import contextmanager
 
@@ -31,14 +31,14 @@ def _enable_sqlite_foreign_keys(dbapi_connection, connection_record):
 
 def init_engine() -> None:
     """Import all models (registering their tables) and create the SQLite schema."""
-    from . import models  # noqa: F401 - import registers all mapped tables
+    from . import models  
     from .base import Base
 
     Base.metadata.create_all(bind=engine)
 
 
 @contextmanager
-def get_session() -> Session:
+def get_session() -> Generator[Session,None,None]:
     """Context-manager helper for obtaining a scoped DB session.
 
     Usage:

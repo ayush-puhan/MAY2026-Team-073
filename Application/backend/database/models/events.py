@@ -4,7 +4,7 @@ volunteer assignments, and external participants."""
 from __future__ import annotations
 
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional,TYPE_CHECKING
 
 from sqlalchemy import Boolean, CheckConstraint, ForeignKey, Integer, String, Text, UniqueConstraint
 from sqlalchemy import Enum as SAEnum
@@ -14,6 +14,8 @@ from ..base import Base
 from ..enums import EventStatus, ExternalParticipantType, RegistrationStatus, VolunteerTaskStatus
 from ..mixins import TimestampMixin
 
+if TYPE_CHECKING:
+    from .__init__ import *
 
 class Event(Base, TimestampMixin):
     __tablename__ = "events"

@@ -4,7 +4,7 @@ committees, committee memberships, and announcements."""
 from __future__ import annotations
 
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, TYPE_CHECKING
 
 from sqlalchemy import ForeignKey, Integer, String, Text, UniqueConstraint
 from sqlalchemy import Enum as SAEnum
@@ -19,6 +19,9 @@ from ..enums import (
     MembershipStatus,
 )
 from ..mixins import SoftDeleteMixin, TimestampMixin
+
+if TYPE_CHECKING:
+    from .__init__ import *
 
 
 class Club(Base, TimestampMixin, SoftDeleteMixin):
@@ -35,13 +38,13 @@ class Club(Base, TimestampMixin, SoftDeleteMixin):
     faculty_advisor_id: Mapped[Optional[int]] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
     member_count_cache: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
 
-    faculty_advisor: Mapped[Optional["User"]] = relationship(back_populates="advised_clubs")
-    memberships: Mapped[List["ClubMembership"]] = relationship(back_populates="club", cascade="all, delete-orphan")
-    events: Mapped[List["Event"]] = relationship(back_populates="club", cascade="all, delete-orphan")
-    committees: Mapped[List["Committee"]] = relationship(back_populates="club", cascade="all, delete-orphan")
-    budgets: Mapped[List["Budget"]] = relationship(back_populates="club", cascade="all, delete-orphan")
-    announcements: Mapped[List["Announcement"]] = relationship(back_populates="club", cascade="all, delete-orphan")
-    sponsor_links: Mapped[List["ClubSponsor"]] = relationship(back_populates="club", cascade="all, delete-orphan")
+    faculty_advisor: Mapped[Optional[User]] = relationship(back_populates="advised_clubs")
+    memberships: Mapped[List[ClubMembership]] = relationship(back_populates="club", cascade="all, delete-orphan")
+    events: Mapped[List[Event]] = relationship(back_populates="club", cascade="all, delete-orphan")
+    committees: Mapped[List[Committee]] = relationship(back_populates="club", cascade="all, delete-orphan")
+    budgets: Mapped[List[Budget]] = relationship(back_populates="club", cascade="all, delete-orphan")
+    announcements: Mapped[List[Announcement]] = relationship(back_populates="club", cascade="all, delete-orphan")
+    sponsor_links: Mapped[List[ClubSponsor]] = relationship(back_populates="club", cascade="all, delete-orphan")
 
 
 class ClubCreationRequest(Base):

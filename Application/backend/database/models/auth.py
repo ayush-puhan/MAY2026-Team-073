@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, TYPE_CHECKING
 
 from sqlalchemy import Boolean, ForeignKey, String, Text
 from sqlalchemy import Enum as SAEnum
@@ -13,6 +13,8 @@ from ..base import Base
 from ..enums import UserRole
 from ..mixins import SoftDeleteMixin, TimestampMixin
 
+if TYPE_CHECKING:
+    from .__init__ import *
 
 class User(Base, TimestampMixin, SoftDeleteMixin):
     __tablename__ = "users"
@@ -30,14 +32,14 @@ class User(Base, TimestampMixin, SoftDeleteMixin):
     email_verified: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
     # Relationships
-    auth_sessions: Mapped[List["AuthSession"]] = relationship(back_populates="user", cascade="all, delete-orphan")
-    club_memberships: Mapped[List["ClubMembership"]] = relationship(
+    auth_sessions: Mapped[List[AuthSession]] = relationship(back_populates="user", cascade="all, delete-orphan")
+    club_memberships: Mapped[List[ClubMembership]] = relationship(
         back_populates="user", foreign_keys="ClubMembership.user_id"
     )
-    advised_clubs: Mapped[List["Club"]] = relationship(back_populates="faculty_advisor")
-    notifications: Mapped[List["Notification"]] = relationship(back_populates="user", cascade="all, delete-orphan")
-    documents: Mapped[List["Document"]] = relationship(back_populates="owner", cascade="all, delete-orphan")
-    tickets_raised: Mapped[List["SupportTicket"]] = relationship(
+    advised_clubs: Mapped[List[Club]] = relationship(back_populates="faculty_advisor")
+    notifications: Mapped[List[Notification]] = relationship(back_populates="user", cascade="all, delete-orphan")
+    documents: Mapped[List[Document]] = relationship(back_populates="owner", cascade="all, delete-orphan")
+    tickets_raised: Mapped[List[SupportTicket]] = relationship(
         back_populates="raised_by_user", foreign_keys="SupportTicket.raised_by"
     )
 

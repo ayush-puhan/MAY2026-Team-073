@@ -4,7 +4,7 @@ single-lifecycle approval fields)."""
 from __future__ import annotations
 
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional,TYPE_CHECKING
 
 from sqlalchemy import CheckConstraint, ForeignKey, Numeric, String, Text
 from sqlalchemy import Enum as SAEnum
@@ -13,7 +13,9 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from ..base import Base
 from ..enums import BudgetStatus, ExpenseApprovalStatus, ExpenseStatus
 
-
+if TYPE_CHECKING:
+    from .__init__ import *
+    
 class Budget(Base):
     __tablename__ = "budgets"
     __table_args__ = (

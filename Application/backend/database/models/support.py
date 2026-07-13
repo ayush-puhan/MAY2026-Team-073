@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, TYPE_CHECKING
 
 from sqlalchemy import Boolean, ForeignKey, Integer, String, Text
 from sqlalchemy import Enum as SAEnum
@@ -13,6 +13,8 @@ from ..base import Base
 from ..enums import EmergencyCategory, EmergencyStatus
 from ..mixins import TimestampMixin
 
+if TYPE_CHECKING:
+    from .__init__ import *
 
 class SupportTicket(Base, TimestampMixin):
     __tablename__ = "support_tickets"

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 
 from sqlalchemy import Boolean, ForeignKey, Integer, String, Text
 from sqlalchemy import Enum as SAEnum
@@ -12,6 +12,8 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from ..base import Base
 from ..enums import DocumentType, NotificationChannel, NotificationType
 
+if TYPE_CHECKING:
+    from .__init__ import *
 
 class Notification(Base):
     __tablename__ = "notifications"

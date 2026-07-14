@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import styles from './DocumentModal.module.css';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Icon } from '@iconify/react';
@@ -65,7 +66,7 @@ export const DocumentModal = ({ isOpen, onClose, documentId }) => {
 
   const doc = DOCS[documentId];
 
-  return (
+  const modalContent = (
     <AnimatePresence>
       {isOpen && (
         <div className={styles.overlay} onClick={onClose}>
@@ -91,4 +92,6 @@ export const DocumentModal = ({ isOpen, onClose, documentId }) => {
       )}
     </AnimatePresence>
   );
+
+  return typeof document !== 'undefined' ? createPortal(modalContent, document.body) : null;
 };

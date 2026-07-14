@@ -38,7 +38,7 @@ export const FeaturedClubs = () => {
           titleAccent="worth joining."
           subtitle="Drag, browse, hover. 72 active clubs across engineering, arts, sport, entrepreneurship and more."
           actionText="See all clubs"
-          actionLink="/register"
+          actionLink={user ? getDashboardLink(user.role) : "/register"}
         />
       </div>
 

@@ -9,7 +9,7 @@ export const StudentDashboard = () => {
   // Fallback in case user is not loaded yet
   if (!user) return null;
 
-  const sidebarLinks = getNavForUser('Student', user.clubRole);
+  const sidebarLinks = getNavForUser(user.role);
 
   return (
     <DashboardLayout title="Student Dashboard" user={user} sidebarLinks={sidebarLinks}>

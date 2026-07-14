@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { authApi } from '../api/auth.api';
 
 const SESSION_KEY = 'session_user';
 
@@ -30,7 +31,7 @@ export const SessionProvider = ({ children }) => {
   }, []);
 
   const logout = useCallback(() => {
-    // auth.api.js handles clearing localStorage
+    authApi.logout();
     setUser(null);
     navigate('/');
   }, [navigate]);

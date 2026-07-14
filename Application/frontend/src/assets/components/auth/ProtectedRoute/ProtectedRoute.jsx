@@ -12,7 +12,7 @@ export const ProtectedRoute = ({ children, allowedRoles }) => {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  if (allowedRoles && !allowedRoles.includes(user.role)) {
+  if (allowedRoles && !allowedRoles.includes(user?.role?.toLowerCase())) {
     // Logged in, but role is not allowed
     // Route them to their proper dashboard
     const correctRoute = authApi.getDashboardRoute(user.role);

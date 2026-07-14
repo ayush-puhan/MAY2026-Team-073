@@ -7,7 +7,7 @@ export const FacultyAdvisorDashboard = () => {
   const { user } = useSession();
   if (!user) return null;
 
-  const sidebarLinks = getNavForUser('Faculty Advisor');
+  const sidebarLinks = getNavForUser(user.role);
 
   return (
     <DashboardLayout title="Faculty Advisor Dashboard" user={user} sidebarLinks={sidebarLinks}>

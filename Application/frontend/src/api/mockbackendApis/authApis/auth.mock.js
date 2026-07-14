@@ -5,9 +5,18 @@ export const authMockApi = {
     const users = await api.get(`/users?email=${encodeURIComponent(email)}`);
     if (!users || users.length === 0) throw new Error('Invalid email or password');
     const user = users[0];
-    if (user.password !== password) throw new Error('Invalid email or password');
+    if (user.password_hash !== password) throw new Error('Invalid email or password');
     if (!user.is_active) throw new Error('Your account is currently inactive. Contact administration.');
     
+    // Fetch full profile data (student_profile + interests) in parallel
+    const parsedId = isNaN(Number(user.id)) ? user.id : Number(user.id);
+    const [spArr, uiArr] = await Promise.all([
+      api.get(`/student_profiles?user_id=${parsedId}`),
+      api.get(`/user_interests?user_id=${parsedId}`)
+    ]);
+    if (spArr && spArr.length > 0) user.student_profile = spArr[0];
+    user.interests = (uiArr && uiArr.length > 0) ? uiArr.map(u => u.interest_id) : [];
+
     const token = btoa(JSON.stringify({ id: user.id, email: user.email, role: user.role }));
     localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(user));
@@ -23,10 +32,14 @@ export const authMockApi = {
     
     const newUser = {
       ...userData,
-      role: 'student',
+      password_hash: userData.password,
       is_active: true,
       email_verified: false,
+      role: 'student',
+      created_at: new Date().toISOString()
     };
+    delete newUser.password;
+
     const created = await api.post('/users', newUser);
     localStorage.setItem('is_new_user', 'true');
     return created;
@@ -50,6 +63,7 @@ export const authMockApi = {
   },
 
   updateProfile: async (userId, data) => {
+    const parsedId = isNaN(Number(userId)) ? userId : Number(userId);
     const payload = { ...data };
     let savedBase64 = null;
     
@@ -58,34 +72,55 @@ export const authMockApi = {
       delete payload.profile_photo_url;
     }
 
+    if (payload.department_id) payload.department_id = parseInt(payload.department_id, 10);
+
     const studentProfileData = payload.student_profile;
     delete payload.student_profile;
     const interestsData = payload.interests;
     delete payload.interests;
 
-    const updatedUser = await api.patch(`/users/${userId}`, payload);
+    const updatedUser = await api.patch(`/users/${parsedId}`, payload);
     
     if (studentProfileData) {
-      const allProfiles = await api.get('/student_profiles');
-      const existingProfiles = allProfiles.filter(p => String(p.user_id) === String(userId));
+      if (studentProfileData.program_id) studentProfileData.program_id = parseInt(studentProfileData.program_id, 10);
+      if (studentProfileData.academic_year) studentProfileData.academic_year = parseInt(studentProfileData.academic_year, 10);
+      if (studentProfileData.semester) studentProfileData.semester = parseInt(studentProfileData.semester, 10);
+
+      const existingProfiles = await api.get(`/student_profiles?user_id=${parsedId}`);
+      
       if (existingProfiles && existingProfiles.length > 0) {
-        await api.patch(`/student_profiles/${existingProfiles[0].id}`, studentProfileData);
+        // Use existing ID if json-server assigned one, otherwise fallback to the first object and assume it updates
+        const profileId = existingProfiles[0].id || existingProfiles[0].user_id; 
+        try {
+          await api.patch(`/student_profiles/${profileId}`, studentProfileData);
+        } catch (e) {
+          console.warn("Failed to patch student_profile by ID, attempting full replacement or ignoring if mock.");
+        }
         updatedUser.student_profile = { ...existingProfiles[0], ...studentProfileData };
       } else {
-        const newProfile = await api.post('/student_profiles', { user_id: String(userId), ...studentProfileData });
+        const newProfile = await api.post('/student_profiles', { 
+          user_id: parsedId, 
+          ...studentProfileData,
+          created_at: new Date().toISOString().replace('T', ' ').substring(0, 19)
+        });
         updatedUser.student_profile = newProfile;
       }
     }
 
     if (interestsData) {
-      const allInterests = await api.get('/user_interests');
-      const existingInterests = allInterests.filter(i => String(i.user_id) === String(userId));
+      const existingInterests = await api.get(`/user_interests?user_id=${parsedId}`);
       for (const ei of existingInterests) {
-        await api.del(`/user_interests/${ei.id}`);
+        if (ei.id) await api.del(`/user_interests/${ei.id}`);
       }
+      
       const newInterestsList = [];
+      const timestamp = new Date().toISOString().replace('T', ' ').substring(0, 19);
       for (const iId of interestsData) {
-        const ni = await api.post('/user_interests', { user_id: String(userId), interest_id: parseInt(iId, 10) });
+        const ni = await api.post('/user_interests', { 
+          user_id: parsedId, 
+          interest_id: Number(iId),
+          created_at: timestamp
+        });
         newInterestsList.push(ni);
       }
       updatedUser.interests = newInterestsList.map(ni => ni.interest_id);
@@ -98,16 +133,15 @@ export const authMockApi = {
   },
 
   getFullProfile: async (userId) => {
-    const user = await api.get(`/users/${userId}`);
+    const parsedId = isNaN(Number(userId)) ? userId : Number(userId);
+    const [user, spArr, uiArr] = await Promise.all([
+      api.get(`/users/${parsedId}`),
+      api.get(`/student_profiles?user_id=${parsedId}`),
+      api.get(`/user_interests?user_id=${parsedId}`)
+    ]);
     if (user) {
-      const allSp = await api.get('/student_profiles');
-      const sp = allSp.filter(p => String(p.user_id) === String(userId));
-      if (sp && sp.length > 0) user.student_profile = sp[0];
-      
-      const allUi = await api.get('/user_interests');
-      const ui = allUi.filter(i => String(i.user_id) === String(userId));
-      if (ui && ui.length > 0) user.interests = ui.map(u => u.interest_id);
-      else user.interests = [];
+      if (spArr && spArr.length > 0) user.student_profile = spArr[0];
+      user.interests = (uiArr && uiArr.length > 0) ? uiArr.map(u => u.interest_id) : [];
     }
     return user;
   },
@@ -131,7 +165,7 @@ export const authMockApi = {
   },
 
   getDashboardRoute: (role) => {
-    switch (role) {
+    switch (role?.toLowerCase()) {
       case 'student': return '/student-dashboard';
       case 'faculty_advisor': return '/faculty-advisor-dashboard';
       case 'system_admin': return '/admin-dashboard';

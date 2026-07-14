@@ -10,17 +10,6 @@ import { SidebarProvider, useSidebarContext } from '../../../../context/SidebarC
 const DashboardLayoutContent = ({ children, title, user, sidebarLinks, isInitializing }) => {
   const { isSidebarOpen } = useSidebarContext();
   
-  if (isInitializing) {
-    return (
-      <div className={styles.layout} data-colorblind={user?.color_blind_mode ? "true" : undefined}>
-        <div className={styles.loadingScreen}>
-          <div className={styles.spinner}></div>
-          <p>Loading Dashboard Workspace...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className={styles.layout} data-colorblind={user?.color_blind_mode ? "true" : undefined}>
       <Sidebar links={sidebarLinks} />
@@ -30,11 +19,27 @@ const DashboardLayoutContent = ({ children, title, user, sidebarLinks, isInitial
           {children}
         </main>
       </div>
+
+      {isInitializing && (
+        <div className={styles.loadingScreen}>
+          <div className={styles.spinner}></div>
+          <p>Loading Dashboard Workspace...</p>
+        </div>
+      )}
     </div>
   );
 };
 
-export const DashboardLayout = ({ children, title, user, sidebarLinks }) => {
+/**
+ * DashboardLayout — wraps every dashboard page.
+ * 
+ * @param {Function} onLoadData - Optional async callback for page-specific data fetching.
+ *   Called in parallel with getFullProfile. The loading screen stays visible until ALL 
+ *   data (profile + page-specific) finishes loading. Future dashboard pages can pass 
+ *   their own fetch logic here (clubs, events, stats, etc.) and it will all be covered 
+ *   by one unified loading state.
+ */
+export const DashboardLayout = ({ children, title, user, sidebarLinks, onLoadData }) => {
   const { updateUser } = useSession();
   const [isInitializing, setIsInitializing] = useState(true);
 
@@ -46,13 +51,18 @@ export const DashboardLayout = ({ children, title, user, sidebarLinks }) => {
         return;
       }
       try {
-        const fullUser = await authApi.getFullProfile(user.id);
-        if (isMounted) {
+        // Run profile fetch + any page-specific data loading in parallel
+        const tasks = [authApi.getFullProfile(user.id)];
+        if (onLoadData) tasks.push(onLoadData());
+        
+        const [fullUser] = await Promise.all(tasks);
+
+        if (isMounted && fullUser) {
           updateUser(fullUser);
           localStorage.setItem('user', JSON.stringify(fullUser));
         }
       } catch (err) {
-        console.error("Failed to fetch full profile on dashboard mount", err);
+        console.error("Failed to initialize dashboard", err);
       } finally {
         if (isMounted) setIsInitializing(false);
       }

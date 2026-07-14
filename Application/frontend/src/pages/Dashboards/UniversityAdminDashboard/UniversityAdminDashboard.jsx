@@ -7,7 +7,7 @@ export const UniversityAdminDashboard = () => {
   const { user } = useSession();
   if (!user) return null;
 
-  const sidebarLinks = getNavForUser('University Admin');
+  const sidebarLinks = getNavForUser(user.role);
 
   return (
     <DashboardLayout title="University Admin Dashboard" user={user} sidebarLinks={sidebarLinks}>

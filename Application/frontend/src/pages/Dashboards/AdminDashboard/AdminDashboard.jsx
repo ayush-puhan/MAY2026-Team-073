@@ -7,7 +7,7 @@ export const AdminDashboard = () => {
   const { user } = useSession();
   if (!user) return null;
 
-  const sidebarLinks = getNavForUser('Admin');
+  const sidebarLinks = getNavForUser(user.role);
 
   return (
     <DashboardLayout title="Admin Dashboard" user={user} sidebarLinks={sidebarLinks}>

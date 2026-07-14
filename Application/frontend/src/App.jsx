@@ -10,6 +10,7 @@ import { FacultyAdvisorDashboard } from './pages/Dashboards/FacultyAdvisorDashbo
 
 import { SessionProvider } from './context/SessionContext';
 import { ProtectedRoute } from './assets/components/auth/ProtectedRoute/ProtectedRoute';
+import { PublicOnlyRoute } from './assets/components/auth/PublicOnlyRoute/PublicOnlyRoute';
 
 function App() {
   return (
@@ -17,9 +18,9 @@ function App() {
       <SessionProvider>
         <Routes>
           <Route path="/" element={<Landing />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/login" element={<PublicOnlyRoute><Login /></PublicOnlyRoute>} />
+          <Route path="/register" element={<PublicOnlyRoute><Register /></PublicOnlyRoute>} />
+          <Route path="/forgot-password" element={<PublicOnlyRoute><ForgotPassword /></PublicOnlyRoute>} />
           
           {/* Dashboard Routes */}
           <Route path="/student-dashboard" element={<ProtectedRoute allowedRoles={['student']}><StudentDashboard /></ProtectedRoute>} />

@@ -26,8 +26,8 @@ export const ProfileSettingsModal = ({ isOpen, onClose, user }) => {
     department_id: user?.department_id ? String(user.department_id) : '',
     student_profile: {
       program_id: user?.student_profile?.program_id ? String(user.student_profile.program_id) : '',
-      academic_year: user?.student_profile?.academic_year || '',
-      semester: user?.student_profile?.semester || '',
+      academic_year: user?.student_profile?.academic_year ? String(user.student_profile.academic_year) : '',
+      semester: user?.student_profile?.semester ? String(user.student_profile.semester) : '',
       batch: user?.student_profile?.batch || '',
       section: user?.student_profile?.section || ''
     },
@@ -83,7 +83,7 @@ export const ProfileSettingsModal = ({ isOpen, onClose, user }) => {
   }, []);
 
   useEffect(() => {
-    if (user?.id) {
+    if (user?.id && isOpen) {
       const loadProfile = async () => {
         try {
           const loadedUser = await authApi.getFullProfile(user.id);
@@ -99,8 +99,8 @@ export const ProfileSettingsModal = ({ isOpen, onClose, user }) => {
             department_id: loadedUser?.department_id ? String(loadedUser.department_id) : (user?.department_id ? String(user.department_id) : ''),
             student_profile: {
               program_id: loadedUser?.student_profile?.program_id ? String(loadedUser.student_profile.program_id) : '',
-              academic_year: loadedUser?.student_profile?.academic_year || '',
-              semester: loadedUser?.student_profile?.semester || '',
+              academic_year: loadedUser?.student_profile?.academic_year ? String(loadedUser.student_profile.academic_year) : '',
+              semester: loadedUser?.student_profile?.semester ? String(loadedUser.student_profile.semester) : '',
               batch: loadedUser?.student_profile?.batch || '',
               section: loadedUser?.student_profile?.section || ''
             },
@@ -123,7 +123,7 @@ export const ProfileSettingsModal = ({ isOpen, onClose, user }) => {
       };
       loadProfile();
     }
-  }, [user?.id]);
+  }, [user?.id, isOpen]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -469,17 +469,17 @@ export const ProfileSettingsModal = ({ isOpen, onClose, user }) => {
                         <label>Academic Year <span className={styles.required}>*</span></label>
                         <select name="academic_year" value={formData.student_profile.academic_year || ''} onChange={handleChange} className={`${styles.input} ${errors.academic_year ? styles.inputError : ''}`}>
                           <option value="">Select Year</option>
-                          <option value="1st Year">1st Year</option>
-                          <option value="2nd Year">2nd Year</option>
-                          <option value="3rd Year">3rd Year</option>
-                          <option value="4th Year">4th Year</option>
+                          <option value="1">1st Year</option>
+                          <option value="2">2nd Year</option>
+                          <option value="3">3rd Year</option>
+                          <option value="4">4th Year</option>
                         </select>
                       </div>
                       <div className={styles.field}>
                         <label>Semester <span className={styles.required}>*</span></label>
                         <select name="semester" value={formData.student_profile.semester || ''} onChange={handleChange} className={`${styles.input} ${errors.semester ? styles.inputError : ''}`}>
                           <option value="">Select Semester</option>
-                          {[1,2,3,4,5,6,7,8].map(s => <option key={s} value={`${s}th Sem`}>{s}th Sem</option>)}
+                          {[1,2,3,4,5,6,7,8].map(s => <option key={s} value={String(s)}>{s}th Sem</option>)}
                         </select>
                       </div>
                     </div>

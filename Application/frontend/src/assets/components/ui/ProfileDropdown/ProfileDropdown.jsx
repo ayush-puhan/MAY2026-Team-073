@@ -29,7 +29,7 @@ export const ProfileDropdown = ({ user, openProfileModal, minimal = false }) => 
 
   const formatRole = (roleStr) => {
     if (!roleStr) return 'Student';
-    switch (roleStr) {
+    switch (roleStr.toLowerCase()) {
       case 'system_admin': return 'System Administrator';
       case 'student_affairs_office': return 'University Administrator';
       case 'dean_student_welfare': return 'Dean of Student Welfare';

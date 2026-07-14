@@ -47,7 +47,6 @@ export const RegisterForm = () => {
     const emailErr = validateEmail(formData.email); if (emailErr) e.email = emailErr;
     if (!pwResult.isValid) e.password = pwResult.errors[0];
     if (formData.password !== formData.confirmPassword) e.confirmPassword = 'Passwords do not match';
-    if (!agreed) e.agreed = 'Please agree to the community guidelines';
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -55,6 +54,10 @@ export const RegisterForm = () => {
   const handleRegister = async (e) => {
     e.preventDefault();
     if (!validate()) return;
+    if (!agreed) {
+      showError('Please agree to the community guidelines and privacy policy to continue.');
+      return;
+    }
     setIsLoading(true);
     try {
       await authApi.register(formData);
@@ -171,8 +174,8 @@ export const RegisterForm = () => {
           </div>
         </div>
 
-        <label className={clsx(styles.agreeLabel, errors.agreed && styles.agreeLabelError)}>
-          <input type="checkbox" checked={agreed} onChange={(e) => { setAgreed(e.target.checked); errors.agreed && setErrors({...errors, agreed: null}); }} className={styles.checkbox} />
+        <label className={styles.agreeLabel}>
+          <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} className={styles.checkbox} />
           <span>I agree to the community <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setActiveDoc('guidelines'); }} className={styles.policyLink}>guidelines</button> and <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setActiveDoc('privacy'); }} className={styles.policyLink}>privacy policy</button>.</span>
         </label>
 

@@ -69,22 +69,19 @@ export const FACULTY_ADVISOR_NAV = [
  * @returns {Array} Final nav link array
  */
 export const getNavForUser = (systemRole) => {
-  switch (systemRole) {
-    case 'Admin':
+  switch (systemRole?.toLowerCase()) {
+    case 'admin':
     case 'system_admin':
       return ADMIN_NAV;
-    case 'University Admin':
+    case 'university admin':
     case 'student_affairs_office':
     case 'dean_student_welfare':
       return UNIVERSITY_ADMIN_NAV;
-    case 'Faculty Advisor':
+    case 'faculty advisor':
     case 'faculty_advisor':
       return FACULTY_ADVISOR_NAV;
-    case 'Student':
     case 'student':
     default:
-      // Primary nav is identical for all students regardless of club role.
-      // Club management pages now live inside the Club Workspace itself.
       return STUDENT_NAV;
   }
 };

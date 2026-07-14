@@ -57,13 +57,8 @@ export const LoginForm = () => {
       
       const r = data.user.role;
       
-      // Update session context
-      login({
-        name: data.user.full_name,
-        email: data.user.email,
-        role: r,
-        clubRole: 'Student' // Default base role from CLUB_ROLES hierarchy
-      });
+      // Update session context with the full user object
+      login(data.user);
 
       // Role-based routing using helper
       navigate(authApi.getDashboardRoute(r));

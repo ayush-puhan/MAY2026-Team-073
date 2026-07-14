@@ -1,0 +1,212 @@
+.sidebar {
+  width: 72px;
+  background: var(--card);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  padding: 1rem 0;
+  z-index: 40;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateX(0);
+}
+
+.sidebar.collapsed {
+  transform: translateX(-100%);
+}
+
+.logoArea {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid color-mix(in oklab, var(--border) 30%, transparent);
+  min-height: 56px;
+}
+
+.logoLink {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: color-mix(in oklab, var(--primary) 15%, transparent);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+  overflow: hidden;
+}
+
+.logoLink:hover {
+  border-radius: 30%;
+  background: color-mix(in oklab, var(--primary) 25%, transparent);
+}
+
+.logoImg {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+/* Tooltip for Logo Link */
+.logoLink::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: calc(100% + 14px);
+  top: 50%;
+  transform: translateY(-50%) scale(0.95);
+  background: var(--foreground);
+  color: var(--background);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s, transform 0.15s;
+  transform-origin: left center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  z-index: 100;
+}
+
+.logoLink:hover::after {
+  opacity: 1;
+  transform: translateY(-50%) scale(1);
+}
+
+.nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  align-items: center;
+  padding: 0.5rem 0;
+  /* Removed overflow to prevent tooltip clipping */
+}
+
+/* Hide scrollbar for nav */
+.nav::-webkit-scrollbar {
+  display: none;
+}
+.nav {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.navItem {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--sidebar-item);
+  color: var(--sidebar-foreground);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.navItem:hover {
+  border-radius: 30%;
+  background: var(--sidebar-hover);
+  color: var(--sidebar-hover-foreground);
+}
+
+.active {
+  border-radius: 30%;
+  background: var(--sidebar-active);
+  color: var(--sidebar-active-foreground);
+  box-shadow: 0 4px 15px color-mix(in oklab, var(--sidebar-active) 30%, transparent);
+}
+
+/* Small indicator pill on the left side of navItem (like Discord) */
+.navItem::before {
+  content: '';
+  position: absolute;
+  left: -12px;
+  top: 50%;
+  transform: translateY(-50%) scaleY(0);
+  width: 4px;
+  height: 20px;
+  background: var(--foreground);
+  border-radius: 0 4px 4px 0;
+  transition: transform 0.2s;
+}
+
+.navItem:hover::before {
+  transform: translateY(-50%) scaleY(1);
+}
+
+.active::before {
+  transform: translateY(-50%) scaleY(2);
+  background: var(--sidebar-active);
+}
+
+.navIcon {
+  font-size: 1.4rem;
+}
+
+/* Pure CSS Tooltip */
+.navItem::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: calc(100% + 14px);
+  top: 50%;
+  transform: translateY(-50%) scale(0.95);
+  background: var(--sidebar-tooltip);
+  color: var(--sidebar-tooltip-foreground);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s, transform 0.15s;
+  transform-origin: left center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  z-index: 100;
+}
+
+/* Tooltip arrow */
+.navItem:hover::after {
+  opacity: 1;
+  transform: translateY(-50%) scale(1);
+}
+
+.navLabel {
+  display: none; /* We use CSS tooltips instead */
+}
+
+/* Footer (Profile) */
+.footer {
+  margin-top: auto;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding-top: 1rem;
+  border-top: 2px solid color-mix(in oklab, var(--border) 30%, transparent);
+}
+
+/* ── Responsive ── */
+@media (max-width: 641px) {
+  .sidebar {
+    width: 56px;
+  }
+  .navItem {
+    width: 40px;
+    height: 40px;
+  }
+  .navItem::after {
+    display: none; /* Hide tooltips on mobile */
+  }
+}

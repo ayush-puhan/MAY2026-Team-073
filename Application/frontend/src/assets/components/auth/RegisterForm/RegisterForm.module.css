@@ -1,0 +1,100 @@
+.container { display: flex; flex-direction: column; }
+.heading { font-size: 1.75rem; font-weight: 700; color: var(--foreground); margin-bottom: 0.4rem; }
+.subtitle { color: var(--muted-foreground); font-size: 0.95rem; margin-bottom: 0.75rem; }
+.form { display: flex; flex-direction: column; gap: 0.65rem; }
+
+.row { display: flex; gap: 0.65rem; }
+.row > * { flex: 1; min-width: 0; }
+@media (max-width: 480px) {
+  .row { flex-direction: column; }
+}
+
+.fieldGroup { display: flex; flex-direction: column; gap: 0.35rem; }
+
+.input {
+  width: 100%; padding: 0.75rem 1rem;
+  background-color: transparent; border: 1px solid color-mix(in oklab, var(--border) 70%, var(--foreground)); border-radius: var(--radius-md);
+  color: var(--foreground); font-family: var(--font-sans); font-size: 0.95rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.input::placeholder { color: var(--muted-foreground); }
+.input:focus { outline: none; border-color: var(--coral); box-shadow: 0 0 0 3px color-mix(in oklab, var(--coral) 15%, transparent); }
+.inputError { border-color: var(--destructive) !important; }
+.inputError:focus { box-shadow: 0 0 0 3px color-mix(in oklab, var(--destructive) 15%, transparent) !important; }
+.errorText { font-size: 0.75rem; color: var(--destructive); }
+
+.passwordWrapper { position: relative; display: flex; align-items: center; width: 100%; }
+.passwordWrapper .input { padding-right: 3rem; }
+.eyeBtn {
+  position: absolute; right: 0.75rem;
+  background: transparent; border: none; color: var(--muted-foreground);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.25rem; cursor: pointer; transition: color 0.2s; padding: 0.25rem;
+}
+.eyeBtn:hover { color: var(--foreground); }
+
+.strengthMeter { display: flex; gap: 0.25rem; }
+.bar { flex: 1; height: 4px; background-color: var(--border); border-radius: 2px; transition: background-color 0.3s; }
+.str1 { background-color: var(--destructive); }
+.str2 { background-color: var(--campus-orange); }
+.str3 { background-color: var(--gold); }
+.str4 { background-color: var(--achievement); }
+.strengthLabel { font-size: 0.75rem; color: var(--muted-foreground); }
+
+.agreeLabel { display: flex; align-items: flex-start; gap: 0.5rem; font-size: 0.85rem; color: var(--muted-foreground); cursor: pointer; margin-top: 0.25rem; }
+.agreeLabelError { color: var(--destructive); }
+.checkbox { accent-color: var(--primary); margin-top: 0.2rem; }
+.policyLink {
+  color: var(--coral);
+  font-weight: 500;
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  font-size: inherit;
+  cursor: pointer;
+  display: inline;
+}
+.policyLink:hover { text-decoration: underline; }
+
+.submitBtn {
+  display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+  width: 100%; padding: 0.9rem;
+  background: linear-gradient(135deg, var(--coral), var(--primary));
+  color: white; border: none; border-radius: var(--radius-md);
+  font-size: 1rem; font-weight: 600; font-family: var(--font-sans);
+  transition: all 0.2s; margin-top: 0.25rem; cursor: pointer;
+}
+.submitBtn:hover:not(:disabled) { filter: brightness(1.1); box-shadow: 0 6px 20px color-mix(in oklab, var(--coral) 40%, transparent); }
+.submitBtn:disabled { opacity: 0.7; cursor: not-allowed; }
+.spinner { animation: spin 1s linear infinite; }
+
+.divider {
+  display: flex; align-items: center; text-align: center; margin: 1rem 0 0.5rem 0;
+}
+.divider::before, .divider::after {
+  content: ''; flex: 1; border-bottom: 1px solid var(--border);
+}
+.divider span {
+  padding: 0 0.75rem; color: var(--muted-foreground); font-size: 0.85rem; font-weight: 500;
+}
+
+.googleBtn {
+  display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+  width: 100%; padding: 0.85rem;
+  background: transparent; color: var(--foreground);
+  border: 1px solid var(--border); border-radius: var(--radius-md);
+  font-size: 0.95rem; font-weight: 500; font-family: var(--font-sans);
+  cursor: pointer; transition: all 0.2s;
+}
+.googleBtn:hover { background: color-mix(in oklab, var(--border) 20%, transparent); }
+
+.benefits { display: flex; flex-direction: column; gap: 0.35rem; margin-top: 0.5rem; }
+.benefit { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: var(--muted-foreground); }
+.checkIcon { color: var(--achievement); font-size: 1rem; }
+
+.footer { margin-top: 0.5rem; text-align: center; font-size: 0.9rem; color: var(--muted-foreground); }
+.footerLink { color: var(--coral); font-weight: 500; }
+.footerLink:hover { text-decoration: underline; }
+
+@keyframes spin { to { transform: rotate(360deg); } }

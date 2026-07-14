@@ -1,0 +1,75 @@
+.layout {
+  display: flex;
+  height: 100vh;
+  background: var(--background);
+  position: relative;
+  overflow: hidden; /* Prevent scrolling on the body, let mainContent scroll */
+}
+
+.mainContent {
+  flex: 1;
+  margin-left: 72px; /* Fixed width of the navigation rail */
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+  height: 100vh;
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mainContent.collapsed {
+  margin-left: 0;
+}
+
+.pageContent {
+  padding: 2rem;
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* ── Responsive ── */
+
+@media (max-width: 641px) {
+  .pageContent {
+    padding: 1.25rem;
+  }
+  .mainContent {
+    margin-left: 56px; /* Slightly thinner rail on mobile */
+  }
+}
+
+@media (max-width: 481px) {
+  .pageContent {
+    padding: 1rem;
+  }
+}
+
+/* ── Full Dashboard Loading Screen ── */
+.loadingScreen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--background);
+  z-index: 9999;
+  gap: 1rem;
+  color: var(--muted-foreground);
+  font-weight: 500;
+  backdrop-filter: blur(8px); /* As per user request for blur */
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

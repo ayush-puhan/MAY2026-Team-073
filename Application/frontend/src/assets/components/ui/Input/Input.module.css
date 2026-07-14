@@ -1,0 +1,85 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--foreground);
+}
+
+.inputContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--primary) 20%, transparent);
+}
+
+.input::placeholder {
+  color: var(--muted-foreground);
+}
+
+.hasError {
+  border-color: var(--destructive) !important;
+}
+.hasError:focus {
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--destructive) 20%, transparent) !important;
+}
+
+.leadingIcon {
+  position: absolute;
+  left: 1rem;
+  color: var(--muted-foreground);
+  font-size: 1.25rem;
+  pointer-events: none;
+}
+
+.hasLeadingIcon {
+  padding-left: 2.75rem;
+}
+
+.trailingIconBtn {
+  position: absolute;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: var(--muted-foreground);
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.trailingIconBtn:hover {
+  color: var(--foreground);
+}
+
+.hasTrailingIcon {
+  padding-right: 2.75rem;
+}
+
+.errorMessage {
+  font-size: 0.75rem;
+  color: var(--destructive);
+  margin-top: 0.25rem;
+}

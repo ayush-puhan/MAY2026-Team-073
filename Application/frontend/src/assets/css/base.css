@@ -1,0 +1,235 @@
+/* Import animations */
+@import '../animations/animations.css';
+
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+/*
+ * ══════════ BREAKPOINTS ══════════
+ * Mobile iPhone Portrait:  max-width: 481px
+ * Mobile Android Portrait: max-width: 641px
+ * Tablet Portrait:         max-width: 961px
+ * Tablet Landscape:        max-width: 1081px
+ * Mini Laptops:            max-width: 1281px
+ * Laptops:                 max-width: 1501px
+ * Big Screen Laptops:      1501px+
+ */
+
+:root {
+  --radius: 0.875rem;
+  --radius-md: 0.625rem;
+  --radius-sm: 0.375rem;
+  /* Light theme variables */
+  --background: oklch(0.985 0.012 85);
+  --foreground: oklch(0.2 0.03 25);
+  --card: oklch(0.995 0.008 85);
+  --card-foreground: oklch(0.2 0.03 25);
+  --popover: oklch(0.995 0.008 85);
+  --popover-foreground: oklch(0.2 0.03 25);
+  --primary: oklch(0.38 0.13 20);
+  --primary-foreground: oklch(0.98 0.02 85);
+  --secondary: oklch(0.94 0.02 75);
+  --secondary-foreground: oklch(0.28 0.08 25);
+  --muted: oklch(0.94 0.02 75);
+  --muted-foreground: oklch(0.48 0.04 40);
+  --accent: oklch(0.93 0.06 80);
+  --accent-foreground: oklch(0.28 0.08 25);
+  --destructive: oklch(0.577 0.245 27);
+  --destructive-foreground: oklch(0.984 0.003 247);
+  --border: oklch(0.88 0.02 75);
+  --input: oklch(0.9 0.02 75);
+  --ring: oklch(0.55 0.15 25);
+  /* Brand extras */
+  --gold: oklch(0.78 0.14 82);
+  --gold-foreground: oklch(0.22 0.05 30);
+  --campus-orange: oklch(0.72 0.17 45);
+  --innovation: oklch(0.55 0.16 275);
+  --achievement: oklch(0.65 0.15 155);
+  --sky: oklch(0.72 0.12 230);
+  --soft-purple: oklch(0.7 0.12 310);
+  --sidebar-foreground: oklch(0.129 0.042 264.695);
+  
+  /* Sidebar Item States */
+  --sidebar-item: color-mix(in oklab, var(--foreground) 4%, transparent);
+  --sidebar-hover: color-mix(in oklab, var(--foreground) 8%, transparent);
+  --sidebar-hover-foreground: var(--foreground);
+  --sidebar-active: var(--primary);
+  --sidebar-active-foreground: oklch(0.98 0.02 85); /* whiteish */
+  --sidebar-tooltip: var(--foreground);
+  --sidebar-tooltip-foreground: var(--background);
+
+  /* Coral accent for buttons */
+  --coral: oklch(0.65 0.2 25);
+
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+[data-theme="dark"] {
+  --background: oklch(0.18 0.015 30);
+  --foreground: oklch(0.96 0.02 85);
+  --card: oklch(0.25 0.02 28);
+  --card-foreground: oklch(0.96 0.02 85);
+  --popover: oklch(0.22 0.02 28);
+  --popover-foreground: oklch(0.96 0.02 85);
+  --primary: oklch(0.68 0.17 25);
+  --primary-foreground: oklch(0.14 0.02 30);
+  --secondary: oklch(0.28 0.03 30);
+  --secondary-foreground: oklch(0.96 0.02 85);
+  --muted: oklch(0.26 0.02 30);
+  --muted-foreground: oklch(0.72 0.03 60);
+  --accent: oklch(0.32 0.05 40);
+  --accent-foreground: oklch(0.96 0.02 85);
+  --destructive: oklch(0.68 0.2 25);
+  --destructive-foreground: oklch(0.98 0.02 85);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 12%);
+  --ring: oklch(0.68 0.14 25);
+  --gold: oklch(0.82 0.15 85);
+  --gold-foreground: oklch(0.18 0.02 30);
+  --campus-orange: oklch(0.75 0.18 50);
+  --innovation: oklch(0.68 0.17 275);
+  --achievement: oklch(0.72 0.16 155);
+  --sky: oklch(0.75 0.13 230);
+  --soft-purple: oklch(0.75 0.14 310);
+  --sidebar-foreground: oklch(0.984 0.003 247.858);
+
+  /* Sidebar Item States */
+  --sidebar-item: color-mix(in oklab, var(--foreground) 5%, transparent);
+  --sidebar-hover: color-mix(in oklab, var(--foreground) 12%, transparent);
+  --sidebar-hover-foreground: var(--foreground);
+  --sidebar-active: var(--primary);
+  --sidebar-active-foreground: oklch(0.96 0.02 85); /* whiteish */
+  --sidebar-tooltip: var(--foreground);
+  --sidebar-tooltip-foreground: var(--background);
+
+  --coral: oklch(0.68 0.2 25);
+}
+
+/* Global Reset */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+  font-weight: 600;
+}
+
+a { color: inherit; text-decoration: none; }
+button { cursor: pointer; font-family: inherit; }
+
+section[id] {
+  scroll-margin-top: 100px;
+}
+
+/* Global utility classes */
+.mesh-hero {
+  background:
+    radial-gradient(60% 50% at 15% 20%, color-mix(in oklab, var(--primary) 45%, transparent) 0%, transparent 60%),
+    radial-gradient(50% 45% at 85% 15%, color-mix(in oklab, var(--gold) 55%, transparent) 0%, transparent 60%),
+    radial-gradient(55% 50% at 70% 85%, color-mix(in oklab, var(--innovation) 40%, transparent) 0%, transparent 60%),
+    radial-gradient(50% 45% at 20% 90%, color-mix(in oklab, var(--campus-orange) 45%, transparent) 0%, transparent 60%),
+    var(--background);
+}
+
+.glass-card {
+  background: color-mix(in oklab, var(--card) 65%, transparent);
+  backdrop-filter: blur(18px) saturate(140%);
+  border: 1px solid color-mix(in oklab, var(--foreground) 10%, transparent);
+}
+
+.text-gradient-brand {
+  background: linear-gradient(120deg, var(--primary), var(--campus-orange) 50%, var(--gold));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.shadow-glow {
+  box-shadow:
+    0 10px 40px -12px color-mix(in oklab, var(--primary) 40%, transparent),
+    0 4px 20px -8px color-mix(in oklab, var(--gold) 30%, transparent);
+}
+
+/* ══════════ COLOR BLIND THEMES ══════════ */
+/* Higher contrast, colorblind-friendly palettes (avoiding red/green ambiguity) */
+
+[data-theme="light"] [data-colorblind="true"],
+[data-theme="light"][data-colorblind="true"] {
+  /* High contrast background & foreground */
+  --background: oklch(0.99 0 0); /* Pure white */
+  --foreground: oklch(0.1 0 0); /* Near black */
+  --card: oklch(0.99 0 0);
+  --card-foreground: oklch(0.1 0 0);
+  --popover: oklch(0.99 0 0);
+  --popover-foreground: oklch(0.1 0 0);
+  --border: oklch(0.7 0 0); /* Much darker border for visibility */
+  --input: oklch(0.9 0 0);
+  
+  --primary: oklch(0.35 0.15 260); /* Deep Blue */
+  --primary-foreground: oklch(0.98 0.02 260);
+  --secondary: oklch(0.85 0.1 85); /* Strong Gold/Yellow */
+  --secondary-foreground: oklch(0.2 0.05 85);
+  --destructive: oklch(0.5 0.2 30); /* Darker Red/Orange with high contrast */
+  --destructive-foreground: oklch(0.98 0 0);
+  --coral: oklch(0.6 0.2 260); /* Shift coral towards blue/purple */
+  --campus-orange: oklch(0.7 0.15 85); /* Shift orange to gold */
+  
+  --sidebar-active: var(--primary);
+  --sidebar-active-foreground: var(--primary-foreground);
+  --sidebar-hover: color-mix(in oklab, var(--primary) 12%, transparent);
+}
+
+[data-theme="dark"] [data-colorblind="true"],
+[data-theme="dark"][data-colorblind="true"] {
+  /* High contrast background & foreground */
+  --background: oklch(0.1 0 0); /* Pure black */
+  --foreground: oklch(0.98 0 0); /* Near white */
+  --card: oklch(0.15 0 0);
+  --card-foreground: oklch(0.98 0 0);
+  --popover: oklch(0.15 0 0);
+  --popover-foreground: oklch(0.98 0 0);
+  --border: oklch(0.3 0 0); /* Much lighter border for visibility */
+  --input: oklch(0.2 0 0);
+
+  --primary: oklch(0.75 0.15 260); /* Bright Blue */
+  --primary-foreground: oklch(0.15 0.05 260);
+  --secondary: oklch(0.85 0.15 85); /* Bright Gold/Yellow */
+  --secondary-foreground: oklch(0.15 0.05 85);
+  --destructive: oklch(0.65 0.25 30); /* High contrast bright red */
+  --destructive-foreground: oklch(0.98 0 0);
+  --coral: oklch(0.7 0.2 260); /* Shift coral towards blue/purple */
+  --campus-orange: oklch(0.75 0.18 85); /* Shift orange to gold */
+  
+  --sidebar-active: var(--primary);
+  --sidebar-active-foreground: var(--primary-foreground);
+  --sidebar-hover: color-mix(in oklab, var(--primary) 18%, transparent);
+}
+
+/* ═══════ View Transitions (Circle Reveal Theme Toggle) ═══════ */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+  z-index: 1;
+}
+
+::view-transition-new(root) {
+  z-index: 9999;
+}

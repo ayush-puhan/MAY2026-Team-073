@@ -1,0 +1,232 @@
+.container {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  background-color: var(--background);
+  @media (max-width: 959px) {
+    flex-direction: column;
+    min-height: 100vh;
+    height: auto;
+    overflow: auto;
+    /* Add subtle gradient for mobile/tablet */
+    background: radial-gradient(
+      circle at 50% 0%,
+      color-mix(in oklab, var(--primary) 12%, transparent) 0%,
+      var(--background) 70%
+    );
+  }
+}
+
+/* ═══════════ LEFT PANE ═══════════ */
+.leftPane {
+  display: none;
+  position: relative;
+  width: 45%;
+  overflow: hidden;
+  background-color: var(--background);
+}
+
+@media (min-width: 960px) {
+  .leftPane { display: block; }
+}
+
+.logoWrapper {
+  position: absolute;
+  top: 2rem;
+  left: 2.5rem;
+  z-index: 20;
+}
+
+.leftContent {
+  position: relative;
+  z-index: 10;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 2rem 2.5rem;
+}
+
+/* Glowing animated orbs */
+.orbPrimary {
+  position: absolute; top: -15%; left: -10%; width: 55%; height: 55%; border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in oklab, var(--primary) 35%, transparent) 0%, transparent 70%);
+  animation: float-slow 18s ease-in-out infinite alternate; z-index: 1;
+}
+.orbGold {
+  position: absolute; top: 20%; right: -5%; width: 45%; height: 45%; border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in oklab, var(--gold) 30%, transparent) 0%, transparent 70%);
+  animation: float-slow 22s ease-in-out infinite alternate-reverse; z-index: 1;
+}
+.orbBlue {
+  position: absolute; bottom: -10%; left: 5%; width: 50%; height: 50%; border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in oklab, var(--soft-purple) 25%, transparent) 0%, transparent 70%);
+  animation: float-slow 20s ease-in-out infinite; z-index: 1;
+}
+
+/* Hero text */
+.heroText {
+  margin-top: 2rem;
+}
+
+.heroText h1 {
+  font-size: clamp(2.2rem, 3.5vw, 3rem);
+  line-height: 1.1;
+  font-weight: 700;
+  color: var(--foreground);
+  margin-bottom: 1rem;
+}
+
+.heroAccent {
+  background: linear-gradient(120deg, oklch(0.68 0.2 25), oklch(0.72 0.18 45));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+
+.heroSub {
+  font-size: 0.95rem;
+  color: var(--muted-foreground);
+  max-width: 90%;
+  line-height: 1.6;
+}
+
+/* Floating glass cards — 2x2 grid */
+.cardsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+  margin-top: 1.75rem;
+}
+
+.glassCard {
+  display: flex; align-items: center; gap: 0.65rem;
+  padding: 0.75rem 0.85rem;
+  background: color-mix(in oklab, var(--card) 50%, transparent);
+  backdrop-filter: blur(16px) saturate(130%);
+  border: 1px solid color-mix(in oklab, var(--foreground) 8%, transparent);
+  border-radius: var(--radius);
+}
+
+.cardIcon {
+  width: 2rem; height: 2rem; border-radius: 0.4rem;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem; flex-shrink: 0;
+}
+
+.cardText { display: flex; flex-direction: column; min-width: 0; }
+.cardTitle { font-size: 0.8rem; font-weight: 600; color: var(--foreground); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cardSub { font-size: 0.7rem; color: var(--muted-foreground); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Testimonial */
+.testimonial {
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--muted-foreground);
+  font-style: italic;
+  opacity: 0.7;
+}
+
+/* ═══════════ RIGHT PANE ═══════════ */
+.rightPane {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow-y: auto;
+  background-color: var(--background);
+  border-left: 1px solid var(--border);
+  position: relative;
+  
+  @media (max-width: 959px) {
+    background-color: transparent; /* Let container gradient show through */
+    border-left: none;
+    height: 100%;
+    min-height: 100vh;
+  }
+}
+
+.topBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 2rem;
+  @media (max-width: 959px) {
+    padding: 1rem 1.5rem;
+  }
+}
+
+.backLink {
+  display: flex; align-items: center; gap: 0.5rem;
+  font-size: 0.9rem; color: var(--foreground); font-weight: 500;
+  transition: all 0.2s;
+  background: color-mix(in oklab, var(--card) 60%, transparent);
+  padding: 0.5rem 1rem;
+  border-radius: 2rem;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 12px color-mix(in oklab, var(--foreground) 5%, transparent);
+}
+.backLink:hover { 
+  background: var(--card);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px color-mix(in oklab, var(--foreground) 8%, transparent);
+}
+
+.backIcon { font-size: 1rem; color: var(--campus-orange); }
+
+/* Form area — centered vertically */
+.formArea {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0 2rem 2rem;
+  position: relative;
+  z-index: 2;
+  @media (max-width: 959px) {
+    padding: 1rem 1.5rem 2rem;
+  }
+}
+
+.formWrapper {
+  width: 100%;
+  max-width: 550px;
+  background: var(--card);
+  padding: 2.5rem;
+  border-radius: var(--radius-md);
+  box-shadow: 0 10px 40px color-mix(in oklab, var(--foreground) 5%, transparent);
+  border: 1px solid var(--border);
+  @media (max-width: 959px) {
+    padding: 3rem 2.5rem; /* Increased padding to make forms taller naturally */
+    max-width: 540px; /* Wider on tablet so it doesn't look too small */
+    box-shadow: 0 8px 30px color-mix(in oklab, var(--foreground) 5%, transparent);
+  }
+  @media (max-width: 481px) {
+    padding: 2.25rem 1.5rem;
+    max-width: 100%;
+  }
+}
+
+/* Cursor glow that follows the mouse */
+.cursorGlow {
+  position: fixed;
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+  background: radial-gradient(
+    circle,
+    color-mix(in oklab, var(--campus-orange) 18%, transparent) 0%,
+    color-mix(in oklab, var(--coral) 8%, transparent) 40%,
+    transparent 70%
+  );
+  transform: translate(-50%, -50%);
+  transition: left 0.15s ease-out, top 0.15s ease-out, opacity 0.3s;
+  opacity: 0;
+  filter: blur(2px);
+}
+
+.cursorGlow.visible {
+  opacity: 1;
+}

@@ -1,0 +1,41 @@
+.section {
+  padding: 2rem 0 6rem;
+  background: var(--background);
+}
+
+.container {
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* Marquee setup to allow scaling without clipping */
+.marqueeWrapper {
+  width: 100%;
+  overflow: hidden;
+  padding: 20px 0; /* Add padding to prevent clipping when cards scale up */
+  margin: -20px 0; /* Offset padding to keep layout intact */
+}
+
+.marqueeTrack {
+  display: flex;
+  gap: 2rem;
+  width: max-content;
+  padding-left: 3rem; /* initial offset */
+  animation: scrollTrack 60s linear infinite;
+}
+
+.marqueeTrack:hover {
+  animation-play-state: paused;
+}
+
+@keyframes scrollTrack {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(calc(-33.33% - 0.66rem)); } /* -33% because we tripled the array */
+}
+
+@media (max-width: 641px) {
+  .section { padding: 2rem 0 4rem; }
+  .container { padding: 0 1rem; }
+}

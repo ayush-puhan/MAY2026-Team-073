@@ -1,0 +1,608 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+}
+
+.modal {
+  position: relative;
+  width: 95%;
+  max-width: 800px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 101;
+  max-height: 90vh;
+
+  @media (max-width: 1081px) {
+    max-width: 600px;
+  }
+}
+
+.header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid color-mix(in oklab, var(--border) 50%, transparent);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header h3 {
+  font-size: 1.1rem;
+  color: var(--foreground);
+  margin: 0;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  color: var(--muted-foreground);
+  font-size: 1.25rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.closeBtn:hover {
+  color: var(--foreground);
+}
+
+.tabs {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0 1.5rem;
+  border-bottom: 1px solid color-mix(in oklab, var(--border) 50%, transparent);
+  background: color-mix(in oklab, var(--card) 95%, transparent);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.tabBtn {
+  padding: 0.75rem 1rem;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--muted-foreground);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: -1px; /* Overlap border-bottom */
+}
+
+@media (max-width: 481px) {
+  .tabBtn {
+    padding: 0.6rem 0.5rem;
+    font-size: 0.8rem;
+    flex: 1;
+    text-align: center;
+  }
+}
+
+.tabBtn:hover {
+  color: var(--foreground);
+}
+
+.tabBtn.activeTab {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+.tabPane {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.content {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  gap: 1.5rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.avatarSection {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+
+  @media (max-width: 768px) {
+    gap: 1rem;
+  }
+}
+
+.avatarPreview {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: color-mix(in oklab, var(--primary) 15%, transparent);
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.avatarIcon {
+  font-size: 2.5rem;
+  color: var(--primary);
+}
+
+.avatarImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatarInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.uploadWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.fileInput {
+  display: none;
+}
+
+.uploadBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.25rem;
+  background: color-mix(in oklab, var(--primary) 10%, transparent);
+  color: var(--primary);
+  border: 1px solid color-mix(in oklab, var(--primary) 20%, transparent);
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.uploadBtn:hover {
+  background: color-mix(in oklab, var(--primary) 15%, transparent);
+}
+
+.removeBtn {
+  padding: 0.6rem 1.25rem;
+  background: transparent;
+  color: var(--destructive);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.removeBtn:hover {
+  background: color-mix(in oklab, var(--destructive) 10%, transparent);
+}
+
+.hint {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+  margin: 0;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.field label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--foreground);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.verifiedBadge {
+  font-size: 0.7rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: var(--radius-full);
+  background: color-mix(in oklab, var(--success, #10b981) 15%, transparent);
+  color: var(--success, #10b981);
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.roleBadge {
+  font-size: 0.7rem;
+  padding: 0.1rem 0.5rem;
+  border-radius: var(--radius-full);
+  background: color-mix(in oklab, var(--primary) 15%, transparent);
+  color: var(--primary);
+  font-weight: 600;
+  margin-left: 0.5rem;
+}
+
+.input, .textarea {
+  width: 100%;
+  padding: 0.75rem;
+  background: var(--input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  transition: all 0.2s;
+}
+
+.input option {
+  background-color: var(--card);
+  color: var(--foreground);
+}
+
+.input:focus, .textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 20%, transparent);
+}
+
+.inputError {
+  border-color: var(--destructive) !important;
+  box-shadow: 0 0 0 1px var(--destructive) !important;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+.passwordRow {
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr auto !important;
+  }
+}
+
+.disabled {
+  background: color-mix(in oklab, var(--input) 50%, transparent);
+  color: var(--muted-foreground);
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+.disabled:focus {
+  box-shadow: none;
+  border-color: var(--border);
+}
+
+.resetWrapper {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.resetPwBtn {
+  padding: 0.75rem 1.25rem; /* Exactly matches input padding */
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--foreground);
+  font-weight: 500;
+  font-size: 0.95rem; /* Matches input font-size */
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.resetPwBtn:hover:not(:disabled) {
+  background: color-mix(in oklab, var(--foreground) 5%, transparent);
+}
+
+.resetPwBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.required {
+  color: var(--destructive);
+  margin-left: 2px;
+}
+
+.errorText {
+  font-size: 0.75rem;
+  color: var(--destructive);
+  margin-top: 0.25rem;
+}
+
+.textarea {
+  resize: vertical;
+}
+
+.footer {
+  padding: 1.25rem 1.5rem;
+  background: color-mix(in oklab, var(--muted) 30%, transparent);
+  border-top: 1px solid color-mix(in oklab, var(--border) 50%, transparent);
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.cancelBtn {
+  padding: 0.65rem 1.5rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--foreground);
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.cancelBtn:hover {
+  background: var(--input);
+}
+
+.saveBtn {
+  padding: 0.65rem 1.5rem;
+  background: var(--primary);
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--primary-foreground);
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: filter 0.2s;
+}
+
+.saveBtn:hover {
+  filter: brightness(1.1);
+}
+
+.interestsSection {
+  margin-top: 1rem;
+}
+.interestsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+.interestsHeader label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--foreground);
+}
+.addInterestBtn {
+  background: none;
+  border: none;
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm);
+}
+.addInterestBtn:hover:not(.addInterestBtnDisabled) {
+  background: color-mix(in oklab, var(--primary) 10%, transparent);
+}
+.addInterestBtnDisabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.chipsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.75rem;
+  background: color-mix(in oklab, var(--border) 30%, transparent);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  font-size: 0.8rem;
+  color: var(--foreground);
+  transition: all 0.2s;
+}
+.removeChipBtn {
+  background: none;
+  border: none;
+  color: var(--muted-foreground);
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 0;
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  margin-left: 0;
+  transition: all 0.2s ease-out;
+}
+.chip:hover .removeChipBtn {
+  max-width: 20px;
+  opacity: 1;
+  margin-left: 0.5rem;
+}
+.removeChipBtn:hover {
+  color: var(--destructive);
+}
+.interestSelectWrapper {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.interestSelect {
+  flex: 1;
+}
+.addBtn {
+  padding: 0 1rem;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+.verifyEmailBtn {
+  padding: 0.25rem 0.75rem;
+  background: var(--coral);
+  color: white;
+  border: none;
+  border-radius: var(--radius-full);
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-left: auto;
+}
+
+.dangerZone {
+  margin-top: 2rem;
+  padding: 1.25rem;
+  border: 1px solid color-mix(in oklab, var(--destructive) 20%, transparent);
+  border-radius: var(--radius-sm);
+  background: color-mix(in oklab, var(--destructive) 5%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.dangerInfo h4 {
+  margin: 0 0 0.25rem 0;
+  color: var(--destructive);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.dangerInfo p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--muted-foreground);
+}
+
+.deleteBtn {
+  padding: 0.65rem 1.25rem;
+  background: var(--destructive);
+  color: var(--destructive-foreground);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: filter 0.2s;
+  white-space: nowrap;
+}
+
+.deleteBtn:hover {
+  filter: brightness(1.1);
+}
+
+.accessibilitySection {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.toggleField {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  background: var(--input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.toggleLabel {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.toggleIcon {
+  font-size: 1.5rem;
+  color: var(--primary);
+}
+
+.toggleLabel strong {
+  display: block;
+  font-size: 0.95rem;
+  color: var(--foreground);
+  margin-bottom: 0.1rem;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: var(--border);
+  transition: .4s;
+  border-radius: 24px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: var(--primary);
+}
+
+input:checked + .slider:before {
+  transform: translateX(20px);
+}

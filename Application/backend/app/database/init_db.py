@@ -1,8 +1,8 @@
 """Local SQLite database initializer for ClubConnect.
 
-Run from the repository root:
+Run from Application/backend/app/ (see README):
 
-    python -m application.backend.database.init_db
+    python -m database.init_db
 """
 
 from .base import Base

@@ -1,8 +1,8 @@
 """Compact verification script for the ClubConnect SQLite database.
 
-Run from the repository root:
+Run from Application/backend/app/ (see README):
 
-    python -m application.backend.database.verify_db
+    python -m database.verify_db
 """
 
 import sqlalchemy as sa
@@ -11,7 +11,7 @@ from .base import Base
 from .database import DB_PATH, engine
 from . import models  # noqa: F401 - import registers all mapped tables
 
-EXPECTED_TABLE_COUNT = 24
+EXPECTED_TABLE_COUNT = 33
 
 
 def main() -> None:

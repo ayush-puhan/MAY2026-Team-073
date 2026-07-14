@@ -143,3 +143,20 @@ class RedemptionStatus(str, enum.Enum):
     APPROVED = "approved"
     FULFILLED = "fulfilled"
     REJECTED = "rejected"
+
+
+class AuthProvider(str, enum.Enum):
+    LOCAL = "local"
+    GOOGLE = "google"
+
+
+class Gender(str, enum.Enum):
+    MALE = "male"
+    FEMALE = "female"
+    OTHER = "other"
+    PREFER_NOT_TO_SAY = "prefer_not_to_say"
+
+
+class TokenType(str, enum.Enum):
+    ACCESS = "access"
+    REFRESH = "refresh"

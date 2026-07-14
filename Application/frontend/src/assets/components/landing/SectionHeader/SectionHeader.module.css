@@ -1,0 +1,75 @@
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 3.5rem;
+  width: 100%;
+}
+
+.headerContent {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--coral);
+  margin-bottom: 0.5rem;
+}
+
+.headerContent h2 {
+  font-size: clamp(2.5rem, 4vw, 3.5rem);
+  font-weight: 700;
+  color: var(--foreground);
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.02em;
+}
+
+.accent {
+  background: linear-gradient(120deg, var(--coral), var(--gold));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.headerContent p {
+  color: var(--muted-foreground);
+  font-size: 1.15rem;
+  max-width: 600px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.actionBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--coral);
+  font-weight: 500;
+  font-size: 1rem;
+  transition: opacity 0.2s;
+  padding-bottom: 0.5rem;
+}
+
+.actionBtn:hover {
+  opacity: 0.8;
+}
+
+@media (max-width: 961px) {
+  .headerRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 481px) {
+  .headerContent h2 { font-size: clamp(1.75rem, 6vw, 2.5rem); }
+  .headerContent p { font-size: 1rem; }
+  .headerRow { margin-bottom: 2rem; }
+}

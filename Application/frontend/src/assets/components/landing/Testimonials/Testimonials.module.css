@@ -1,0 +1,20 @@
+.section { padding: 6rem 2rem; }
+.container { max-width: 1280px; width: 100%; margin: 0 auto; padding: 0 2rem; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+.card {
+  padding: 2rem; background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); transition: all 0.3s; cursor: default;
+}
+.card:hover { box-shadow: 0 12px 32px color-mix(in oklab, var(--foreground) 6%, transparent); }
+.quote { font-size: 0.95rem; color: var(--foreground); line-height: 1.6; margin-bottom: 1.5rem; font-style: italic; }
+.author { display: flex; align-items: center; gap: 0.75rem; }
+.avatar { font-size: 2.5rem; color: var(--muted-foreground); }
+.author strong { display: block; font-size: 0.9rem; color: var(--foreground); }
+.author span { font-size: 0.8rem; color: var(--muted-foreground); }
+
+@media (max-width: 641px) {
+  .section { padding: 3rem 1rem; }
+  .container { padding: 0 1rem; }
+  .grid { grid-template-columns: 1fr; }
+  .card { padding: 1.5rem; }
+}

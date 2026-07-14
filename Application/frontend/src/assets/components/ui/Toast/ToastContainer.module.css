@@ -1,0 +1,99 @@
+.container {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 999999;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  pointer-events: none; /* Let clicks pass through the container */
+}
+
+@media (max-width: 641px) {
+  .container {
+    right: 1rem;
+    left: calc(56px + 1.5rem); /* Sidebar width + gap */
+    bottom: 1rem;
+    align-items: center; /* Center toasts in the available space */
+  }
+}
+
+.toast {
+  pointer-events: auto; /* Enable clicks on the toast itself */
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  background-color: var(--card);
+  color: var(--card-foreground);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  min-width: 300px;
+  max-width: 400px;
+}
+
+@media (max-width: 641px) {
+  .toast {
+    min-width: 100%; /* Take full available space within container */
+    max-width: 100%;
+    padding: 0.875rem 1rem; /* Slightly smaller padding on mobile */
+  }
+}
+
+.toast.success {
+  border-left: 4px solid var(--achievement);
+}
+
+.toast.error {
+  border-left: 4px solid var(--destructive);
+}
+
+.toast.info {
+  border-left: 4px solid var(--sky);
+}
+
+.toast.loading {
+  border-left: 4px solid var(--primary);
+}
+
+.icon {
+  font-size: 1.25rem;
+}
+
+.toast.success .icon { color: var(--achievement); }
+.toast.error .icon { color: var(--destructive); }
+.toast.info .icon { color: var(--sky); }
+.toast.loading .icon { color: var(--primary); }
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+.message {
+  flex-grow: 1;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  color: var(--muted-foreground);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.closeBtn:hover {
+  background-color: var(--muted);
+  color: var(--foreground);
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

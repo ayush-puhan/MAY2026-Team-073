@@ -1,0 +1,147 @@
+.card {
+  width: 320px;
+  height: 420px;
+  border-radius: 1.5rem;
+  overflow: visible;
+  background: var(--card);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+}
+
+.card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px -10px color-mix(in oklab, var(--foreground) 20%, transparent);
+  z-index: 10;
+}
+
+.banner {
+  height: 180px;
+  border-radius: 1.5rem 1.5rem 0 0;
+  position: relative;
+}
+
+.banner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(color-mix(in oklab, var(--background) 15%, transparent) 1px, transparent 1px);
+  background-size: 16px 16px;
+  border-radius: 1.5rem 1.5rem 0 0;
+  pointer-events: none;
+}
+
+.categoryPill {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  background: color-mix(in oklab, var(--background) 40%, transparent);
+  backdrop-filter: blur(8px);
+  color: var(--foreground);
+  padding: 0.35rem 0.85rem;
+  border-radius: 2rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.iconCircle {
+  position: absolute;
+  bottom: -18px;
+  left: 2rem;
+  width: 36px;
+  height: 36px;
+  background: var(--card);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted-foreground);
+  font-size: 1.2rem;
+  border: 1px solid var(--border);
+  z-index: 2;
+}
+
+.cardBody {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.cardBody h3 {
+  font-size: 1.25rem;
+  color: var(--foreground);
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.statsRow {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  color: var(--muted-foreground);
+  font-size: 0.85rem;
+  margin-bottom: 1.5rem;
+}
+
+.statsRow span {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.upcomingBox {
+  background: color-mix(in oklab, var(--foreground) 3%, transparent);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 0.85rem 1rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.upcomingLabel {
+  font-size: 0.65rem;
+  color: var(--muted-foreground);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.upcomingEvent {
+  font-size: 0.9rem;
+  color: var(--foreground);
+  font-weight: 500;
+}
+
+.joinBtn {
+  margin-top: auto;
+  width: 100%;
+  padding: 0.9rem;
+  background: var(--coral);
+  color: white;
+  border: none;
+  border-radius: 2rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: filter 0.2s;
+  text-decoration: none;
+}
+
+.joinBtn:hover {
+  filter: brightness(1.1);
+}
+
+@media (max-width: 641px) {
+  .card { width: 260px; height: auto; }
+}

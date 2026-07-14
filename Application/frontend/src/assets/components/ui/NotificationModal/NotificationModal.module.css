@@ -1,0 +1,132 @@
+.modal {
+  position: absolute;
+  top: 60px;
+  right: 60px;
+  width: 340px;
+  background: var(--card); /* Solid background to prevent text bleed-through */
+  border: 1px solid color-mix(in oklab, var(--border) 50%, transparent);
+  border-radius: var(--radius);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4); /* Stronger shadow to lift it */
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.header {
+  padding: 1rem;
+  border-bottom: 1px solid color-mix(in oklab, var(--border) 50%, transparent);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header h3 {
+  font-size: 1rem;
+  color: var(--foreground);
+  margin: 0;
+}
+
+.markReadBtn {
+  background: none;
+  border: none;
+  color: var(--coral);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.markReadBtn:hover:not(:disabled) {
+  opacity: 0.8;
+}
+
+.markReadBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  filter: grayscale(100%);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.item {
+  padding: 1rem;
+  display: flex;
+  gap: 1rem;
+  border-bottom: 1px solid color-mix(in oklab, var(--border) 30%, transparent);
+  transition: background 0.2s;
+  cursor: pointer;
+  position: relative;
+}
+
+.item:hover {
+  background: color-mix(in oklab, var(--muted) 30%, transparent);
+}
+
+.unread {
+  background: color-mix(in oklab, var(--primary) 10%, transparent);
+}
+
+.iconWrapper {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: color-mix(in oklab, var(--primary) 20%, transparent);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.content h4 {
+  font-size: 0.85rem;
+  color: var(--foreground);
+  margin: 0;
+}
+
+.content p {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+  margin: 0;
+}
+
+.dot {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--coral);
+}
+
+.empty {
+  padding: 2rem;
+  text-align: center;
+  color: var(--muted-foreground);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 641px) {
+  .modal {
+    position: fixed;
+    top: 70px;
+    right: 10px;
+    left: 10px;
+    width: auto;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+}

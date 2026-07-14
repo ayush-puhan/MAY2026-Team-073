@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF5A5F" />
+      <stop offset="100%" stop-color="#FF8A65" />
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="64" fill="url(#grad)" />
+  <text x="50%" y="54%" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="130" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle" letter-spacing="-8">CC</text>
+</svg>

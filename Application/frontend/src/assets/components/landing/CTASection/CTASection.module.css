@@ -1,0 +1,21 @@
+.section { padding: 4rem 2rem 6rem; display: flex; justify-content: center; }
+.card {
+  max-width: 900px; width: 100%; padding: 5rem 2rem; text-align: center;
+  border-radius: var(--radius); position: relative; overflow: hidden;
+  background:
+    radial-gradient(ellipse at 20% 80%, color-mix(in oklab, var(--primary) 30%, transparent), transparent 60%),
+    radial-gradient(ellipse at 80% 20%, color-mix(in oklab, var(--gold) 25%, transparent), transparent 60%),
+    var(--card);
+  border: 1px solid var(--border);
+  display: flex; flex-direction: column; align-items: center; gap: 1.25rem;
+}
+.card h2 { font-size: 2.75rem; color: var(--foreground); }
+.accent { background: linear-gradient(120deg, oklch(0.68 0.2 25), oklch(0.75 0.18 50)); -webkit-background-clip: text; background-clip: text; color: transparent; font-style: italic; }
+.card p { color: var(--muted-foreground); font-size: 1.1rem; margin-bottom: 0.5rem; }
+.ctaBtn { box-shadow: 0 8px 30px -8px color-mix(in oklab, var(--primary) 45%, transparent); }
+
+@media (max-width: 641px) {
+  .section { padding: 3rem 1rem 4rem; }
+  .card { padding: 3rem 1.5rem; }
+  .card h2 { font-size: clamp(2rem, 8vw, 2.75rem); }
+}

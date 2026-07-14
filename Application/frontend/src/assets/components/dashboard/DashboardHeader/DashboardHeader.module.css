@@ -1,0 +1,106 @@
+.header {
+  height: 48px;
+  background: color-mix(in oklab, var(--card) 95%, transparent);
+  backdrop-filter: blur(20px) saturate(140%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1rem;
+  z-index: 30;
+  border-bottom: 1px solid color-mix(in oklab, var(--border) 40%, transparent);
+}
+
+.leftActions {
+  display: flex;
+  align-items: center;
+}
+
+.toggleBtn {
+  background: transparent;
+  border: none;
+  color: var(--muted-foreground);
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s;
+  position: relative;
+}
+
+.toggleBtn:hover {
+  background: color-mix(in oklab, var(--foreground) 5%, transparent);
+  color: var(--foreground);
+}
+
+/* Tooltip for Toggle Button */
+.toggleBtn::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  transform: scale(0.95);
+  background: var(--sidebar-tooltip);
+  color: var(--sidebar-tooltip-foreground);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s, transform 0.15s;
+  transform-origin: top left;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  z-index: 100;
+}
+
+.toggleBtn:hover::after {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.bellBtn {
+  position: relative;
+  background: none;
+  border: none;
+  color: var(--muted-foreground);
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: color 0.2s;
+  padding: 0.5rem;
+}
+
+.bellBtn:hover {
+  color: var(--foreground);
+}
+
+.bellBadge {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.4rem;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--coral);
+  border: 2px solid var(--background);
+}
+
+/* ── Responsive ── */
+@media (max-width: 641px) {
+  .header {
+    height: 48px;
+    padding: 0 0.75rem;
+  }
+}

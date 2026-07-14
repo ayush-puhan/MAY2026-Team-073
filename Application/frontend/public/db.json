@@ -1,0 +1,811 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "email": "guest@clubconnect.edu",
+      "password": "password123",
+      "full_name": "Guest User",
+      "roll_number": "GUEST001",
+      "role": "student",
+      "is_active": true,
+      "email_verified": true,
+      "phone": null,
+      "profile_photo_url": null,
+      "accessibility_prefs": null,
+      "google_id": null,
+      "auth_provider": "LOCAL",
+      "department_id": null,
+      "gender": "PREFER_NOT_TO_SAY",
+      "color_blind_mode": false
+    },
+    {
+      "id": "2",
+      "email": "student@clubconnect.edu",
+      "password": "password123",
+      "full_name": "Arjun Patel",
+      "roll_number": "STU001",
+      "role": "student",
+      "is_active": true,
+      "email_verified": true,
+      "phone": "+916280073454",
+      "profile_photo_url": "",
+      "accessibility_prefs": "",
+      "google_id": null,
+      "auth_provider": "LOCAL",
+      "department_id": 2,
+      "gender": "PREFER_NOT_TO_SAY",
+      "color_blind_mode": false,
+      "dob": ""
+    },
+    {
+      "id": "3",
+      "email": "applicant@clubconnect.edu",
+      "password": "password123",
+      "full_name": "Club Applicant",
+      "roll_number": "APP001",
+      "role": "student",
+      "is_active": true,
+      "email_verified": true,
+      "phone": null,
+      "profile_photo_url": null,
+      "accessibility_prefs": null,
+      "google_id": null,
+      "auth_provider": "LOCAL",
+      "department_id": null,
+      "gender": "PREFER_NOT_TO_SAY",
+      "color_blind_mode": false
+    },
+    {
+      "id": "4",
+      "email": "member@clubconnect.edu",
+      "password": "password123",
+      "full_name": "Active Member",
+      "roll_number": "MEM001",
+      "role": "student",
+      "is_active": true,
+      "email_verified": true,
+      "phone": null,
+      "profile_photo_url": null,
+      "accessibility_prefs": null,
+      "google_id": null,
+      "auth_provider": "LOCAL",
+      "department_id": null,
+      "gender": "PREFER_NOT_TO_SAY",
+      "color_blind_mode": false
+    },
+    {
+      "id": "5",
+      "email": "event.coord@clubconnect.edu",
+      "password": "password123",
+      "full_name": "Event Coordinator",
+      "roll_number": "EC001",
+      "role": "student",
+      "is_active": true,
+      "email_verified": true,
+      "phone": null,
+      "profile_photo_url": null,
+      "accessibility_prefs": null,
+      "google_id": null,
+      "auth_provider": "LOCAL",
+      "department_id": null,
+      "gender": "PREFER_NOT_TO_SAY",
+      "color_blind_mode": false
+    },
+    {
+      "id": "6",
+      "email": "vol.coord@clubconnect.edu",
+      "password": "password123",
+      "full_name": "Volunteer Coordinator",
+      "roll_number": "VC001",
+      "role": "student",
+      "is_active": true,
+      "email_verified": true,
+      "phone": null,
+      "profile_photo_url": null,
+      "accessibility_prefs": null,
+      "google_id": null,
+      "auth_provider": "LOCAL",
+      "department_id": null,
+      "gender": "PREFER_NOT_TO_SAY",
+      "color_blind_mode": false
+    },
+    {
+      "id": "7",
+      "email": "committee@clubconnect.edu",
+      "password": "password123",
+      "full_name": "Committee Member",
+      "roll_number": "CM001",
+      "role": "student",
+      "is_active": true,
+      "email_verified": true,
+      "phone": null,
+      "profile_photo_url": null,
+      "accessibility_prefs": null,
+      "google_id": null,
+      "auth_provider": "LOCAL",
+      "department_id": null,
+      "gender": "PREFER_NOT_TO_SAY",
+      "color_blind_mode": false
+    },
+    {
+      "id": "8",
+      "email": "leader@clubconnect.edu",
+      "password": "password123",
+      "full_name": "Priya Sharma",
+      "roll_number": "PRES001",
+      "role": "student",
+      "is_active": true,
+      "email_verified": true,
+      "phone": null,
+      "profile_photo_url": null,
+      "accessibility_prefs": null,
+      "google_id": null,
+      "auth_provider": "LOCAL",
+      "department_id": null,
+      "gender": "PREFER_NOT_TO_SAY",
+      "color_blind_mode": false
+    },
+    {
+      "id": "9",
+      "email": "vp@clubconnect.edu",
+      "password": "password123",
+      "full_name": "Vice President",
+      "roll_number": "VP001",
+      "role": "student",
+      "is_active": true,
+      "email_verified": true,
+      "phone": null,
+      "profile_photo_url": null,
+      "accessibility_prefs": null,
+      "google_id": null,
+      "auth_provider": "LOCAL",
+      "department_id": null,
+      "gender": "PREFER_NOT_TO_SAY",
+      "color_blind_mode": false
+    },
+    {
+      "id": "10",
+      "email": "secretary@clubconnect.edu",
+      "password": "password123",
+      "full_name": "Club Secretary",
+      "roll_number": "SEC001",
+      "role": "student",
+      "is_active": true,
+      "email_verified": true,
+      "phone": null,
+      "profile_photo_url": null,
+      "accessibility_prefs": null,
+      "google_id": null,
+      "auth_provider": "LOCAL",
+      "department_id": null,
+      "gender": "PREFER_NOT_TO_SAY",
+      "color_blind_mode": false
+    },
+    {
+      "id": "11",
+      "email": "treasurer@clubconnect.edu",
+      "password": "password123",
+      "full_name": "Kavitha R.",
+      "roll_number": "TREAS001",
+      "role": "student",
+      "is_active": true,
+      "email_verified": true,
+      "phone": null,
+      "profile_photo_url": null,
+      "accessibility_prefs": null,
+      "google_id": null,
+      "auth_provider": "LOCAL",
+      "department_id": null,
+      "gender": "PREFER_NOT_TO_SAY",
+      "color_blind_mode": false
+    },
+    {
+      "id": "12",
+      "email": "faculty@clubconnect.edu",
+      "password": "password123",
+      "full_name": "Dr. Ramesh Kumar",
+      "roll_number": "FAC001",
+      "role": "faculty_advisor",
+      "is_active": true,
+      "email_verified": true,
+      "phone": null,
+      "profile_photo_url": null,
+      "accessibility_prefs": null,
+      "google_id": null,
+      "auth_provider": "LOCAL",
+      "department_id": 1,
+      "gender": "PREFER_NOT_TO_SAY",
+      "color_blind_mode": false
+    },
+    {
+      "id": "13",
+      "email": "sao@clubconnect.edu",
+      "password": "password123",
+      "full_name": "Student Affairs Office",
+      "roll_number": "SAO001",
+      "role": "student_affairs_office",
+      "is_active": true,
+      "email_verified": true,
+      "phone": "+916280073454",
+      "profile_photo_url": "",
+      "accessibility_prefs": "",
+      "google_id": null,
+      "auth_provider": "LOCAL",
+      "department_id": null,
+      "gender": "PREFER_NOT_TO_SAY",
+      "color_blind_mode": false
+    },
+    {
+      "id": "14",
+      "email": "dean@clubconnect.edu",
+      "password": "password123",
+      "full_name": "Dean of Student Welfare",
+      "roll_number": "DEAN001",
+      "role": "dean_student_welfare",
+      "is_active": true,
+      "email_verified": true,
+      "phone": null,
+      "profile_photo_url": null,
+      "accessibility_prefs": null,
+      "google_id": null,
+      "auth_provider": "LOCAL",
+      "department_id": null,
+      "gender": "PREFER_NOT_TO_SAY",
+      "color_blind_mode": false
+    },
+    {
+      "id": "15",
+      "email": "admin@clubconnect.edu",
+      "password": "password123",
+      "full_name": "System Admin",
+      "roll_number": "ADMIN001",
+      "role": "system_admin",
+      "is_active": true,
+      "email_verified": true,
+      "phone": null,
+      "profile_photo_url": null,
+      "accessibility_prefs": null,
+      "google_id": null,
+      "auth_provider": "LOCAL",
+      "department_id": null,
+      "gender": "PREFER_NOT_TO_SAY",
+      "color_blind_mode": false
+    }
+  ],
+  "clubs": [
+    {
+      "id": "1",
+      "name": "Robotics Club",
+      "slug": "robotics-club",
+      "category": "Technical",
+      "description": "Building the future, one robot at a time.",
+      "objectives": "To promote robotics and automation.",
+      "status": "active",
+      "faculty_advisor_id": 12,
+      "member_count_cache": 45
+    },
+    {
+      "id": "2",
+      "name": "Cultural Committee",
+      "slug": "cultural-committee",
+      "category": "Cultural",
+      "description": "Organizing campus-wide cultural events.",
+      "objectives": "To foster cultural exchange.",
+      "status": "active",
+      "faculty_advisor_id": 12,
+      "member_count_cache": 120
+    }
+  ],
+  "club_memberships": [
+    {
+      "id": "1",
+      "user_id": 3,
+      "club_id": 1,
+      "role_in_club": "applicant",
+      "status": "pending"
+    },
+    {
+      "id": "2",
+      "user_id": 4,
+      "club_id": 1,
+      "role_in_club": "member",
+      "status": "approved"
+    },
+    {
+      "id": "3",
+      "user_id": 5,
+      "club_id": 1,
+      "role_in_club": "event_coordinator",
+      "status": "approved"
+    },
+    {
+      "id": "4",
+      "user_id": 6,
+      "club_id": 1,
+      "role_in_club": "volunteer_coordinator",
+      "status": "approved"
+    },
+    {
+      "id": "5",
+      "user_id": 7,
+      "club_id": 1,
+      "role_in_club": "committee_member",
+      "status": "approved"
+    },
+    {
+      "id": "6",
+      "user_id": 8,
+      "club_id": 1,
+      "role_in_club": "president",
+      "status": "approved"
+    },
+    {
+      "id": "7",
+      "user_id": 9,
+      "club_id": 1,
+      "role_in_club": "vice_president",
+      "status": "approved"
+    },
+    {
+      "id": "8",
+      "user_id": 10,
+      "club_id": 1,
+      "role_in_club": "secretary",
+      "status": "approved"
+    },
+    {
+      "id": "9",
+      "user_id": 11,
+      "club_id": 1,
+      "role_in_club": "treasurer",
+      "status": "approved"
+    }
+  ],
+  "events": [
+    {
+      "id": "1",
+      "club_id": 1,
+      "title": "Shaastra Hackathon",
+      "description": "Annual 24-hour robotics hackathon.",
+      "venue": "Main Auditorium",
+      "start_at": "2026-10-15T09:00:00Z",
+      "end_at": "2026-10-16T09:00:00Z",
+      "status": "scheduled",
+      "capacity": 200,
+      "created_by": 8
+    }
+  ],
+  "announcements": [
+    {
+      "id": "1",
+      "club_id": 1,
+      "posted_by": 8,
+      "title": "Welcome to the new semester!",
+      "body": "We have an exciting lineup of events planned.",
+      "target_audience": "all_members"
+    }
+  ],
+  "departments": [
+    {
+      "id": "1",
+      "name": "Computer Science & Engineering"
+    },
+    {
+      "id": "2",
+      "name": "Electronics & Communication Engineering"
+    },
+    {
+      "id": "3",
+      "name": "Mechanical Engineering"
+    }
+  ],
+  "programs": [
+    {
+      "id": "1",
+      "name": "B.Tech CSE",
+      "department_id": 1
+    },
+    {
+      "id": "2",
+      "name": "M.Tech AI",
+      "department_id": 1
+    },
+    {
+      "id": "3",
+      "name": "B.Tech ECE",
+      "department_id": 2
+    }
+  ],
+  "interests": [
+    {
+      "id": "1",
+      "name": "Artificial Intelligence"
+    },
+    {
+      "id": "2",
+      "name": "Robotics"
+    },
+    {
+      "id": "3",
+      "name": "Photography"
+    },
+    {
+      "id": "4",
+      "name": "Music"
+    },
+    {
+      "id": "5",
+      "name": "Entrepreneurship"
+    },
+    {
+      "id": "6",
+      "name": "Machine Learning"
+    },
+    {
+      "id": "7",
+      "name": "Web Development"
+    },
+    {
+      "id": "8",
+      "name": "Cybersecurity"
+    },
+    {
+      "id": "9",
+      "name": "Data Science"
+    },
+    {
+      "id": "10",
+      "name": "Open Source"
+    },
+    {
+      "id": "11",
+      "name": "Cloud Computing"
+    },
+    {
+      "id": "12",
+      "name": "Game Development"
+    },
+    {
+      "id": "13",
+      "name": "UI/UX Design"
+    },
+    {
+      "id": "14",
+      "name": "Blockchain"
+    },
+    {
+      "id": "15",
+      "name": "Creative Writing"
+    },
+    {
+      "id": "16",
+      "name": "Debating"
+    },
+    {
+      "id": "17",
+      "name": "Theatre & Drama"
+    },
+    {
+      "id": "18",
+      "name": "Dance"
+    },
+    {
+      "id": "19",
+      "name": "Fine Arts"
+    },
+    {
+      "id": "20",
+      "name": "Astronomy"
+    },
+    {
+      "id": "21",
+      "name": "Basketball"
+    },
+    {
+      "id": "22",
+      "name": "Football"
+    },
+    {
+      "id": "23",
+      "name": "Chess"
+    },
+    {
+      "id": "24",
+      "name": "Volunteering"
+    },
+    {
+      "id": "25",
+      "name": "Cooking"
+    }
+  ],
+  "student_profiles": [
+    {
+      "id": "1",
+      "user_id": "1",
+      "program_id": 1,
+      "academic_year": "3rd Year",
+      "semester": "6th Sem",
+      "batch": "2024",
+      "section": "A"
+    },
+    {
+      "id": "2",
+      "user_id": "2",
+      "program_id": 3,
+      "academic_year": "3rd Year",
+      "semester": "6th Sem",
+      "batch": "2024",
+      "section": "A"
+    },
+    {
+      "id": "3",
+      "user_id": "3",
+      "program_id": 1,
+      "academic_year": "3rd Year",
+      "semester": "6th Sem",
+      "batch": "2024",
+      "section": "A"
+    },
+    {
+      "id": "4",
+      "user_id": "4",
+      "program_id": 1,
+      "academic_year": "3rd Year",
+      "semester": "6th Sem",
+      "batch": "2024",
+      "section": "A"
+    },
+    {
+      "id": "5",
+      "user_id": "5",
+      "program_id": 1,
+      "academic_year": "3rd Year",
+      "semester": "6th Sem",
+      "batch": "2024",
+      "section": "A"
+    },
+    {
+      "id": "6",
+      "user_id": "6",
+      "program_id": 1,
+      "academic_year": "3rd Year",
+      "semester": "6th Sem",
+      "batch": "2024",
+      "section": "A"
+    },
+    {
+      "id": "7",
+      "user_id": "7",
+      "program_id": 1,
+      "academic_year": "3rd Year",
+      "semester": "6th Sem",
+      "batch": "2024",
+      "section": "A"
+    },
+    {
+      "id": "8",
+      "user_id": "8",
+      "program_id": 1,
+      "academic_year": "3rd Year",
+      "semester": "6th Sem",
+      "batch": "2024",
+      "section": "A"
+    },
+    {
+      "id": "9",
+      "user_id": "9",
+      "program_id": 1,
+      "academic_year": "3rd Year",
+      "semester": "6th Sem",
+      "batch": "2024",
+      "section": "A"
+    },
+    {
+      "id": "10",
+      "user_id": "10",
+      "program_id": 1,
+      "academic_year": "3rd Year",
+      "semester": "6th Sem",
+      "batch": "2024",
+      "section": "A"
+    },
+    {
+      "id": "11",
+      "user_id": "11",
+      "program_id": 1,
+      "academic_year": "3rd Year",
+      "semester": "6th Sem",
+      "batch": "2024",
+      "section": "A"
+    },
+    {
+      "user_id": "4gPCXsB-gB0",
+      "program_id": 1,
+      "academic_year": "1st Year",
+      "semester": "2th Sem",
+      "batch": "",
+      "section": "",
+      "id": "hYDYITMdoPQ"
+    },
+    {
+      "user_id": "t5OC9eEXmFc",
+      "program_id": 1,
+      "academic_year": "1st Year",
+      "semester": "1th Sem",
+      "batch": "",
+      "section": "",
+      "id": "RtHwJUcIARE"
+    },
+    {
+      "user_id": "EmiC07zXLts",
+      "program_id": 1,
+      "academic_year": "1st Year",
+      "semester": "1th Sem",
+      "batch": "",
+      "section": "",
+      "id": "9bFHrwXagBA"
+    },
+    {
+      "user_id": "2",
+      "program_id": 2,
+      "academic_year": "1st Year",
+      "semester": "2th Sem",
+      "batch": "",
+      "section": "",
+      "id": "BbliEMhnXeU"
+    },
+    {
+      "user_id": "2",
+      "program_id": 1,
+      "academic_year": "1st Year",
+      "semester": "2th Sem",
+      "batch": "",
+      "section": "",
+      "id": "1WSoMvyGac0"
+    },
+    {
+      "user_id": "2",
+      "program_id": 1,
+      "academic_year": "1st Year",
+      "semester": "2th Sem",
+      "batch": "",
+      "section": "",
+      "id": "ZXYEVo_VLmg"
+    },
+    {
+      "user_id": "2",
+      "program_id": 1,
+      "academic_year": "1st Year",
+      "semester": "4th Sem",
+      "batch": "",
+      "section": "",
+      "id": "QdRcxEFzHvo"
+    },
+    {
+      "user_id": "2",
+      "program_id": 2,
+      "academic_year": "1st Year",
+      "semester": "2th Sem",
+      "batch": "",
+      "section": "",
+      "id": "PHxPm6A5crc"
+    },
+    {
+      "user_id": "2",
+      "program_id": 1,
+      "academic_year": "1st Year",
+      "semester": "3th Sem",
+      "batch": "",
+      "section": "",
+      "id": "CcW1ut0b8oU"
+    },
+    {
+      "user_id": "2",
+      "program_id": 1,
+      "academic_year": "2nd Year",
+      "semester": "2th Sem",
+      "batch": "",
+      "section": "",
+      "id": "lgG4ajlMrd4"
+    },
+    {
+      "user_id": "2",
+      "program_id": 2,
+      "academic_year": "1st Year",
+      "semester": "2th Sem",
+      "batch": "",
+      "section": "",
+      "id": "c8DVj5celdo"
+    },
+    {
+      "user_id": "2",
+      "program_id": 3,
+      "academic_year": "2nd Year",
+      "semester": "2th Sem",
+      "batch": "",
+      "section": "",
+      "id": "e9K5az3UZUc"
+    },
+    {
+      "user_id": "2",
+      "program_id": 3,
+      "academic_year": "1st Year",
+      "semester": "2th Sem",
+      "batch": "",
+      "section": "",
+      "id": "Xf_cNxQpSGk"
+    },
+    {
+      "user_id": "2",
+      "program_id": 3,
+      "academic_year": "1st Year",
+      "semester": "3th Sem",
+      "batch": "",
+      "section": "",
+      "id": "bRjZYP7sqWg"
+    }
+  ],
+  "user_interests": [
+    {
+      "user_id": "4gPCXsB-gB0",
+      "interest_id": 14,
+      "id": "V7tpVSJGs44"
+    },
+    {
+      "user_id": "4gPCXsB-gB0",
+      "interest_id": 12,
+      "id": "4xVfW7uiwpU"
+    },
+    {
+      "user_id": "4gPCXsB-gB0",
+      "interest_id": 8,
+      "id": "J0Zf-dG4wzI"
+    },
+    {
+      "user_id": "4gPCXsB-gB0",
+      "interest_id": 13,
+      "id": "oStnPMUGIgw"
+    },
+    {
+      "user_id": "4gPCXsB-gB0",
+      "interest_id": 10,
+      "id": "JjH1JhrogHY"
+    },
+    {
+      "user_id": "4gPCXsB-gB0",
+      "interest_id": 15,
+      "id": "Ag_iKWUjV5Q"
+    },
+    {
+      "user_id": "t5OC9eEXmFc",
+      "interest_id": 14,
+      "id": "gr5BJhu-lWs"
+    },
+    {
+      "user_id": "t5OC9eEXmFc",
+      "interest_id": 13,
+      "id": "ztzm_iHUer4"
+    },
+    {
+      "user_id": "EmiC07zXLts",
+      "interest_id": 14,
+      "id": "wAZamldgrGg"
+    },
+    {
+      "user_id": "EmiC07zXLts",
+      "interest_id": 9,
+      "id": "yPQ0fSTOl5o"
+    },
+    {
+      "user_id": "2",
+      "interest_id": 3,
+      "id": "eWruaaAXFJs"
+    },
+    {
+      "user_id": "2",
+      "interest_id": 7,
+      "id": "-3D9BukuggI"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}

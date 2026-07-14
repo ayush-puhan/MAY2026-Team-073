@@ -1,0 +1,30 @@
+.card {
+  display: flex; align-items: center; gap: 0.75rem; padding: 0.85rem 1.15rem;
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+  white-space: nowrap; flex-shrink: 0; transition: all 0.2s; cursor: pointer;
+  min-width: 280px;
+}
+
+.card:hover { 
+  border-color: var(--campus-orange); 
+  transform: translateY(-2px); 
+  box-shadow: 0 6px 20px color-mix(in oklab, var(--foreground) 5%, transparent); 
+}
+
+.cardIcon { 
+  width: 2rem; height: 2rem; border-radius: 0.4rem; 
+  display: flex; align-items: center; justify-content: center; 
+  font-size: 1rem; flex-shrink: 0; 
+}
+
+.cardText { 
+  flex: 1; font-size: 0.85rem; font-weight: 500; color: var(--foreground); 
+}
+
+.cardTime { 
+  font-size: 0.7rem; color: var(--muted-foreground); 
+}
+
+@media (max-width: 641px) {
+  .card { min-width: 220px; }
+}

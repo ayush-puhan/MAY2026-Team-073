@@ -2,7 +2,7 @@
 
 from datetime import datetime
 
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, UniqueConstraint
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, UniqueConstraint
 from sqlalchemy.orm import relationship
 
 from ..base import Base
@@ -16,10 +16,12 @@ class Department(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(255), unique=True, nullable=False)
     code = Column(String(20), unique=True, nullable=True)
+    university_id = Column(Integer, ForeignKey("universities.id", ondelete="CASCADE"), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
     programs = relationship("Program", back_populates="department", cascade="all, delete-orphan")
     users = relationship("User", back_populates="department")
+    university = relationship("University", back_populates="departments")
 
 
 class Program(Base):
@@ -48,6 +50,8 @@ class StudentProfile(Base):
     semester = Column(Integer, nullable=True)
     batch = Column(String(20), nullable=True)
     section = Column(String(10), nullable=True)
+    institutional_email = Column(String(255), unique=True, nullable=True)
+    is_verified = Column(Boolean, default=False, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
     user = relationship("User", back_populates="student_profile")

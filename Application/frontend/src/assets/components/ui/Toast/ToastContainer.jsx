@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import styles from './ToastContainer.module.css';
 import { Icon } from '@iconify/react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -18,7 +19,7 @@ const getIconForType = (type) => {
 };
 
 export const ToastContainer = ({ toasts, removeToast }) => {
-  return (
+  const content = (
     <div className={styles.container}>
       <AnimatePresence>
         {toasts.map((toast) => (
@@ -42,4 +43,6 @@ export const ToastContainer = ({ toasts, removeToast }) => {
       </AnimatePresence>
     </div>
   );
+
+  return typeof document !== 'undefined' ? createPortal(content, document.body) : null;
 };

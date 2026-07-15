@@ -31,6 +31,7 @@ class User(Base, TimestampMixin, SoftDeleteMixin):
     dob = Column(Date, nullable=True)
     auth_provider = Column(SAEnum(AuthProvider), default=AuthProvider.LOCAL, nullable=False)
     department_id = Column(Integer, ForeignKey("departments.id", ondelete="SET NULL"), nullable=True)
+    university_id = Column(Integer, ForeignKey("universities.id", ondelete="SET NULL"), nullable=True)
     gender = Column(SAEnum(Gender), nullable=True)
     color_blind_mode = Column(Boolean, default=False, nullable=False)
 
@@ -46,6 +47,7 @@ class User(Base, TimestampMixin, SoftDeleteMixin):
         "SupportTicket", back_populates="raised_by_user", foreign_keys="SupportTicket.raised_by"
     )
     department = relationship("Department", back_populates="users")
+    university = relationship("University", back_populates="users")
     student_profile = relationship(
         "StudentProfile", back_populates="user", uselist=False, cascade="all, delete-orphan"
     )

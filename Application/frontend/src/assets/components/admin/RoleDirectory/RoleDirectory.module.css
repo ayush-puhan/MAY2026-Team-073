@@ -1,0 +1,144 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  container-type: inline-size;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+.subtitle {
+  margin: 0;
+  color: var(--muted-foreground);
+  font-size: 0.95rem;
+}
+
+.layout {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+
+.rolesSidebar {
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background-color: var(--surface);
+  padding: 0.75rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+.roleBtn {
+  background: transparent;
+  border: 1px solid transparent;
+  text-align: left;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.roleBtn:hover {
+  background-color: rgba(0,0,0,0.02);
+}
+
+.roleBtn.active {
+  background-color: var(--primary);
+  color: white;
+}
+
+.roleBtn.active .roleName,
+.roleBtn.active .roleDesc {
+  color: white;
+}
+
+.roleName {
+  font-weight: 600;
+  color: var(--foreground);
+  font-size: 0.95rem;
+}
+
+.roleCount {
+  background-color: rgba(0,0,0,0.08);
+  color: var(--muted-foreground);
+  padding: 0.15rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  min-width: 24px;
+  text-align: center;
+}
+
+.roleBtn.active .roleCount {
+  background-color: rgba(255,255,255,0.2);
+  color: white;
+}
+
+.roleContent {
+  flex: 1;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.contentHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.contentHeaderLeft {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.contentHeader h3 {
+  margin: 0;
+  color: var(--foreground);
+}
+
+.userCount {
+  background-color: rgba(0,0,0,0.05);
+  color: var(--muted-foreground);
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.tableWrapper {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+  color: var(--primary);
+}

@@ -23,10 +23,10 @@ function App() {
           <Route path="/forgot-password" element={<PublicOnlyRoute><ForgotPassword /></PublicOnlyRoute>} />
           
           {/* Dashboard Routes */}
-          <Route path="/student-dashboard" element={<ProtectedRoute allowedRoles={['student']}><StudentDashboard /></ProtectedRoute>} />
-          <Route path="/admin-dashboard" element={<ProtectedRoute allowedRoles={['system_admin']}><AdminDashboard /></ProtectedRoute>} />
-          <Route path="/university-admin-dashboard" element={<ProtectedRoute allowedRoles={['student_affairs_office', 'dean_student_welfare']}><UniversityAdminDashboard /></ProtectedRoute>} />
-          <Route path="/faculty-advisor-dashboard" element={<ProtectedRoute allowedRoles={['faculty_advisor']}><FacultyAdvisorDashboard /></ProtectedRoute>} />
+          <Route path="/student-dashboard/*" element={<ProtectedRoute allowedRoles={['student']}><StudentDashboard /></ProtectedRoute>} />
+          <Route path="/admin-dashboard/*" element={<ProtectedRoute allowedRoles={['system_admin']}><AdminDashboard /></ProtectedRoute>} />
+          <Route path="/university-admin-dashboard/*" element={<ProtectedRoute allowedRoles={['student_affairs_office', 'dean_student_welfare']}><UniversityAdminDashboard /></ProtectedRoute>} />
+          <Route path="/faculty-advisor-dashboard/*" element={<ProtectedRoute allowedRoles={['faculty_advisor']}><FacultyAdvisorDashboard /></ProtectedRoute>} />
           
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

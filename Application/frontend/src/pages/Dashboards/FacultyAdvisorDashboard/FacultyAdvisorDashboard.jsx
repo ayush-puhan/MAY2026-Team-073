@@ -1,4 +1,4 @@
-import { DashboardLayout } from '../../../assets/components/dashboard/DashboardLayout/DashboardLayout';
+﻿import { DashboardLayout } from '../../../assets/components/dashboard/DashboardLayout/DashboardLayout';
 import { getNavForUser } from '../../../config/navigation';
 
 import { useSession } from '../../../context/SessionContext';
@@ -7,7 +7,7 @@ export const FacultyAdvisorDashboard = () => {
   const { user } = useSession();
   if (!user) return null;
 
-  const sidebarLinks = getNavForUser(user.role);
+  const sidebarLinks = getNavForUser(user);
 
   return (
     <DashboardLayout title="Faculty Advisor Dashboard" user={user} sidebarLinks={sidebarLinks}>
@@ -18,3 +18,4 @@ export const FacultyAdvisorDashboard = () => {
     </DashboardLayout>
   );
 };
+

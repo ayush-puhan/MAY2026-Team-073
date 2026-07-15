@@ -1,0 +1,29 @@
+.wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.icon {
+  position: absolute;
+  left: 0.75rem;
+  color: var(--muted-foreground);
+  width: 18px;
+  height: 18px;
+}
+
+.input {
+  width: 100%;
+  padding: 0.4rem 0.75rem 0.4rem 2.25rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background-color: var(--surface);
+  color: var(--foreground);
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input:focus {
+  border-color: var(--primary);
+}

@@ -19,14 +19,15 @@
 
 .input {
   width: 100%;
-  padding: 0.75rem 1rem;
-  border-radius: var(--radius-md);
+  padding: 0.35rem 0.6rem;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--border);
-  background-color: var(--background);
+  background-color: var(--input);
   color: var(--foreground);
   font-family: var(--font-sans);
-  font-size: 1rem;
+  font-size: 0.85rem;
   transition: all 0.2s ease;
+  min-height: 32px;
 }
 
 .input:focus {
@@ -37,6 +38,13 @@
 
 .input::placeholder {
   color: var(--muted-foreground);
+}
+
+.textarea {
+  min-height: 80px;
+  resize: vertical;
+  padding: 0.6rem;
+  font-family: inherit;
 }
 
 .hasError {

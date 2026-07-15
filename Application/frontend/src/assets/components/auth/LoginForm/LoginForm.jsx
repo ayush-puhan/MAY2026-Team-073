@@ -7,6 +7,8 @@ import { useToast } from '../../../../context/ToastContext';
 import { useSession } from '../../../../context/SessionContext';
 import { Icon } from '@iconify/react';
 import { motion } from 'framer-motion';
+import { checkIsVerified } from '../../../../utils/verification';
+import { notificationApi } from '../../../../api/notification.api';
 
 export const LoginForm = () => {
   const [email, setEmail] = useState('');
@@ -23,7 +25,7 @@ export const LoginForm = () => {
   }, []);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
-  const { showSuccess, showError } = useToast();
+  const { showSuccess, showError, showInfo } = useToast();
   const { login } = useSession();
   const navigate = useNavigate();
 
@@ -57,6 +59,27 @@ export const LoginForm = () => {
       
       const r = data.user.role;
       
+      // Reminder for unverified users
+      const hasOptedOut = data.user.browse_public_only || data.user.preferences?.browse_public_only;
+      if (!checkIsVerified(data.user) && !hasOptedOut) {
+        setTimeout(() => {
+          showInfo("Reminder: Please add and verify your university email in Profile Settings.", 5000);
+        }, 1000);
+      }
+
+      // Check unread notifications
+      try {
+        const notifs = await notificationApi.getNotifications(data.user.id);
+        const unreadCount = notifs.filter(n => !n.is_read).length;
+        if (unreadCount > 0) {
+          setTimeout(() => {
+            showInfo(`You have ${unreadCount} unread notification${unreadCount > 1 ? 's' : ''}.`);
+          }, 2000);
+        }
+      } catch (e) {
+        // ignore error
+      }
+
       // Update session context with the full user object
       login(data.user);
 

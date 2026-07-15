@@ -93,13 +93,13 @@ SELECT title, doc_type, created_at FROM documents WHERE club_id = 1;
 SELECT title, body, created_at FROM notifications WHERE user_id = 1 AND is_read = 0;
 
 -- 20. Show support tickets with full response history
-SELECT t.title, t.is_open, r.body, r.is_resolution, r.created_at
+SELECT t.title, t.status, r.body, r.is_resolution, r.created_at
 FROM support_tickets t LEFT JOIN ticket_responses r ON r.ticket_id = t.id
 WHERE t.id = 1
 ORDER BY r.created_at;
 
 -- 21. List all open support tickets
-SELECT id, title, raised_by FROM support_tickets WHERE is_open = 1;
+SELECT id, title, raised_by FROM support_tickets WHERE status = 'Open';
 
 -- 22. Show unresolved emergency reports
 SELECT category, description, created_at FROM emergency_reports WHERE status != 'resolved';

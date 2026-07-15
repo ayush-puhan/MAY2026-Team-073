@@ -1,0 +1,106 @@
+.dropdown {
+  position: relative;
+  width: 100%;
+  font-family: var(--font-primary);
+  user-select: none;
+  font-size: 0.9rem;
+}
+
+.header {
+  padding: 0.4rem 0.75rem;
+  background-color: var(--input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--foreground);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 36px;
+}
+
+.header:hover {
+  border-color: var(--primary);
+}
+
+.placeholder {
+  color: var(--text-secondary);
+}
+
+.value {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.icon {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+  margin-left: 0.5rem;
+}
+
+.icon.open {
+  transform: rotate(180deg);
+}
+
+.menu {
+  position: fixed;
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  max-height: 160px;
+  overflow-y: auto;
+  z-index: 99999;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.menu::-webkit-scrollbar {
+  width: 6px;
+  background: transparent;
+}
+
+.menu::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 10px;
+}
+
+.menu:hover::-webkit-scrollbar-thumb {
+  background: var(--border);
+}
+
+.menu::-webkit-scrollbar-thumb:hover {
+  background: var(--muted-foreground);
+}
+
+.option {
+  padding: 0.5rem 1rem;
+  color: var(--foreground);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  white-space: nowrap;
+}
+
+.option:hover {
+  background-color: color-mix(in oklab, var(--foreground) 10%, transparent);
+}
+
+.option.selected {
+  background-color: color-mix(in oklab, var(--primary) 15%, transparent);
+  color: var(--primary);
+  font-weight: 500;
+}
+
+.empty {
+  padding: 0.75rem 1rem;
+  color: var(--text-secondary);
+  text-align: center;
+  font-style: italic;
+}
+
+.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}

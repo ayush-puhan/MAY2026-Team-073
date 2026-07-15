@@ -20,12 +20,24 @@ PRAGMA foreign_keys = ON;
 -- users after this script runs, producing genuine tokens instead of fake
 -- placeholder values.
 
+-- ============ universities (university.py) ============
+INSERT OR IGNORE INTO universities (id, name, short_name, domain, website, is_active, created_at, updated_at) VALUES
+(1, 'Indian Institute of Technology Delhi', 'IITD', 'iitd.ac.in', 'https://iitd.ac.in', 1, datetime('now'), datetime('now')),
+(2, 'BITS Pilani', 'BITS', 'bits-pilani.ac.in', 'https://bits-pilani.ac.in', 1, datetime('now'), datetime('now'));
+
+-- ============ university_domains (university.py) ============
+INSERT OR IGNORE INTO university_domains (id, university_id, domain, created_at) VALUES
+(1, 1, 'iitd.ac.in', datetime('now')),
+(2, 1, 'admin.iitd.ac.in', datetime('now')),
+(3, 1, 'campus.edu', datetime('now')),
+(4, 2, 'bits-pilani.ac.in', datetime('now'));
+
 -- ============ departments (academics.py) ============
-INSERT INTO departments (id, name, code, created_at) VALUES
-(1, 'Computer Science & Engineering', 'CSE', '2026-01-01 09:00:00'),
-(2, 'Electronics & Communication Engineering', 'ECE', '2026-01-01 09:00:00'),
-(3, 'Mechanical Engineering', 'ME', '2026-01-01 09:00:00'),
-(4, 'Management Studies', 'MS', '2026-01-01 09:00:00');
+INSERT INTO departments (id, university_id, name, code, created_at) VALUES
+(1, 1, 'Computer Science & Engineering', 'CSE', '2026-01-01 09:00:00'),
+(2, 1, 'Electronics & Communication Engineering', 'ECE', '2026-01-01 09:00:00'),
+(3, 1, 'Mechanical Engineering', 'ME', '2026-01-01 09:00:00'),
+(4, 1, 'Management Studies', 'MS', '2026-01-01 09:00:00');
 
 -- ============ programs (academics.py) ============
 INSERT INTO programs (id, department_id, name, created_at) VALUES
@@ -37,12 +49,12 @@ INSERT INTO programs (id, department_id, name, created_at) VALUES
 (6, 1, 'B.Sc Data Science', '2026-01-01 09:00:00');
 
 -- ============ student_profiles (academics.py) ============
-INSERT INTO student_profiles (user_id, program_id, academic_year, semester, batch, section, created_at) VALUES
-(1, 1, 2, 4, '2024', 'A', '2026-01-10 09:00:00'),
-(2, 1, 2, 4, '2024', 'B', '2026-01-10 09:00:00'),
-(3, 3, 3, 6, '2023', 'A', '2026-01-10 09:00:00'),
-(8, 4, 2, 3, '2024', 'C', '2026-01-10 09:00:00'),
-(9, 6, 2, 4, '2024', 'A', '2026-01-10 09:00:00');
+INSERT INTO student_profiles (user_id, program_id, academic_year, semester, batch, section, institutional_email, is_verified, created_at) VALUES
+(1, 1, 2, 4, '2024', 'A', 'priya.sharma@iitd.ac.in', 1, '2026-01-10 09:00:00'),
+(2, 1, 2, 4, '2024', 'B', 'arjun.mehta@iitd.ac.in', 1, '2026-01-10 09:00:00'),
+(3, 3, 3, 6, '2023', 'A', 'ananya.gupta@iitd.ac.in', 1, '2026-01-10 09:00:00'),
+(8, 4, 2, 3, '2024', 'C', NULL, 0, '2026-01-10 09:00:00'),
+(9, 6, 2, 4, '2024', 'A', 'kavya.iyer@iitd.ac.in', 1, '2026-01-10 09:00:00');
 
 -- ============ interests (interests.py) ============
 INSERT INTO interests (id, name, created_at) VALUES
@@ -63,10 +75,10 @@ INSERT INTO user_interests (id, user_id, interest_id, created_at) VALUES
 
 
 -- ============ clubs (clubs.py) ============
-INSERT INTO clubs (id, name, slug, category, description, status, faculty_advisor_id, member_count_cache, created_at) VALUES
-(1, 'Chess Club', 'chess-club', 'Games', 'Strategy and tournament chess.', 'active', 4, 2, '2026-01-10 12:00:00'),
-(2, 'Robotics Society', 'robotics-society', 'Technical', 'Builds and competes with robots.', 'active', 4, 1, '2026-01-11 12:00:00'),
-(3, 'Photography Club', 'photography-club', 'Arts', 'Campus photo-walks and exhibitions.', 'pending', NULL, 0, '2026-02-01 09:00:00');
+INSERT INTO clubs (id, university_id, name, slug, category, description, status, faculty_advisor_id, member_count_cache, created_at) VALUES
+(1, 1, 'Chess Club', 'chess-club', 'Games', 'Strategy and tournament chess.', 'active', 4, 2, '2026-01-10 12:00:00'),
+(2, 1, 'Robotics Society', 'robotics-society', 'Technical', 'Builds and competes with robots.', 'active', 4, 1, '2026-01-11 12:00:00'),
+(3, 1, 'Photography Club', 'photography-club', 'Arts', 'Campus photo-walks and exhibitions.', 'pending', NULL, 0, '2026-02-01 09:00:00');
 
 -- ============ club_interests (interests.py) ============
 INSERT INTO club_interests (id, club_id, interest_id, created_at) VALUES
@@ -101,9 +113,9 @@ INSERT INTO announcements (id, club_id, posted_by, title, body, target_audience,
 (2, NULL, 6, 'Annual Fest Dates Announced', 'The annual college fest will be held in October.', 'all_students', '2026-02-15 08:00:00');
 
 -- ============ events (events.py) ============
-INSERT INTO events (id, club_id, title, description, venue, start_at, end_at, registration_deadline, capacity, status, created_by, requires_external_participants, created_at) VALUES
-(1, 1, 'Inter-College Chess Championship', 'Open chess tournament.', 'Main Auditorium', '2026-08-01 09:00:00', '2026-08-01 18:00:00', '2026-07-25 23:59:00', 64, 'scheduled', 4, 1, '2026-06-01 10:00:00'),
-(2, 2, 'Robotics Demo Day', 'Showcase of student robotics projects.', 'Engineering Lab 3', '2026-07-20 10:00:00', '2026-07-20 13:00:00', '2026-07-18 23:59:00', 40, 'scheduled', 4, 0, '2026-06-10 10:00:00');
+INSERT INTO events (id, club_id, title, description, venue, start_at, end_at, registration_deadline, capacity, status, created_by, requires_external_participants, is_public, created_at) VALUES
+(1, 1, 'Inter-College Chess Championship', 'Open chess tournament.', 'Main Auditorium', '2026-08-01 09:00:00', '2026-08-01 18:00:00', '2026-07-25 23:59:00', 64, 'scheduled', 4, 1, 1, '2026-06-01 10:00:00'),
+(2, 2, 'Robotics Demo Day', 'Showcase of student robotics projects.', 'Engineering Lab 3', '2026-07-20 10:00:00', '2026-07-20 13:00:00', '2026-07-18 23:59:00', 40, 'scheduled', 4, 0, 0, '2026-06-10 10:00:00');
 
 -- ============ event_interests (interests.py) ============
 INSERT INTO event_interests (id, event_id, interest_id, created_at) VALUES
@@ -154,9 +166,9 @@ INSERT INTO notifications (id, user_id, type, title, body, channel, is_read, sen
 (3, 1, 'event_reminder', 'Event Tomorrow', 'Inter-College Chess Championship starts tomorrow.', 'both', 0, 1, 'event', 1, '2026-07-31 09:00:00');
 
 -- ============ support_tickets (support.py) ============
-INSERT INTO support_tickets (id, raised_by, club_id, title, description, assigned_agent_id, is_open, is_offensive, resolution_rating, created_at) VALUES
-(1, 8, NULL, 'Cannot reset password', 'The password reset email never arrives.', 6, 1, 0, NULL, '2026-06-01 10:00:00'),
-(2, 3, 2, 'Membership stuck in pending', 'My membership request has been pending for 2 weeks.', 6, 0, 0, 4, '2026-05-15 10:00:00');
+INSERT INTO support_tickets (id, university_id, raised_by, club_id, title, description, assigned_agent_id, status, priority, ticket_type, is_offensive, resolution_rating, created_at) VALUES
+(1, 1, 8, NULL, 'Cannot reset password', 'The password reset email never arrives.', 6, 'Open', 'Medium', 'Bug', 0, NULL, '2026-06-01 10:00:00'),
+(2, 1, 3, 2, 'Membership stuck in pending', 'My membership request has been pending for 2 weeks.', 6, 'Closed', 'Low', 'Support', 0, 5, '2026-06-05 14:30:00');
 
 -- ============ ticket_responses (support.py) ============
 INSERT INTO ticket_responses (id, ticket_id, responder_id, body, is_resolution, created_at) VALUES
@@ -205,3 +217,9 @@ INSERT INTO application_interests (id, application_id, interest_id) VALUES
 (2, 2, 2),
 (3, 2, 6),
 (4, 2, 1);
+
+-- ============ audit_logs (audit.py) ============
+INSERT INTO audit_logs (id, user_id, university_id, action, entity_type, entity_id, details, created_at, updated_at) VALUES
+(1, 7, 1, 'UPDATE', 'UniversitySettings', '1', 'Updated password length to 8', datetime('now', '-2 days'), datetime('now', '-2 days')),
+(2, 1, 1, 'CREATE', 'Event', '1', 'Created Kickoff event', datetime('now', '-1 days'), datetime('now', '-1 days')),
+(3, 7, 1, 'DELETE', 'User', '10', 'Removed spam account', datetime('now', '-5 hours'), datetime('now', '-5 hours'));

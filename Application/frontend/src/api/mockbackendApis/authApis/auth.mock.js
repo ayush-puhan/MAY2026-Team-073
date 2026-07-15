@@ -9,7 +9,7 @@ export const authMockApi = {
     if (!user.is_active) throw new Error('Your account is currently inactive. Contact administration.');
     
     // Fetch full profile data (student_profile + interests) in parallel
-    const parsedId = isNaN(Number(user.id)) ? user.id : Number(user.id);
+    const parsedId = /^\d+$/.test(String(user.id)) ? parseInt(user.id, 10) : user.id;
     const [spArr, uiArr] = await Promise.all([
       api.get(`/student_profiles?user_id=${parsedId}`),
       api.get(`/user_interests?user_id=${parsedId}`)
@@ -31,16 +31,35 @@ export const authMockApi = {
     if (existingRoll && existingRoll.length > 0) throw new Error('An account with this roll number already exists');
     
     const newUser = {
-      ...userData,
+      full_name: userData.full_name,
+      email: userData.email,
       password_hash: userData.password,
+      phone: null,
+      profile_photo_url: null,
+      department_id: null,
+      role: 'student',
       is_active: true,
       email_verified: false,
-      role: 'student',
+      theme: 'system',
+      color_blind_mode: false,
+      browse_public_only: false,
       created_at: new Date().toISOString()
     };
-    delete newUser.password;
 
     const created = await api.post('/users', newUser);
+    
+    // Auto-generate empty student_profile for new student
+    await api.post('/student_profiles', {
+      user_id: created.id,
+      program_id: null,
+      academic_year: null,
+      semester: null,
+      batch: null,
+      section: null,
+      institutional_email: null,
+      is_verified: false,
+      created_at: new Date().toISOString().replace('T', ' ').substring(0, 19)
+    });
     localStorage.setItem('is_new_user', 'true');
     return created;
   },
@@ -63,7 +82,7 @@ export const authMockApi = {
   },
 
   updateProfile: async (userId, data) => {
-    const parsedId = isNaN(Number(userId)) ? userId : Number(userId);
+    const parsedId = /^\d+$/.test(String(userId)) ? parseInt(userId, 10) : userId;
     const payload = { ...data };
     let savedBase64 = null;
     
@@ -133,7 +152,7 @@ export const authMockApi = {
   },
 
   getFullProfile: async (userId) => {
-    const parsedId = isNaN(Number(userId)) ? userId : Number(userId);
+    const parsedId = /^\d+$/.test(String(userId)) ? parseInt(userId, 10) : userId;
     const [user, spArr, uiArr] = await Promise.all([
       api.get(`/users/${parsedId}`),
       api.get(`/student_profiles?user_id=${parsedId}`),
@@ -176,7 +195,8 @@ export const authMockApi = {
   },
 
   deleteAccount: async (userId) => {
-    await api.del(`/users/${userId}`);
+    const parsedId = /^\d+$/.test(String(userId)) ? parseInt(userId, 10) : userId;
+    await api.del(`/users/${parsedId}`);
     return true;
   }
 };

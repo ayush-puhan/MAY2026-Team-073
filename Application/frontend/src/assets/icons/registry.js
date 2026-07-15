@@ -12,7 +12,9 @@ export const uiIcons = {
   eyeOff: 'mdi:eye-off',
   checkCircle: 'mdi:check-circle',
   alertCircle: 'mdi:alert-circle',
+  alertOutline: 'mdi:alert-outline',
   info: 'mdi:information',
+  infoOutline: 'mdi:information-outline',
   warning: 'mdi:alert',
   star: 'mdi:star-four-points',
   themeDark: 'mdi:weather-night',
@@ -24,6 +26,7 @@ export const uiIcons = {
   chevronRight: 'mdi:chevron-right',
   search: 'mdi:magnify',
   menu: 'mdi:menu',
+  folderOpen: 'mdi:folder-open-outline',
 };
 
 // ── Auth ──
@@ -106,11 +109,26 @@ export const dashboardIcons = {
   // System Admin
   clubApprovals: 'mdi:check-decagram-outline',
   userMgmt: 'mdi:account-multiple-outline',
+  rolesMgmt: 'mdi:shield-account-outline',
   reports: 'mdi:chart-box-outline',
-  systemLogs: 'mdi:format-list-bulleted',
+  supportMgmt: 'mdi:lifebuoy',
+  auditLogs: 'mdi:history',
 
   // Faculty Advisor
   advisedClubs: 'mdi:account-group-outline',
   eventApprovals: 'mdi:calendar-check-outline',
   studentReports: 'mdi:file-document-outline',
+};
+
+// ── Admin Dashboard ──
+export const adminIcons = {
+  statsUsers: 'mdi:account-multiple-outline',
+  statsClubs: 'mdi:account-group-outline',
+  statsEvents: 'mdi:calendar-check-outline',
+  statsTickets: 'mdi:lifebuoy',
+  send: 'mdi:send',
+  download: 'mdi:download',
+  exportCsv: 'mdi:file-excel',
+  history: 'mdi:history',
+  save: 'mdi:content-save-outline',
 };

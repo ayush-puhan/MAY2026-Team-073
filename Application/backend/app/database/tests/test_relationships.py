@@ -16,9 +16,9 @@ def _make_user(session, email, role=UserRole.STUDENT):
     return user
 
 
-def test_one_to_many_club_to_events(session):
+def test_one_to_many_club_to_events(session, sample_university):
     advisor = _make_user(session, "advisor@example.com")
-    club = Club(name="Robotics", slug="robotics", faculty_advisor_id=advisor.id)
+    club = Club(name="Robotics", slug="robotics", faculty_advisor_id=advisor.id, university_id=sample_university.id)
     session.add(club)
     session.commit()
 
@@ -33,11 +33,11 @@ def test_one_to_many_club_to_events(session):
     assert e1.club.name == "Robotics"
 
 
-def test_one_to_many_user_to_memberships(session):
+def test_one_to_many_user_to_memberships(session, sample_university):
     advisor = _make_user(session, "advisor2@example.com")
     student = _make_user(session, "student@example.com")
-    club_a = Club(name="Art Club", slug="art-club", faculty_advisor_id=advisor.id)
-    club_b = Club(name="Music Club", slug="music-club", faculty_advisor_id=advisor.id)
+    club_a = Club(name="Art Club", slug="art-club", faculty_advisor_id=advisor.id, university_id=sample_university.id)
+    club_b = Club(name="Music Club", slug="music-club", faculty_advisor_id=advisor.id, university_id=sample_university.id)
     session.add_all([club_a, club_b])
     session.commit()
 
@@ -50,9 +50,9 @@ def test_one_to_many_user_to_memberships(session):
     assert len(student.club_memberships) == 2
 
 
-def test_many_to_many_committee_membership(session):
+def test_many_to_many_committee_membership(session, sample_university):
     advisor = _make_user(session, "advisor3@example.com")
-    club = Club(name="Debate Club", slug="debate-club", faculty_advisor_id=advisor.id)
+    club = Club(name="Debate Club", slug="debate-club", faculty_advisor_id=advisor.id, university_id=sample_university.id)
     session.add(club)
     session.commit()
 
@@ -77,10 +77,10 @@ def test_many_to_many_committee_membership(session):
     assert {link.membership.user_id for link in committee.member_links} == {student1.id, student2.id}
 
 
-def test_many_to_many_club_sponsor(session):
+def test_many_to_many_club_sponsor(session, sample_university):
     advisor = _make_user(session, "advisor4@example.com")
-    club_a = Club(name="Coding Club", slug="coding-club", faculty_advisor_id=advisor.id)
-    club_b = Club(name="Gaming Club", slug="gaming-club", faculty_advisor_id=advisor.id)
+    club_a = Club(name="Coding Club", slug="coding-club", faculty_advisor_id=advisor.id, university_id=sample_university.id)
+    club_b = Club(name="Gaming Club", slug="gaming-club", faculty_advisor_id=advisor.id, university_id=sample_university.id)
     session.add_all([club_a, club_b])
     session.commit()
 
@@ -99,10 +99,10 @@ def test_many_to_many_club_sponsor(session):
     assert {link.club.name for link in sponsor.club_links} == {"Coding Club", "Gaming Club"}
 
 
-def test_event_registration_relationship(session):
+def test_event_registration_relationship(session, sample_university):
     advisor = _make_user(session, "advisor5@example.com")
     student = _make_user(session, "student5@example.com")
-    club = Club(name="Photography Club", slug="photo-club", faculty_advisor_id=advisor.id)
+    club = Club(name="Photography Club", slug="photo-club", faculty_advisor_id=advisor.id, university_id=sample_university.id)
     session.add(club)
     session.commit()
 

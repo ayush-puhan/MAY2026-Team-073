@@ -6,7 +6,8 @@ import { motion } from 'framer-motion';
 import { landingIcons } from '../../../icons/registry';
 import { Icon } from '@iconify/react';
 import roboticsBanner from '../../../images/robotics_banner.png';
-import { useSession, getDashboardLink } from '../../../../context/SessionContext';
+import { useSession } from '../../../../context/SessionContext';
+import { authApi } from '../../../../api/auth.api';
 
 export const HeroSection = () => {
   const { user } = useSession();
@@ -35,10 +36,10 @@ export const HeroSection = () => {
 
           <motion.div className={styles.actions} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.4 }}>
             <div className={styles.ctaGroup}>
-              <Link to={user ? getDashboardLink(user.role) : "/register"}>
+              <Link to={user ? authApi.getDashboardRoute(user.role) : "/register"}>
                 <Button size="lg" icon={landingIcons.compass} className={styles.glowBtn}>Explore campus</Button>
               </Link>
-              <Link to={user ? getDashboardLink(user.role) : "/register"}>
+              <Link to={user ? authApi.getDashboardRoute(user.role) : "/register"}>
                 <Button variant="outline" size="lg">Join ClubConnect <Icon icon={landingIcons.arrowRight} /></Button>
               </Link>
             </div>

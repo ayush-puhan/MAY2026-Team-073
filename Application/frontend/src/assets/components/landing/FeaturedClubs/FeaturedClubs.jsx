@@ -5,7 +5,8 @@ import { motion } from 'framer-motion';
 import { Icon } from '@iconify/react';
 import { SectionHeader } from '../SectionHeader/SectionHeader';
 import { ClubCard } from '../../ui/ClubCard/ClubCard';
-import { useSession, getDashboardLink } from '../../../../context/SessionContext';
+import { useSession } from '../../../../context/SessionContext';
+import { authApi } from '../../../../api/auth.api';
 
 import roboticsBanner from '../../../images/robotics_banner.png';
 import cameraBanner from '../../../images/camera_banner.png';
@@ -38,7 +39,7 @@ export const FeaturedClubs = () => {
           titleAccent="worth joining."
           subtitle="Drag, browse, hover. 72 active clubs across engineering, arts, sport, entrepreneurship and more."
           actionText="See all clubs"
-          actionLink={user ? getDashboardLink(user.role) : "/register"}
+          actionLink={user ? authApi.getDashboardRoute(user.role) : "/register"}
         />
       </div>
 
@@ -48,7 +49,7 @@ export const FeaturedClubs = () => {
             <ClubCard 
               key={i} 
               club={club} 
-              onJoin={user ? getDashboardLink(user.role) : '/register'}
+              onJoin={user ? authApi.getDashboardRoute(user.role) : '/register'}
             />
           ))}
         </div>

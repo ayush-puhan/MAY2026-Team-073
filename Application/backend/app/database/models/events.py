@@ -38,6 +38,7 @@ class Event(Base, TimestampMixin):
     status = Column(SAEnum(EventStatus), default=EventStatus.SCHEDULED, nullable=False)
     created_by = Column(Integer, ForeignKey("users.id", ondelete="RESTRICT"), nullable=False)
     requires_external_participants = Column(Boolean, default=False, nullable=False)
+    is_public = Column(Boolean, default=False, nullable=False)
 
     club = relationship("Club", back_populates="events")
     creator = relationship("User", foreign_keys=[created_by])
@@ -107,6 +108,7 @@ class ExternalParticipant(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     event_id = Column(Integer, ForeignKey("events.id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
     full_name = Column(String(255), nullable=False)
     email = Column(String(255), nullable=True)
     affiliation = Column(String(255), nullable=True)
@@ -114,3 +116,4 @@ class ExternalParticipant(Base):
     registered_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
     event = relationship("Event", back_populates="external_participants")
+    platform_user = relationship("User", foreign_keys=[user_id])

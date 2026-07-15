@@ -32,6 +32,7 @@ export const Sidebar = ({ links = [] }) => {
           <NavLink
             key={idx}
             to={link.path}
+            end
             className={({ isActive }) =>
               `${styles.navItem} ${isActive && link.path !== '#' ? styles.active : ''}`
             }

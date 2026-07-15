@@ -4,13 +4,6 @@ import { authApi } from '../api/auth.api';
 
 const SESSION_KEY = 'session_user';
 
-export const getDashboardLink = (role) => {
-  if (role === 'system_admin') return '/admin-dashboard';
-  if (role === 'student_affairs_office' || role === 'dean_student_welfare') return '/university-admin-dashboard';
-  if (role === 'faculty_advisor') return '/faculty-advisor-dashboard';
-  return '/student-dashboard';
-};
-
 const SessionContext = createContext();
 
 export const SessionProvider = ({ children }) => {

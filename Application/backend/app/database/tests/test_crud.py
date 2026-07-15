@@ -38,8 +38,9 @@ def _make_user(session, email="user@example.com", role=UserRole.STUDENT):
     return user
 
 
-def _make_club(session, advisor):
-    club = Club(name="Chess Club", slug="chess-club", faculty_advisor_id=advisor.id)
+def _make_club(session, advisor, university):
+    club = Club(name="Chess Club", slug="chess-club", faculty_advisor_id=advisor.id,
+                university_id=university.id)
     session.add(club)
     session.commit()
     return club
@@ -69,9 +70,9 @@ def test_auth_session_crud(session):
     assert session.get(AuthSession, auth.id).user.email == user.email
 
 
-def test_club_and_membership_lifecycle(session):
+def test_club_and_membership_lifecycle(session, sample_university):
     advisor = _make_user(session, email="advisor@example.com", role=UserRole.FACULTY_ADVISOR)
-    club = _make_club(session, advisor)
+    club = _make_club(session, advisor, sample_university)
     student = _make_user(session, email="student@example.com")
 
     membership = ClubMembership(user_id=student.id, club_id=club.id, status=MembershipStatus.PENDING)
@@ -85,9 +86,9 @@ def test_club_and_membership_lifecycle(session):
     assert session.get(ClubMembership, membership.id).status == MembershipStatus.APPROVED
 
 
-def test_committee_and_committee_membership(session):
+def test_committee_and_committee_membership(session, sample_university):
     advisor = _make_user(session, email="advisor2@example.com")
-    club = _make_club(session, advisor)
+    club = _make_club(session, advisor, sample_university)
     student = _make_user(session, email="student2@example.com")
     membership = ClubMembership(user_id=student.id, club_id=club.id, status=MembershipStatus.APPROVED)
     session.add(membership)
@@ -103,18 +104,18 @@ def test_committee_and_committee_membership(session):
     assert link.committee.name == "Events Committee"
 
 
-def test_announcement_crud(session):
+def test_announcement_crud(session, sample_university):
     advisor = _make_user(session, email="advisor3@example.com")
-    club = _make_club(session, advisor)
+    club = _make_club(session, advisor, sample_university)
     announcement = Announcement(club_id=club.id, posted_by=advisor.id, title="Welcome", body="Hello all")
     session.add(announcement)
     session.commit()
     assert session.get(Announcement, announcement.id).title == "Welcome"
 
 
-def test_event_registration_and_attendance(session):
+def test_event_registration_and_attendance(session, sample_university):
     advisor = _make_user(session, email="advisor4@example.com")
-    club = _make_club(session, advisor)
+    club = _make_club(session, advisor, sample_university)
     student = _make_user(session, email="student4@example.com")
 
     event = Event(
@@ -141,9 +142,9 @@ def test_event_registration_and_attendance(session):
     assert session.get(AttendanceRecord, attendance.id).user.email == student.email
 
 
-def test_volunteer_and_external_participant(session):
+def test_volunteer_and_external_participant(session, sample_university):
     advisor = _make_user(session, email="advisor5@example.com")
-    club = _make_club(session, advisor)
+    club = _make_club(session, advisor, sample_university)
     student = _make_user(session, email="student5@example.com")
     membership = ClubMembership(user_id=student.id, club_id=club.id, status=MembershipStatus.APPROVED)
     session.add(membership)
@@ -179,9 +180,9 @@ def test_volunteer_and_external_participant(session):
     assert external.event.title == "Guest Talk"
 
 
-def test_budget_and_expense_approval(session):
+def test_budget_and_expense_approval(session, sample_university):
     advisor = _make_user(session, email="advisor6@example.com")
-    club = _make_club(session, advisor)
+    club = _make_club(session, advisor, sample_university)
 
     budget = Budget(
         club_id=club.id,
@@ -234,7 +235,14 @@ def test_support_ticket_and_response(session):
     student = _make_user(session, email="ticket@example.com")
     agent = _make_user(session, email="agent@example.com", role=UserRole.STUDENT_AFFAIRS_OFFICE)
 
-    ticket = SupportTicket(raised_by=student.id, title="Login issue", description="Can't log in")
+    ticket = SupportTicket(
+        raised_by=student.id, 
+        title="Login issue", 
+        description="Can't log in",
+        status="Open",
+        priority="Medium",
+        ticket_type="Support"
+    )
     session.add(ticket)
     session.commit()
 
@@ -270,9 +278,9 @@ def test_reward_points_and_redemption(session):
     assert session.get(RewardRedemption, redemption.id).points_spent == 50
 
 
-def test_sponsor_and_club_sponsor(session):
+def test_sponsor_and_club_sponsor(session, sample_university):
     advisor = _make_user(session, email="advisor7@example.com")
-    club = _make_club(session, advisor)
+    club = _make_club(session, advisor, sample_university)
     sponsor = Sponsor(organization_name="Acme Corp")
     session.add(sponsor)
     session.commit()

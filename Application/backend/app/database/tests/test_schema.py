@@ -5,10 +5,11 @@ import sqlalchemy as sa
 from database.base import Base
 from database import models  # noqa: F401
 
-EXPECTED_TABLE_COUNT = 33
+EXPECTED_TABLE_COUNT = 36
 
 EXPECTED_TABLE_NAMES = {
     "announcements",
+    "audit_logs",
     "application_interests",
     "attendance_records",
     "auth_sessions",
@@ -41,6 +42,8 @@ EXPECTED_TABLE_NAMES = {
     "user_interests",
     "users",
     "volunteer_assignments",
+    "universities",
+    "university_domains",
 }
 
 

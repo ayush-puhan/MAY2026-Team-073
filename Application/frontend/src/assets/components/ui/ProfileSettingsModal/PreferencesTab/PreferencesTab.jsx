@@ -1,21 +1,53 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Icon } from '@iconify/react';
+import { useToast } from '../../../../../context/ToastContext';
+import { Button } from '../../Button/Button';
+import { Dropdown } from '../../Dropdown/Dropdown';
 import styles from '../ProfileSettingsModal.module.css';
 
 export const PreferencesTab = ({
   formData,
+  setFormData,
   handleChange,
   showInterests,
-  showInterestSearch,
-  handleOpenInterestSearch,
-  selectedInterestId,
-  setSelectedInterestId,
   masterData,
-  handleAddInterest,
-  setShowInterestSearch,
-  handleRemoveInterest
+  isVerified
 }) => {
+  const { showError } = useToast();
+  const [showInterestSearch, setShowInterestSearch] = useState(false);
+  const [selectedInterestId, setSelectedInterestId] = useState('');
+
+  const handleOpenInterestSearch = () => {
+    if (formData.interests.length >= 6) {
+      showError("Only 6 interests allowed");
+      return;
+    }
+    setShowInterestSearch(true);
+  };
+
+  const handleAddInterest = () => {
+    if (formData.interests.length >= 6) {
+      showError("Only 6 interests allowed");
+      return;
+    }
+    if (!selectedInterestId) return;
+    const id = String(selectedInterestId);
+    if (!formData.interests.some(fid => String(fid) === id)) {
+      setFormData(prev => ({ ...prev, interests: [...prev.interests, id] }));
+    }
+    setSelectedInterestId('');
+    setShowInterestSearch(false);
+  };
+
+  const handleRemoveInterest = (id) => {
+    const strId = String(id);
+    setFormData(prev => ({
+      ...prev,
+      interests: prev.interests.filter(intId => String(intId) !== strId)
+    }));
+  };
+
   return (
     <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className={styles.tabPane}>
       {showInterests ? (
@@ -23,33 +55,38 @@ export const PreferencesTab = ({
           <div className={styles.interestsHeader}>
             <label>Interests & Hobbies <span className={styles.required}>*</span></label>
             {!showInterestSearch && (
-              <button 
-                type="button" 
+              <Button 
+                variant="outline"
+                size="sm"
                 className={`${styles.addInterestBtn} ${formData.interests.length >= 6 ? styles.addInterestBtnDisabled : ''}`} 
                 onClick={handleOpenInterestSearch}
+                icon="mdi:plus"
               >
-                <Icon icon="mdi:plus" /> Add Interest
-              </button>
+                Add Interest
+              </Button>
             )}
           </div>
           {showInterestSearch && (
             <div className={styles.interestSelectWrapper}>
-              <select value={selectedInterestId} onChange={e => setSelectedInterestId(e.target.value)} className={`${styles.input} ${styles.interestSelect}`}>
-                <option value="">Select an interest...</option>
-                {masterData.interests
+              <Dropdown 
+                name="interest"
+                value={selectedInterestId} 
+                onChange={e => setSelectedInterestId(e.target.value)}
+                placeholder="Select an interest..."
+                options={masterData.interests
                   .filter(i => !formData.interests.some(fid => String(fid) === String(i.id)))
-                  .map(i => <option key={i.id} value={i.id}>{i.name}</option>)
+                  .map(i => ({ value: i.id, label: i.name }))
                 }
-              </select>
-              <button type="button" className={styles.addBtn} onClick={handleAddInterest}>Add</button>
-              <button type="button" className={styles.removeBtn} onClick={() => setShowInterestSearch(false)}>Cancel</button>
+              />
+              <Button onClick={handleAddInterest}>Add</Button>
+              <Button variant="outline" onClick={() => setShowInterestSearch(false)}>Cancel</Button>
             </div>
           )}
           <div className={styles.chipsContainer}>
             {formData.interests.map(id => {
               const interest = masterData.interests.find(i => String(i.id) === String(id));
               return interest ? (
-                <div key={id} className={styles.chip}>
+               <div key={id} className={styles.chip}>
                   {interest.name}
                   <button type="button" className={styles.removeChipBtn} onClick={() => handleRemoveInterest(id)}>
                     <Icon icon="mdi:close-circle" />
@@ -63,7 +100,7 @@ export const PreferencesTab = ({
 
       <div className={styles.accessibilitySection} style={{ marginTop: showInterests ? '2rem' : '0' }}>
         <div className={styles.interestsHeader}>
-          <label>Accessibility Options</label>
+          <label>Preferences & Options</label>
         </div>
         <div className={styles.toggleField}>
           <div className={styles.toggleLabel}>
@@ -81,6 +118,25 @@ export const PreferencesTab = ({
             <span style={{ fontSize: '0.9rem', color: 'var(--foreground)' }}>Enable Color-Blind Support</span>
           </label>
         </div>
+
+        {!isVerified && (
+          <div className={styles.toggleField} style={{ marginTop: '1.5rem' }}>
+            <div className={styles.toggleLabel}>
+              <Icon icon="mdi:incognito" className={styles.toggleIcon} />
+              <div>
+                <strong>Browse Public Events Only</strong>
+                <p className={styles.hint}>Disable campus email verification reminders.</p>
+              </div>
+            </div>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer' }}>
+              <div className={styles.switch}>
+                <input type="checkbox" name="browse_public_only" checked={Boolean(formData.browse_public_only)} onChange={handleChange} />
+                <span className={styles.slider}></span>
+              </div>
+              <span style={{ fontSize: '0.9rem', color: 'var(--foreground)' }}>Hide verification reminder</span>
+            </label>
+          </div>
+        )}
       </div>
     </motion.div>
   );

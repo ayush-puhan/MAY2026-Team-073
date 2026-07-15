@@ -124,6 +124,27 @@ class AnnouncementAudience(str, enum.Enum):
     ALL_STUDENTS = "all_students"
 
 
+class TicketStatus(str, enum.Enum):
+    OPEN = "Open"
+    IN_PROGRESS = "In Progress"
+    RESOLVED = "Resolved"
+    CLOSED = "Closed"
+
+
+class TicketPriority(str, enum.Enum):
+    LOW = "Low"
+    MEDIUM = "Medium"
+    HIGH = "High"
+    CRITICAL = "Critical"
+
+
+class TicketType(str, enum.Enum):
+    SUPPORT = "Support"
+    BUG = "Bug"
+    FEATURE_REQUEST = "Feature Request"
+    INQUIRY = "Inquiry"
+
+
 class EmergencyCategory(str, enum.Enum):
     HARASSMENT = "harassment"
     MEDICAL = "medical"

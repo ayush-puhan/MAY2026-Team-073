@@ -47,6 +47,7 @@ export const UNIVERSITY_ADMIN_NAV = [
   { name: 'Club Approvals',   path: '/university-admin-dashboard/approvals', icon: dashboardIcons.clubApprovals },
   { name: 'Student Reports',  path: '/university-admin-dashboard/reports', icon: dashboardIcons.studentReports },
   { name: 'Events',           path: '/university-admin-dashboard/events', icon: dashboardIcons.eventMgmt },
+  { name: 'Announcements',    path: '/university-admin-dashboard/announcements', icon: dashboardIcons.messages },
   { name: 'Settings',         path: '/university-admin-dashboard/settings', icon: dashboardIcons.settings },
 ];
 

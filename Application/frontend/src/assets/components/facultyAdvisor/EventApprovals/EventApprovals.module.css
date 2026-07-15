@@ -1,0 +1,24 @@
+.container {
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  color: var(--muted-foreground);
+}
+
+.title {
+  font-size: 1.5rem;
+  color: var(--foreground);
+}
+
+.subtitle {
+  color: var(--muted-foreground);
+  margin-top: 0.25rem;
+}

@@ -7,21 +7,20 @@ import { SectionHeader } from '../SectionHeader/SectionHeader';
 import { ClubCard } from '../../ui/ClubCard/ClubCard';
 import { useSession, getDashboardLink } from '../../../../context/SessionContext';
 
-import roboticsBanner from '../../../images/robotics_banner.png';
-import cameraBanner from '../../../images/camera_banner.png';
+import mentalHealthBanner from '../../../images/mental_health_banner.png';
+import culturalBanner from '../../../images/cultural_banner.png';
 import musicBanner from '../../../images/music_banner.png';
 import codingBanner from '../../../images/coding_banner.png';
-import financeBanner from '../../../images/finance_banner.png';
+import foodBanner from '../../../images/food_banner.png';
 import { landingIcons } from '../../../icons/registry';
 
 const clubs = [
-  { name: 'Robotics Club', category: 'Engineering', members: 420, awards: 18, image: roboticsBanner, icon: landingIcons.clubRobot, event: 'Autonomous bot demo' },
-  { name: 'Camera Club', category: 'Arts', members: 260, awards: 12, image: cameraBanner, icon: landingIcons.clubCamera, event: 'Street photo walk' },
+  { name: 'Mind & Body Alliance', category: 'Wellness', members: 310, awards: 6, image: mentalHealthBanner, icon: landingIcons.clubMentalHealth, event: 'Mental Health Week' },
+  { name: 'Cultural Club', category: 'Arts', members: 260, awards: 12, image: culturalBanner, icon: landingIcons.clubCultural, event: 'Nukkad Natak Competition' },
   { name: 'Music Society', category: 'Culture', members: 315, awards: 22, image: musicBanner, icon: landingIcons.clubMusic, event: 'Open Mic Friday' },
   { name: 'Coding Club', category: 'Engineering', members: 540, awards: 35, image: codingBanner, icon: landingIcons.clubCode, event: 'Web3 Workshop' },
-  { name: 'Finance Cell', category: 'Business', members: 180, awards: 8, image: financeBanner, icon: landingIcons.clubFinance, event: 'Mock Trading Session' },
+  { name: 'Culinary Club', category: 'Lifestyle', members: 220, awards: 10, image: foodBanner, icon: landingIcons.clubFood, event: 'Bake with us Day' },
 ];
-
 
 export const FeaturedClubs = () => {
   const { user } = useSession();

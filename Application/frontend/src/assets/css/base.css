@@ -61,6 +61,18 @@
   /* Coral accent for buttons */
   --coral: oklch(0.65 0.2 25);
 
+  /* Status badge colors */
+  --badge-success-bg: oklch(0.93 0.08 155);
+  --badge-success-text: oklch(0.4 0.12 155);
+  --badge-warning-bg: oklch(0.93 0.09 85);
+  --badge-warning-text: oklch(0.45 0.13 70);
+  --badge-error-bg: oklch(0.93 0.07 25);
+  --badge-error-text: oklch(0.5 0.2 27);
+  --badge-info-bg: oklch(0.92 0.06 230);
+  --badge-info-text: oklch(0.42 0.12 230);
+  --badge-neutral-bg: var(--muted);
+  --badge-neutral-text: var(--muted-foreground);
+
   --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 }
@@ -104,6 +116,18 @@
   --sidebar-tooltip-foreground: var(--background);
 
   --coral: oklch(0.68 0.2 25);
+
+  /* Status badge colors */
+  --badge-success-bg: oklch(0.3 0.08 155);
+  --badge-success-text: oklch(0.85 0.1 155);
+  --badge-warning-bg: oklch(0.32 0.09 85);
+  --badge-warning-text: oklch(0.85 0.12 85);
+  --badge-error-bg: oklch(0.32 0.09 25);
+  --badge-error-text: oklch(0.82 0.15 27);
+  --badge-info-bg: oklch(0.3 0.06 230);
+  --badge-info-text: oklch(0.8 0.1 230);
+  --badge-neutral-bg: var(--muted);
+  --badge-neutral-text: var(--muted-foreground);
 }
 
 /* Global Reset */

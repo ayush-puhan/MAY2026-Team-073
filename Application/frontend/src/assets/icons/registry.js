@@ -67,7 +67,7 @@ export const landingIcons = {
 
   // Featured Clubs
   clubRobot: 'mdi:cpu-64-bit',
-  clubCultural: 'mdi:theatre',
+  clubCamera: 'mdi:camera-outline',
   clubMusic: 'mdi:music-note',
   clubCode: 'mdi:code-tags',
   clubFinance: 'mdi:chart-line',

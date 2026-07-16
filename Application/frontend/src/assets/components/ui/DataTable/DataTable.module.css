@@ -1,0 +1,45 @@
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.table th {
+  text-align: left;
+  padding: 0.875rem 1rem;
+  background-color: var(--muted);
+  color: var(--muted-foreground);
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 0.875rem 1rem;
+  border-top: 1px solid var(--border);
+  color: var(--foreground);
+  vertical-align: middle;
+}
+
+.clickableRow {
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.clickableRow:hover {
+  background-color: var(--muted);
+}
+
+.rowChevron {
+  color: var(--muted-foreground);
+  font-size: 1.125rem;
+}

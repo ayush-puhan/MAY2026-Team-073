@@ -3,7 +3,7 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  border-radius: 9999px;
+  border-radius: 8px;
   font-weight: 500;
   border: none;
   transition: all 0.2s ease;
@@ -21,18 +21,18 @@
 
 /* Sizes */
 .sm {
-  padding: 0.5rem 0.75rem;
-  font-size: 0.875rem;
+  padding: 0.35rem 0.6rem;
+  font-size: 0.8rem;
 }
 
 .md {
-  padding: 0.75rem 1rem;
-  font-size: 1rem;
+  padding: 0.5rem 0.85rem;
+  font-size: 0.9rem;
 }
 
 .lg {
-  padding: 1rem 1.5rem;
-  font-size: 1.125rem;
+  padding: 0.75rem 1.25rem;
+  font-size: 1rem;
 }
 
 /* Variants */

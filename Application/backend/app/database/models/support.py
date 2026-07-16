@@ -7,7 +7,7 @@ from sqlalchemy import Enum as SAEnum
 from sqlalchemy.orm import relationship
 
 from ..base import Base
-from ..enums import EmergencyCategory, EmergencyStatus
+from ..enums import EmergencyCategory, EmergencyStatus, TicketStatus, TicketPriority, TicketType
 from ..mixins import TimestampMixin
 
 
@@ -19,15 +19,19 @@ class SupportTicket(Base, TimestampMixin):
     club_id = Column(Integer, ForeignKey("clubs.id", ondelete="SET NULL"), nullable=True)
     title = Column(String(255), nullable=False)
     description = Column(Text, nullable=False)
+    ticket_type = Column(SAEnum(TicketType), default=TicketType.SUPPORT, nullable=False)
+    priority = Column(SAEnum(TicketPriority), default=TicketPriority.MEDIUM, nullable=False)
+    status = Column(SAEnum(TicketStatus), default=TicketStatus.OPEN, nullable=False)
     assigned_agent_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
-    is_open = Column(Boolean, default=True, nullable=False)
     is_offensive = Column(Boolean, default=False, nullable=False)
     resolution_rating = Column(Integer, nullable=True)
+    university_id = Column(Integer, ForeignKey("universities.id", ondelete="SET NULL"), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
     raised_by_user = relationship("User", back_populates="tickets_raised", foreign_keys=[raised_by])
     assigned_agent = relationship("User", foreign_keys=[assigned_agent_id])
     responses = relationship("TicketResponse", back_populates="ticket", cascade="all, delete-orphan")
+    university = relationship("University", back_populates="tickets")
 
 
 class TicketResponse(Base):

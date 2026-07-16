@@ -3,34 +3,39 @@ import { DashboardLayout } from '../../../assets/components/dashboard/DashboardL
 import { getNavForUser } from '../../../config/navigation';
 import { useSession } from '../../../context/SessionContext';
 
-import { AdminOverviewHome } from '../../../assets/components/universityAdmin/AdminOverviewHome/AdminOverviewHome';
-import { ClubApprovalQueue } from '../../../assets/components/universityAdmin/ClubApprovalQueue/ClubApprovalQueue';
-import { UniversityAnalytics } from '../../../assets/components/universityAdmin/UniversityAnalytics/UniversityAnalytics';
-import { EventOversight } from '../../../assets/components/universityAdmin/EventOversight/EventOversight';
-import { AnnouncementCenter } from '../../../assets/components/universityAdmin/AnnouncementCenter/AnnouncementCenter';
-import { DashboardSettings } from '../../../assets/components/dashboard/DashboardSettings/DashboardSettings';
-
-import styles from './UniversityAdminDashboard.module.css';
+// Re-use SupportManagement from admin components
+import { SupportManagement } from '../../../assets/components/admin/SupportManagement/SupportManagement';
 
 export const UniversityAdminDashboard = () => {
   const { user } = useSession();
+  
   if (!user) return null;
 
-  const sidebarLinks = getNavForUser(user.role);
+  const sidebarLinks = getNavForUser(user);
 
   return (
     <DashboardLayout title="University Admin Dashboard" user={user} sidebarLinks={sidebarLinks}>
-      <div className={styles.container}>
+      <div style={{ width: '100%' }}>
         <Routes>
-          <Route path="/" element={<AdminOverviewHome />} />
-          <Route path="approvals/*" element={<ClubApprovalQueue />} />
-          <Route path="reports/*" element={<UniversityAnalytics />} />
-          <Route path="events/*" element={<EventOversight />} />
-          <Route path="announcements/*" element={<AnnouncementCenter />} />
-          <Route path="settings/*" element={<DashboardSettings />} />
+          <Route path="/" element={
+            <div>
+              <h2 style={{ color: 'var(--foreground)', marginBottom: '1rem' }}>University Overview</h2>
+              <p style={{ color: 'var(--muted-foreground)' }}>Manage student affairs, club approvals, and academic events here.</p>
+            </div>
+          } />
+          
+          <Route path="support/*" element={<SupportManagement />} />
+          
+          {/* Redirect unbuilt routes back to overview for now */}
+          <Route path="approvals/*" element={<Navigate to="" replace />} />
+          <Route path="reports/*" element={<Navigate to="" replace />} />
+          <Route path="events/*" element={<Navigate to="" replace />} />
+          <Route path="settings/*" element={<Navigate to="" replace />} />
+          
           <Route path="*" element={<Navigate to="" replace />} />
         </Routes>
       </div>
     </DashboardLayout>
   );
 };
+

@@ -4,18 +4,43 @@ import { ThemeToggle } from '../../ui/ThemeToggle/ThemeToggle';
 import { NotificationModal } from '../../ui/NotificationModal/NotificationModal';
 import { Icon } from '@iconify/react';
 import { useSidebarContext } from '../../../../context/SidebarContext';
+import { useSession } from '../../../../context/SessionContext';
+import { notificationApi } from '../../../../api/notification.api';
 
 export const DashboardHeader = () => {
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const { isSidebarOpen, toggleSidebar } = useSidebarContext();
-  
-  const [hasUnread, setHasUnread] = useState(() => {
-    return localStorage.getItem('clubconnect_notifications_read') !== 'true';
-  });
+  const { user } = useSession();
+  const [notifications, setNotifications] = useState([]);
+  const [hasUnread, setHasUnread] = useState(false);
 
-  const handleMarkAllRead = () => {
-    localStorage.setItem('clubconnect_notifications_read', 'true');
-    setHasUnread(false);
+  React.useEffect(() => {
+    const fetchNotifs = async () => {
+      if (user?.id) {
+        try {
+          const sorted = await notificationApi.getNotifications(user.id);
+          setNotifications(sorted);
+          setHasUnread(sorted.some(n => !n.is_read));
+        } catch (e) {
+          console.error("Failed to fetch notifications", e);
+        }
+      }
+    };
+    fetchNotifs();
+    // Poll every minute
+    const interval = setInterval(fetchNotifs, 60000);
+    return () => clearInterval(interval);
+  }, [user?.id]);
+
+  const handleMarkAllRead = async () => {
+    if (!user?.id) return;
+    try {
+      await notificationApi.markAllAsRead(user.id);
+      setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
+      setHasUnread(false);
+    } catch (e) {
+      console.error("Failed to mark notifications as read", e);
+    }
   };
 
   return (
@@ -37,6 +62,7 @@ export const DashboardHeader = () => {
         isOpen={isNotifOpen} 
         onClose={() => setIsNotifOpen(false)} 
         hasUnread={hasUnread}
+        notifications={notifications}
         onMarkAllRead={handleMarkAllRead} 
       />
     </header>

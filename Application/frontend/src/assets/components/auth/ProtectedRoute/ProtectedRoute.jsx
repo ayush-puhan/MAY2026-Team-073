@@ -7,6 +7,17 @@ export const ProtectedRoute = ({ children, allowedRoles }) => {
   const { user, isAuthenticated } = useSession();
   const location = useLocation();
 
+  React.useEffect(() => {
+    if (user?.color_blind_mode) {
+      document.documentElement.setAttribute('data-colorblind', 'true');
+    } else {
+      document.documentElement.removeAttribute('data-colorblind');
+    }
+    return () => {
+      document.documentElement.removeAttribute('data-colorblind');
+    };
+  }, [user?.color_blind_mode]);
+
   if (!isAuthenticated || !user) {
     // Not logged in
     return <Navigate to="/login" state={{ from: location }} replace />;

@@ -285,7 +285,7 @@ select.input {
 
 .row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 1.5rem;
 
   @media (max-width: 768px) {
@@ -295,9 +295,8 @@ select.input {
 }
 
 .passwordRow {
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr auto !important;
-  }
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  align-items: end;
 }
 
 .disabled {
@@ -492,7 +491,7 @@ select.input {
   font-size: 0.7rem;
   font-weight: 600;
   cursor: pointer;
-  margin-left: auto;
+  margin-left: 0.5rem;
 }
 
 .dangerZone {
@@ -611,4 +610,197 @@ input:checked + .slider {
 
 input:checked + .slider:before {
   transform: translateX(20px);
+}
+
+/* ========================================================
+   SECURITY TAB (COMPACT & MODERN)
+   ======================================================== */
+.securityPane {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.secSection {
+  background: color-mix(in oklab, var(--card) 98%, transparent);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-shadow: 0 2px 8px color-mix(in oklab, var(--background) 5%, transparent);
+}
+
+.secTitle {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--foreground);
+  border-bottom: 1px solid color-mix(in oklab, var(--border) 50%, transparent);
+  padding-bottom: 0.5rem;
+}
+
+.secGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+.secGridFull {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+
+@media (max-width: 640px) {
+  .secGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.secField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.secField label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--muted-foreground);
+}
+
+.secInputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.secInput {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  background: var(--input);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.secInputWrapper .secInput {
+  padding-right: 90px;
+}
+
+.secInput:disabled {
+  background: color-mix(in oklab, var(--input) 60%, transparent);
+  color: var(--muted-foreground);
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+.secBadge {
+  position: absolute;
+  right: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--success, #10b981);
+  background: color-mix(in oklab, var(--success, #10b981) 15%, transparent);
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+}
+
+.secVerifyBtn {
+  position: absolute;
+  right: 0.4rem;
+  background: var(--coral);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.2s;
+}
+
+.secVerifyBtn:hover {
+  filter: brightness(1.1);
+}
+
+.secPasswordRow {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.secPasswordRow .secInput {
+  flex: 1;
+}
+
+.secResetBtn {
+  padding: 0.6rem 1rem;
+  background: transparent;
+  color: var(--foreground);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.secResetBtn:hover:not(:disabled) {
+  background: color-mix(in oklab, var(--foreground) 5%, transparent);
+}
+
+.secResetBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.secDangerZone {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: color-mix(in oklab, var(--destructive) 5%, transparent);
+  border: 1px solid color-mix(in oklab, var(--destructive) 20%, transparent);
+  border-radius: 12px;
+}
+
+.secDangerInfo h5 {
+  margin: 0 0 0.25rem 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--destructive);
+}
+
+.secDangerInfo p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--muted-foreground);
+}
+
+.secDeleteBtn {
+  padding: 0.6rem 1rem;
+  background: var(--destructive);
+  color: var(--destructive-foreground);
+  border: none;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: filter 0.2s;
+}
+
+.secDeleteBtn:hover {
+  filter: brightness(1.1);
 }

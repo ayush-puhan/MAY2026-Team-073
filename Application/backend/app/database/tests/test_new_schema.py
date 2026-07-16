@@ -29,8 +29,8 @@ def _make_user(session, email="student@example.com", **kwargs):
     return user
 
 
-def _make_department_and_program(session):
-    dept = Department(name="Computer Science & Engineering", code="CSE")
+def _make_department_and_program(session, university):
+    dept = Department(name="Computer Science & Engineering", code="CSE", university_id=university.id)
     session.add(dept)
     session.commit()
     program = Program(department_id=dept.id, name="B.Tech Computer Science")
@@ -74,14 +74,14 @@ def test_color_blind_mode_default_and_enabled(session):
 
 # ---------- Departments / Programs / StudentProfile ----------
 
-def test_department_and_program(session):
-    dept, program = _make_department_and_program(session)
+def test_department_and_program(session, sample_university):
+    dept, program = _make_department_and_program(session, sample_university)
     assert program.department_id == dept.id
 
 
-def test_student_profile_one_to_one(session):
+def test_student_profile_one_to_one(session, sample_university):
     student = _make_user(session)
-    _, program = _make_department_and_program(session)
+    _, program = _make_department_and_program(session, sample_university)
     profile = StudentProfile(
         user_id=student.id, program_id=program.id, academic_year=2, semester=4, batch="2024", section="A"
     )
@@ -123,9 +123,9 @@ def test_user_interest_mapping_and_duplicate_rejected(session):
     session.rollback()
 
 
-def test_club_interest_mapping(session):
+def test_club_interest_mapping(session, sample_university):
     advisor = _make_user(session, email="advisor@example.com", role=UserRole.FACULTY_ADVISOR)
-    club = Club(name="Robotics Club", slug="robotics-club", faculty_advisor_id=advisor.id)
+    club = Club(name="Robotics Club", slug="robotics-club", faculty_advisor_id=advisor.id, university_id=sample_university.id)
     interest = Interest(name="Machine Learning")
     session.add_all([club, interest])
     session.commit()
@@ -135,11 +135,11 @@ def test_club_interest_mapping(session):
     assert len(club.interest_links) == 1
 
 
-def test_event_interest_mapping(session):
+def test_event_interest_mapping(session, sample_university):
     from database.models.events import Event
 
     advisor = _make_user(session, email="advisor2@example.com", role=UserRole.FACULTY_ADVISOR)
-    club = Club(name="AI Club", slug="ai-club", faculty_advisor_id=advisor.id)
+    club = Club(name="AI Club", slug="ai-club", faculty_advisor_id=advisor.id, university_id=sample_university.id)
     session.add(club)
     session.commit()
 
@@ -161,10 +161,10 @@ def test_event_interest_mapping(session):
 
 # ---------- Club join applications ----------
 
-def test_club_join_application_crud(session):
+def test_club_join_application_crud(session, sample_university):
     advisor = _make_user(session, email="advisor3@example.com", role=UserRole.FACULTY_ADVISOR)
     student = _make_user(session, email="applicant@example.com")
-    club = Club(name="Debate Club", slug="debate-club", faculty_advisor_id=advisor.id)
+    club = Club(name="Debate Club", slug="debate-club", faculty_advisor_id=advisor.id, university_id=sample_university.id)
     session.add(club)
     session.commit()
 
@@ -182,14 +182,14 @@ def test_club_join_application_crud(session):
     assert fetched.reviewed_at is None
 
 
-def test_application_reviewer_and_resume_document_relationships(session):
+def test_application_reviewer_and_resume_document_relationships(session, sample_university):
     from database.enums import DocumentType
     from database.models.communication import Document
 
     advisor = _make_user(session, email="advisor4@example.com", role=UserRole.FACULTY_ADVISOR)
     reviewer = _make_user(session, email="reviewer@example.com", role=UserRole.FACULTY_ADVISOR)
     student = _make_user(session, email="applicant2@example.com")
-    club = Club(name="Music Club", slug="music-club", faculty_advisor_id=advisor.id)
+    club = Club(name="Music Club", slug="music-club", faculty_advisor_id=advisor.id, university_id=sample_university.id)
     session.add(club)
     session.commit()
 
@@ -216,15 +216,15 @@ def test_application_reviewer_and_resume_document_relationships(session):
     assert fetched.resume_document.title == "Resume"
 
 
-def test_application_interests_and_duplicate_rejected(session):
+def test_application_interests_and_duplicate_rejected(session, sample_university):
     advisor = _make_user(session, email="advisor5@example.com", role=UserRole.FACULTY_ADVISOR)
     student = _make_user(session, email="applicant3@example.com")
-    club = Club(name="Entrepreneurship Cell", slug="e-cell", faculty_advisor_id=advisor.id)
+    club = Club(name="Entrepreneurship Cell", slug="e-cell", faculty_advisor_id=advisor.id, university_id=sample_university.id)
     interest = Interest(name="Entrepreneurship")
     session.add_all([club, interest])
     session.commit()
 
-    application = ClubJoinApplication(user_id=student.id, club_id=club.id)
+    application = ClubJoinApplication(user_id=student.id, club_id=club.id, status=MembershipStatus.PENDING)
     session.add(application)
     session.commit()
 

@@ -31,8 +31,10 @@ class Club(Base, TimestampMixin, SoftDeleteMixin):
     status = Column(SAEnum(ClubStatus), default=ClubStatus.ACTIVE, nullable=False)
     faculty_advisor_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
     member_count_cache = Column(Integer, default=0, nullable=False)
+    university_id = Column(Integer, ForeignKey("universities.id", ondelete="CASCADE"), nullable=False)
 
     faculty_advisor = relationship("User", back_populates="advised_clubs")
+    university = relationship("University", back_populates="clubs")
     memberships = relationship("ClubMembership", back_populates="club", cascade="all, delete-orphan")
     events = relationship("Event", back_populates="club", cascade="all, delete-orphan")
     committees = relationship("Committee", back_populates="club", cascade="all, delete-orphan")

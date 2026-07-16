@@ -1,20 +1,20 @@
-import React from 'react';
-import clsx from 'clsx';
 import styles from './FilterTabs.module.css';
 
-// tabs: [{ value, label, count }]
-export const FilterTabs = ({ tabs = [], activeTab, onTabChange }) => (
-  <div className={styles.tabs}>
-    {tabs.map((tab) => (
-      <button
-        key={tab.value}
-        type="button"
-        className={clsx(styles.tab, activeTab === tab.value && styles.active)}
-        onClick={() => onTabChange(tab.value)}
-      >
-        {tab.label}
-        {tab.count !== undefined && <span className={styles.count}>{tab.count}</span>}
-      </button>
-    ))}
-  </div>
-);
+export const FilterTabs = ({ tabs, activeTab, onTabChange }) => {
+  return (
+    <div className={styles.tabsContainer}>
+      {tabs.map((tab, idx) => (
+        <button
+          key={idx}
+          className={`${styles.tabBtn} ${activeTab === tab.id ? styles.active : ''}`}
+          onClick={() => onTabChange(tab.id)}
+        >
+          {tab.label}
+          {tab.count !== undefined && (
+            <span className={styles.tabCount}>{tab.count}</span>
+          )}
+        </button>
+      ))}
+    </div>
+  );
+};

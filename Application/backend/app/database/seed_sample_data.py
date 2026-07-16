@@ -23,7 +23,7 @@ so it won't create duplicate users or clash with data already loaded.
 """
 
 import sqlite3
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
 
 from werkzeug.security import generate_password_hash
@@ -31,6 +31,7 @@ from werkzeug.security import generate_password_hash
 from .database import DB_PATH, get_session, init_engine
 from .models.auth import User
 from .enums import AuthProvider, Gender, UserRole
+from .models.university import University, UniversityDomain
 from .session_manager import cleanup_expired_tokens, generate_and_store_token
 
 SQL_DIR = Path(__file__).resolve().parent / "sql"
@@ -42,34 +43,59 @@ DEMO_PASSWORD = "ClubConnect#2026"
 SAMPLE_USERS = [
     dict(id=1, email="priya.sharma@campus.edu", full_name="Priya Sharma",
          roll_number="CS2023001", role=UserRole.STUDENT, phone="9990000001",
-         is_active=True, email_verified=True, dob=date(2004, 3, 12), gender=Gender.FEMALE),
+         is_active=True, email_verified=True, dob=date(2004, 3, 12), gender=Gender.FEMALE,
+         university_id=1, created_at=datetime(2026, 1, 15, 10, 0)),
     dict(id=2, email="arjun.mehta@campus.edu", full_name="Arjun Mehta",
          roll_number="CS2023002", role=UserRole.STUDENT, phone="9990000002",
-         is_active=True, email_verified=True, dob=date(2004, 7, 22), gender=Gender.MALE),
+         is_active=True, email_verified=True, dob=date(2004, 7, 22), gender=Gender.MALE,
+         university_id=1, created_at=datetime(2026, 2, 10, 10, 0)),
     dict(id=3, email="ananya.gupta@campus.edu", full_name="Ananya Gupta",
          roll_number="EC2023011", role=UserRole.STUDENT, phone="9990000003",
-         is_active=True, email_verified=True, dob=date(2003, 11, 4), gender=Gender.FEMALE),
+         is_active=True, email_verified=True, dob=date(2003, 11, 4), gender=Gender.FEMALE,
+         university_id=1, created_at=datetime(2026, 2, 18, 10, 0)),
     dict(id=4, email="dr.rao@campus.edu", full_name="Dr. Rao",
          roll_number=None, role=UserRole.FACULTY_ADVISOR, phone="9990000004",
-         is_active=True, email_verified=True),
+         is_active=True, email_verified=True, university_id=1, created_at=datetime(2026, 3, 5, 10, 0)),
     dict(id=5, email="dean.welfare@campus.edu", full_name="Dean of Student Welfare",
          roll_number=None, role=UserRole.DEAN_STUDENT_WELFARE, phone="9990000005",
-         is_active=True, email_verified=True),
+         is_active=True, email_verified=True, university_id=1, created_at=datetime(2026, 3, 12, 10, 0)),
     dict(id=6, email="affairs.office@campus.edu", full_name="Student Affairs Office",
          roll_number=None, role=UserRole.STUDENT_AFFAIRS_OFFICE, phone="9990000006",
-         is_active=True, email_verified=True),
+         is_active=True, email_verified=True, university_id=1, created_at=datetime(2026, 4, 1, 10, 0)),
     dict(id=7, email="admin@campus.edu", full_name="System Admin",
          roll_number=None, role=UserRole.SYSTEM_ADMIN, phone="9990000007",
-         is_active=True, email_verified=True),
+         is_active=True, email_verified=True, university_id=None, created_at=datetime(2026, 4, 20, 10, 0)),
     dict(id=8, email="rohit.singh@campus.edu", full_name="Rohit Singh",
          roll_number="ME2023044", role=UserRole.STUDENT, phone="9990000008",
-         is_active=True, email_verified=False, color_blind_mode=True),
+         is_active=True, email_verified=False, color_blind_mode=True, university_id=1, created_at=datetime(2026, 5, 15, 10, 0)),
     dict(id=9, email="kavya.iyer@campus.edu", full_name="Kavya Iyer",
          roll_number="DS2023019", role=UserRole.STUDENT, phone="9990000009",
          is_active=True, email_verified=True, auth_provider=AuthProvider.GOOGLE,
-         google_id="google-oauth2|kavya-iyer-demo", gender=Gender.FEMALE),
+         google_id="google-oauth2|kavya-iyer-demo", gender=Gender.FEMALE, university_id=1, created_at=datetime(2026, 6, 2, 10, 0)),
 ]
 
+
+def seed_universities() -> None:
+    """Insert sample universities needed by users."""
+    with get_session() as session:
+        if session.query(University).count() > 0:
+            print("Universities table already has data — skipping university seeding.")
+            return
+
+        u1 = University(id=1, name='Indian Institute of Technology Delhi', short_name='IITD', domain='iitd.ac.in', website='https://iitd.ac.in')
+        u2 = University(id=2, name='BITS Pilani', short_name='BITS', domain='bits-pilani.ac.in', website='https://bits-pilani.ac.in')
+        
+        session.add_all([u1, u2])
+        session.commit()
+        
+        d1 = UniversityDomain(university_id=1, domain='iitd.ac.in')
+        d2 = UniversityDomain(university_id=1, domain='admin.iitd.ac.in')
+        d3 = UniversityDomain(university_id=1, domain='campus.edu')
+        d4 = UniversityDomain(university_id=2, domain='bits-pilani.ac.in')
+        session.add_all([d1, d2, d3, d4])
+        session.commit()
+        
+        print("Seeded 2 sample universities and their domains.")
 
 def seed_users() -> None:
     """Insert the 8 sample users with real Werkzeug password hashes."""
@@ -93,7 +119,9 @@ def seed_users() -> None:
                 gender=u.get("gender"),
                 auth_provider=u.get("auth_provider", AuthProvider.LOCAL),
                 google_id=u.get("google_id"),
+                university_id=u.get("university_id"),
                 color_blind_mode=u.get("color_blind_mode", False),
+                created_at=u.get("created_at")
             )
             session.add(user)
         session.commit()
@@ -133,6 +161,7 @@ def seed_auth_sessions() -> None:
 
 def main() -> None:
     init_engine()  # ensure tables exist; safe to call even if already initialized
+    seed_universities()
     seed_users()
     seed_remaining_tables()
     seed_auth_sessions()

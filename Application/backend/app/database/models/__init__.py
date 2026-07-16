@@ -1,12 +1,13 @@
 """Importing this package registers every ORM model with SQLAlchemy metadata.
 
 Always import models via this package (not the individual submodules) before
-calling Base.metadata.create_all() or configuring mappers, so all 33 tables
+calling Base.metadata.create_all() or configuring mappers, so all tables
 and their cross-file relationships resolve correctly.
 """
 
 from .academics import Department, Program, StudentProfile
 from .applications import ApplicationInterest, ClubJoinApplication
+from .audit import AuditLog
 from .auth import AuthSession, User
 from .clubs import Announcement, Club, ClubCreationRequest, ClubMembership, Committee, CommitteeMembership
 from .communication import Document, Notification
@@ -16,10 +17,12 @@ from .finance import Budget, Expense
 from .interests import ClubInterest, EventInterest, Interest, UserInterest
 from .rewards import RewardPointsLedger, RewardRedemption
 from .support import EmergencyReport, SupportTicket, TicketResponse
+from .university import University, UniversityDomain
 
 __all__ = [
     "User",
     "AuthSession",
+    "AuditLog",
     "Department",
     "Program",
     "StudentProfile",
@@ -51,4 +54,6 @@ __all__ = [
     "RewardRedemption",
     "Sponsor",
     "ClubSponsor",
+    "University",
+    "UniversityDomain",
 ]

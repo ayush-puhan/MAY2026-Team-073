@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { Dropdown } from '../../Dropdown/Dropdown';
 import styles from '../ProfileSettingsModal.module.css';
 
 export const AcademicTab = ({
@@ -16,24 +17,28 @@ export const AcademicTab = ({
         <div className={styles.row}>
           <div className={styles.field}>
             <label>Department <span className={styles.required}>*</span></label>
-            <select name="department_id" value={formData.department_id || ''} onChange={handleChange} className={`${styles.input} ${errors.department_id ? styles.inputError : ''}`}>
-              <option value="">Select Department</option>
-              {masterData.departments.map(d => (
-                <option key={d.id} value={d.id}>{d.name}</option>
-              ))}
-            </select>
+            <Dropdown 
+              name="department_id" 
+              value={formData.department_id || ''} 
+              onChange={handleChange} 
+              placeholder="Select Department"
+              options={masterData.departments.map(d => ({ value: d.id, label: d.name }))}
+              className={`${errors.department_id ? styles.inputError : ''}`}
+            />
           </div>
           {isStudent && (
             <div className={styles.field}>
               <label>Program <span className={styles.required}>*</span></label>
-              <select name="program_id" value={formData.student_profile.program_id || ''} onChange={handleChange} className={`${styles.input} ${errors.program_id ? styles.inputError : ''}`}>
-                <option value="">Select Program</option>
-                {masterData.programs
+              <Dropdown 
+                name="student_profile.program_id" 
+                value={formData.student_profile?.program_id || ''} 
+                onChange={handleChange} 
+                placeholder="Select Program"
+                options={masterData.programs
                   .filter(p => !formData.department_id || p.department_id === parseInt(formData.department_id))
-                  .map(p => (
-                  <option key={p.id} value={p.id}>{p.name}</option>
-                ))}
-              </select>
+                  .map(p => ({ value: p.id, label: p.name }))}
+                className={`${errors.program_id ? styles.inputError : ''}`}
+              />
             </div>
           )}
         </div>
@@ -44,31 +49,54 @@ export const AcademicTab = ({
           <div className={styles.row}>
             <div className={styles.field}>
               <label>Academic Year <span className={styles.required}>*</span></label>
-              <select name="academic_year" value={formData.student_profile.academic_year || ''} onChange={handleChange} className={`${styles.input} ${errors.academic_year ? styles.inputError : ''}`}>
-                <option value="">Select Year</option>
-                <option value="1">1st Year</option>
-                <option value="2">2nd Year</option>
-                <option value="3">3rd Year</option>
-                <option value="4">4th Year</option>
-              </select>
+              <Dropdown 
+                name="student_profile.academic_year" 
+                value={formData.student_profile?.academic_year || ''} 
+                onChange={handleChange} 
+                placeholder="Select Year"
+                options={[
+                  { value: '1', label: '1st Year' },
+                  { value: '2', label: '2nd Year' },
+                  { value: '3', label: '3rd Year' },
+                  { value: '4', label: '4th Year' }
+                ]}
+                className={`${errors.academic_year ? styles.inputError : ''}`}
+              />
             </div>
             <div className={styles.field}>
               <label>Semester <span className={styles.required}>*</span></label>
-              <select name="semester" value={formData.student_profile.semester || ''} onChange={handleChange} className={`${styles.input} ${errors.semester ? styles.inputError : ''}`}>
-                <option value="">Select Semester</option>
-                {[1,2,3,4,5,6,7,8].map(s => <option key={s} value={String(s)}>{s}th Sem</option>)}
-              </select>
+              <Dropdown 
+                name="student_profile.semester" 
+                value={formData.student_profile?.semester || ''} 
+                onChange={handleChange} 
+                placeholder="Select Semester"
+                options={[1,2,3,4,5,6,7,8].map(s => ({ value: String(s), label: `${s}th Sem` }))}
+                className={`${errors.semester ? styles.inputError : ''}`}
+              />
             </div>
           </div>
 
           <div className={styles.row}>
             <div className={styles.field}>
               <label>Batch <span className={styles.required}>*</span></label>
-              <input type="text" name="batch" value={formData.student_profile.batch || ''} onChange={handleChange} className={`${styles.input} ${errors.batch ? styles.inputError : ''}`} placeholder="e.g. 2024" />
+              <Dropdown 
+                name="student_profile.batch" 
+                value={formData.student_profile?.batch || ''} 
+                onChange={handleChange} 
+                placeholder="Select Batch"
+                options={[2021,2022,2023,2024,2025,2026,2027,2028].map(y => ({ value: String(y), label: String(y) }))}
+                className={`${errors.batch ? styles.inputError : ''}`}
+              />
             </div>
             <div className={styles.field}>
               <label>Section</label>
-              <input type="text" name="section" value={formData.student_profile.section || ''} onChange={handleChange} className={styles.input} placeholder="e.g. A" />
+              <Dropdown 
+                name="student_profile.section" 
+                value={formData.student_profile?.section || ''} 
+                onChange={handleChange} 
+                placeholder="Select Section"
+                options={['A','B','C','D','E','F','G'].map(s => ({ value: s, label: `Section ${s}` }))}
+              />
             </div>
           </div>
         </>

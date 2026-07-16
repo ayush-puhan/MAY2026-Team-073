@@ -2,33 +2,28 @@
   position: relative;
   display: flex;
   align-items: center;
-  min-width: 220px;
 }
 
 .icon {
   position: absolute;
   left: 0.75rem;
   color: var(--muted-foreground);
-  font-size: 1.125rem;
-  pointer-events: none;
+  width: 18px;
+  height: 18px;
 }
 
 .input {
   width: 100%;
-  padding: 0.625rem 0.875rem 0.625rem 2.25rem;
-  border-radius: var(--radius-md);
+  padding: 0.4rem 0.75rem 0.4rem 2.25rem;
+  border-radius: 6px;
   border: 1px solid var(--border);
-  background-color: var(--card);
+  background-color: var(--surface);
   color: var(--foreground);
-  font-size: 0.875rem;
+  font-size: 0.9rem;
   outline: none;
-  transition: border-color 0.15s ease;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .input:focus {
-  border-color: var(--ring);
-}
-
-.input::placeholder {
-  color: var(--muted-foreground);
+  border-color: var(--primary);
 }

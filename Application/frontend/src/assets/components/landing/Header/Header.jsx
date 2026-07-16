@@ -4,7 +4,8 @@ import { Logo } from '../../ui/Logo/Logo';
 import { ThemeToggle } from '../../ui/ThemeToggle/ThemeToggle';
 import { Button } from '../../ui/Button/Button';
 import { Link } from 'react-router-dom';
-import { useSession, getDashboardLink } from '../../../../context/SessionContext';
+import { useSession } from '../../../../context/SessionContext';
+import { authApi } from '../../../../api/auth.api';
 
 export const Header = () => {
   const [isVisible, setIsVisible] = useState(true);
@@ -41,7 +42,7 @@ export const Header = () => {
         <div className={styles.actions}>
           <ThemeToggle />
           {user ? (
-            <Link to={getDashboardLink(user.role)}><Button variant="primary" size="sm" className={styles.joinBtn}>Go to Dashboard</Button></Link>
+            <Link to={authApi.getDashboardRoute(user.role)}><Button variant="primary" size="sm" className={styles.joinBtn}>Go to Dashboard</Button></Link>
           ) : (
             <>
               <Link to="/login" className={styles.loginLink}>Sign in</Link>

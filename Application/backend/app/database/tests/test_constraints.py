@@ -36,10 +36,11 @@ def test_unique_constraint_on_email(session):
     session.rollback()
 
 
-def test_composite_unique_constraint_membership(session):
+def test_composite_unique_constraint_membership(session, sample_university):
     advisor = _make_user(session, "advisor@example.com")
     student = _make_user(session, "student@example.com")
-    club = Club(name="Chess Club", slug="chess-club-2", faculty_advisor_id=advisor.id)
+    club = Club(name="Chess Club", slug="chess-club-2", faculty_advisor_id=advisor.id,
+                university_id=sample_university.id)
     session.add(club)
     session.commit()
 
@@ -53,9 +54,10 @@ def test_composite_unique_constraint_membership(session):
     session.rollback()
 
 
-def test_check_constraint_event_dates(session):
+def test_check_constraint_event_dates(session, sample_university):
     advisor = _make_user(session, "advisor2@example.com")
-    club = Club(name="Art Club", slug="art-club-2", faculty_advisor_id=advisor.id)
+    club = Club(name="Art Club", slug="art-club-2", faculty_advisor_id=advisor.id,
+                university_id=sample_university.id)
     session.add(club)
     session.commit()
 
@@ -72,9 +74,10 @@ def test_check_constraint_event_dates(session):
     session.rollback()
 
 
-def test_check_constraint_expense_amount_positive(session):
+def test_check_constraint_expense_amount_positive(session, sample_university):
     advisor = _make_user(session, "advisor3@example.com")
-    club = Club(name="Music Club", slug="music-club-2", faculty_advisor_id=advisor.id)
+    club = Club(name="Music Club", slug="music-club-2", faculty_advisor_id=advisor.id,
+                university_id=sample_university.id)
     session.add(club)
     session.commit()
 
@@ -92,10 +95,11 @@ def test_check_constraint_expense_amount_positive(session):
     session.rollback()
 
 
-def test_cascade_delete_club_removes_memberships(session):
+def test_cascade_delete_club_removes_memberships(session, sample_university):
     advisor = _make_user(session, "advisor4@example.com")
     student = _make_user(session, "student4@example.com")
-    club = Club(name="Debate Club", slug="debate-club-2", faculty_advisor_id=advisor.id)
+    club = Club(name="Debate Club", slug="debate-club-2", faculty_advisor_id=advisor.id,
+                university_id=sample_university.id)
     session.add(club)
     session.commit()
 
@@ -110,9 +114,10 @@ def test_cascade_delete_club_removes_memberships(session):
     assert session.get(ClubMembership, membership_id) is None
 
 
-def test_set_null_on_club_faculty_advisor_delete(session):
+def test_set_null_on_club_faculty_advisor_delete(session, sample_university):
     advisor = _make_user(session, "advisor5@example.com")
-    club = Club(name="Photography Club", slug="photo-club-2", faculty_advisor_id=advisor.id)
+    club = Club(name="Photography Club", slug="photo-club-2", faculty_advisor_id=advisor.id,
+                university_id=sample_university.id)
     session.add(club)
     session.commit()
     club_id = club.id
@@ -124,9 +129,10 @@ def test_set_null_on_club_faculty_advisor_delete(session):
     assert refreshed.faculty_advisor_id is None
 
 
-def test_restrict_on_event_creator_delete(session):
+def test_restrict_on_event_creator_delete(session, sample_university):
     advisor = _make_user(session, "advisor6@example.com")
-    club = Club(name="Coding Club", slug="coding-club-2", faculty_advisor_id=advisor.id)
+    club = Club(name="Coding Club", slug="coding-club-2", faculty_advisor_id=advisor.id,
+                university_id=sample_university.id)
     session.add(club)
     session.commit()
 
@@ -144,10 +150,11 @@ def test_restrict_on_event_creator_delete(session):
     session.rollback()
 
 
-def test_cascade_delete_event_removes_registrations_and_attendance(session):
+def test_cascade_delete_event_removes_registrations_and_attendance(session, sample_university):
     advisor = _make_user(session, "advisor7@example.com")
     student = _make_user(session, "student7@example.com")
-    club = Club(name="Gaming Club", slug="gaming-club-2", faculty_advisor_id=advisor.id)
+    club = Club(name="Gaming Club", slug="gaming-club-2", faculty_advisor_id=advisor.id,
+                university_id=sample_university.id)
     session.add(club)
     session.commit()
 

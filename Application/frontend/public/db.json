@@ -1,93 +1,713 @@
 {
-  "announcements": [
+  "sponsors": [
     {
       "id": "1",
-      "club_id": 1,
-      "posted_by": 4,
-      "title": "Chess Club Weekly Meet",
-      "body": "We meet every Friday at 5 PM in Room 204.",
-      "target_audience": "all_members",
-      "created_at": "2026-01-20 08:00:00"
+      "organization_name": "TechNova Pvt Ltd",
+      "contact_email": "partnerships@technova.example.com",
+      "contact_person": "Karan Mehra",
+      "created_at": "2026-03-01 09:00:00"
     },
     {
       "id": "2",
-      "club_id": null,
-      "posted_by": 6,
-      "title": "Annual Fest Dates Announced",
-      "body": "The annual college fest will be held in October.",
-      "target_audience": "all_students",
-      "created_at": "2026-02-15 08:00:00"
+      "organization_name": "Campus Cafe",
+      "contact_email": "owner@campuscafe.example.com",
+      "contact_person": "Sunita Verma",
+      "created_at": "2026-03-05 09:00:00"
     }
   ],
-  "application_interests": [
+  "interests": [
     {
       "id": "1",
-      "application_id": 1,
-      "interest_id": 2
+      "name": "Artificial Intelligence",
+      "created_at": "2026-01-01 09:00:00"
     },
     {
       "id": "2",
-      "application_id": 2,
-      "interest_id": 2
+      "name": "Robotics",
+      "created_at": "2026-01-01 09:00:00"
     },
     {
       "id": "3",
-      "application_id": 2,
-      "interest_id": 6
+      "name": "Photography",
+      "created_at": "2026-01-01 09:00:00"
     },
     {
       "id": "4",
-      "application_id": 2,
-      "interest_id": 1
+      "name": "Music",
+      "created_at": "2026-01-01 09:00:00"
+    },
+    {
+      "id": "5",
+      "name": "Entrepreneurship",
+      "created_at": "2026-01-01 09:00:00"
+    },
+    {
+      "id": "6",
+      "name": "Machine Learning",
+      "created_at": "2026-01-01 09:00:00"
     }
   ],
-  "attendance_records": [
+  "universities": [
     {
       "id": "1",
-      "event_id": 1,
+      "name": "Indian Institute of Technology Delhi",
+      "short_name": "IITD",
+      "logo_url": null,
+      "domain": "iitd.ac.in",
+      "address": null,
+      "website": "https://iitd.ac.in",
+      "is_active": 1,
+      "created_at": "2026-07-15 10:09:36.762186",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    {
+      "id": "2",
+      "name": "BITS Pilani",
+      "short_name": "BITS",
+      "logo_url": null,
+      "domain": "bits-pilani.ac.in",
+      "address": null,
+      "website": "https://bits-pilani.ac.in",
+      "is_active": 1,
+      "created_at": "2026-07-15 10:09:36.762190",
+      "updated_at": null,
+      "deleted_at": null
+    }
+  ],
+  "departments": [
+    {
+      "id": "1",
+      "name": "Computer Science & Engineering",
+      "code": "CSE",
+      "university_id": 1,
+      "created_at": "2026-01-01 09:00:00"
+    },
+    {
+      "id": "2",
+      "name": "Electronics & Communication Engineering",
+      "code": "ECE",
+      "university_id": 1,
+      "created_at": "2026-01-01 09:00:00"
+    },
+    {
+      "id": "3",
+      "name": "Mechanical Engineering",
+      "code": "ME",
+      "university_id": 1,
+      "created_at": "2026-01-01 09:00:00"
+    },
+    {
+      "id": "4",
+      "name": "Management Studies",
+      "code": "MS",
+      "university_id": 1,
+      "created_at": "2026-01-01 09:00:00"
+    }
+  ],
+  "university_domains": [
+    {
+      "id": "1",
+      "university_id": 1,
+      "domain": "iitd.ac.in",
+      "created_at": "2026-07-15 10:09:36.775496",
+      "updated_at": null
+    },
+    {
+      "id": "2",
+      "university_id": 1,
+      "domain": "admin.iitd.ac.in",
+      "created_at": "2026-07-15 10:09:36.775513",
+      "updated_at": null
+    },
+    {
+      "id": "3",
+      "university_id": 1,
+      "domain": "campus1.edu",
+      "created_at": "2026-07-15 10:09:36.775515",
+      "updated_at": null
+    },
+    {
+      "id": "4",
+      "university_id": 2,
+      "domain": "bits-pilani.ac.in",
+      "created_at": "2026-07-15 10:09:36.775516",
+      "updated_at": null
+    }
+  ],
+  "programs": [
+    {
+      "id": "1",
+      "department_id": 1,
+      "name": "B.Tech Computer Science",
+      "created_at": "2026-01-01 09:00:00"
+    },
+    {
+      "id": "2",
+      "department_id": 1,
+      "name": "M.Tech Artificial Intelligence",
+      "created_at": "2026-01-01 09:00:00"
+    },
+    {
+      "id": "3",
+      "department_id": 2,
+      "name": "B.Tech Electronics",
+      "created_at": "2026-01-01 09:00:00"
+    },
+    {
+      "id": "4",
+      "department_id": 3,
+      "name": "B.Tech Mechanical Engineering",
+      "created_at": "2026-01-01 09:00:00"
+    },
+    {
+      "id": "5",
+      "department_id": 4,
+      "name": "MBA",
+      "created_at": "2026-01-01 09:00:00"
+    },
+    {
+      "id": "6",
+      "department_id": 1,
+      "name": "B.Sc Data Science",
+      "created_at": "2026-01-01 09:00:00"
+    }
+  ],
+  "users": [
+    {
+      "id": "1",
+      "email": "priya.sharma@iitd.ac.in",
+      "password_hash": "Password@123",
+      "full_name": "Priya Sharma",
+      "roll_number": "SAO001",
+      "role": "student",
+      "phone": "9990000001",
+      "profile_photo_url": "",
+      "accessibility_prefs": "",
+      "is_active": true,
+      "email_verified": 1,
+      "google_id": null,
+      "dob": "2004-03-12",
+      "auth_provider": "LOCAL",
+      "department_id": 1,
+      "university_id": 1,
+      "gender": "FEMALE",
+      "color_blind_mode": false,
+      "created_at": "2026-01-15 10:00:00.000000",
+      "updated_at": null,
+      "deleted_at": null,
+      "browse_public_only": false
+    },
+    {
+      "id": "2",
+      "email": "arjun.mehta@campus.edu",
+      "password_hash": "Password@123",
+      "full_name": "Arjun Mehta",
+      "roll_number": "CS2023002",
+      "role": "student",
+      "phone": "9990000002",
+      "profile_photo_url": "",
+      "accessibility_prefs": "",
+      "is_active": 1,
+      "email_verified": 1,
+      "google_id": null,
+      "dob": "2004-07-22",
+      "auth_provider": "LOCAL",
+      "department_id": 1,
+      "university_id": 1,
+      "gender": "MALE",
+      "color_blind_mode": false,
+      "created_at": "2026-02-10 10:00:00.000000",
+      "updated_at": null,
+      "deleted_at": null,
+      "browse_public_only": false
+    },
+    {
+      "id": "3",
+      "email": "ananya.gupta@campus.edu",
+      "password_hash": "Password@123",
+      "full_name": "Ananya Gupta",
+      "roll_number": "EC2023011",
+      "role": "student",
+      "phone": "9990000003",
+      "profile_photo_url": null,
+      "accessibility_prefs": null,
+      "is_active": 1,
+      "email_verified": 1,
+      "google_id": null,
+      "dob": "2003-11-04",
+      "auth_provider": "LOCAL",
+      "department_id": null,
+      "university_id": 1,
+      "gender": "FEMALE",
+      "color_blind_mode": 0,
+      "created_at": "2026-02-18 10:00:00.000000",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    {
+      "id": "4",
+      "email": "dr.rao@campus.edu",
+      "password_hash": "Password@123",
+      "full_name": "Dr. Rao",
+      "roll_number": null,
+      "role": "student",
+      "phone": "9990000004",
+      "profile_photo_url": null,
+      "accessibility_prefs": null,
+      "is_active": 1,
+      "email_verified": 1,
+      "google_id": null,
+      "dob": null,
+      "auth_provider": "LOCAL",
+      "department_id": null,
+      "university_id": 1,
+      "gender": null,
+      "color_blind_mode": 0,
+      "created_at": "2026-03-05 10:00:00.000000",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    {
+      "id": "5",
+      "email": "dean.welfare@campus.edu",
+      "password_hash": "Password@123",
+      "full_name": "Dean of Student Welfare",
+      "roll_number": null,
+      "role": "student",
+      "phone": "9990000005",
+      "profile_photo_url": null,
+      "accessibility_prefs": null,
+      "is_active": 1,
+      "email_verified": 1,
+      "google_id": null,
+      "dob": null,
+      "auth_provider": "LOCAL",
+      "department_id": null,
+      "university_id": 1,
+      "gender": null,
+      "color_blind_mode": 0,
+      "created_at": "2026-03-12 10:00:00.000000",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    {
+      "id": "6",
+      "email": "affairs.office@campus.edu",
+      "password_hash": "Password@123",
+      "full_name": "Student Affairs Office",
+      "roll_number": null,
+      "role": "STUDENT_AFFAIRS_OFFICE",
+      "phone": "9990000006",
+      "profile_photo_url": null,
+      "accessibility_prefs": null,
+      "is_active": 1,
+      "email_verified": 1,
+      "google_id": null,
+      "dob": null,
+      "auth_provider": "LOCAL",
+      "department_id": null,
+      "university_id": 1,
+      "gender": null,
+      "color_blind_mode": 0,
+      "created_at": "2026-04-01 10:00:00.000000",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    {
+      "id": "7",
+      "email": "admin@campus.edu",
+      "password_hash": "Password@123",
+      "full_name": "System Admin",
+      "roll_number": "",
+      "role": "SYSTEM_ADMIN",
+      "phone": "9990000007",
+      "profile_photo_url": "",
+      "accessibility_prefs": "",
+      "is_active": 1,
+      "email_verified": 1,
+      "google_id": null,
+      "dob": "",
+      "auth_provider": "LOCAL",
+      "department_id": null,
+      "university_id": null,
+      "gender": "",
+      "color_blind_mode": false,
+      "created_at": "2026-04-20 10:00:00.000000",
+      "updated_at": null,
+      "deleted_at": null,
+      "browse_public_only": true
+    },
+    {
+      "id": "8",
+      "email": "rohit.singh@campus.edu",
+      "password_hash": "Password@123",
+      "full_name": "Rohit Singh",
+      "roll_number": "ME2023044",
+      "role": "STUDENT",
+      "phone": "9990000008",
+      "profile_photo_url": null,
+      "accessibility_prefs": null,
+      "is_active": 1,
+      "email_verified": 0,
+      "google_id": null,
+      "dob": null,
+      "auth_provider": "LOCAL",
+      "department_id": null,
+      "university_id": 1,
+      "gender": null,
+      "color_blind_mode": 1,
+      "created_at": "2026-05-15 10:00:00.000000",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    {
+      "id": "9",
+      "email": "kavya.iyer@campus.edu",
+      "password_hash": "Password@123",
+      "full_name": "Kavya Iyer",
+      "roll_number": "DS2023019",
+      "role": "STUDENT",
+      "phone": "9990000009",
+      "profile_photo_url": null,
+      "accessibility_prefs": null,
+      "is_active": 1,
+      "email_verified": 1,
+      "google_id": "google-oauth2|kavya-iyer-demo",
+      "dob": null,
+      "auth_provider": "GOOGLE",
+      "department_id": null,
+      "university_id": 1,
+      "gender": "FEMALE",
+      "color_blind_mode": 0,
+      "created_at": "2026-06-02 10:00:00.000000",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    {
+      "full_name": "student1",
+      "email": "student@clubconnect.edu",
+      "confirmPassword": "Password@123",
+      "password_hash": "Password@123",
+      "is_active": true,
+      "email_verified": true,
+      "role": "student",
+      "created_at": "2026-07-15T14:35:08.921Z",
+      "id": "zB2qaIT99aI",
+      "phone": "9990000002",
+      "dob": "2005-06-23",
+      "profile_photo_url": "",
+      "color_blind_mode": false,
+      "browse_public_only": true,
+      "department_id": 1,
+      "gender": "male"
+    },
+    {
+      "full_name": "admin",
+      "email": "admin1@campus.edu",
+      "role": "faculty_advisor",
+      "password_hash": "mocked_hash",
+      "auth_provider": "LOCAL",
+      "is_active": true,
+      "email_verified": true,
+      "created_at": "2026-07-15T16:23:15.769Z",
+      "id": "rU5RTE1NU68"
+    }
+  ],
+  "student_profiles": [
+    {
       "user_id": 1,
-      "checked_in_at": "2026-08-01 09:05:00",
-      "recorded_by": 4
+      "program_id": 1,
+      "academic_year": 2,
+      "semester": 4,
+      "batch": "2024",
+      "section": "A",
+      "institutional_email": "priya.sharma@iitd.ac.in",
+      "is_verified": 1,
+      "created_at": "2026-01-10 09:00:00",
+      "id": "oOh2X7izo5o"
+    },
+    {
+      "user_id": 2,
+      "program_id": 1,
+      "academic_year": 2,
+      "semester": 4,
+      "batch": "2024",
+      "section": "B",
+      "institutional_email": "arjun.mehta@campus1.edu",
+      "is_verified": 1,
+      "created_at": "2026-01-10 09:00:00",
+      "id": "_POZ0M8orOk"
+    },
+    {
+      "user_id": 3,
+      "program_id": 3,
+      "academic_year": 3,
+      "semester": 6,
+      "batch": "2023",
+      "section": "A",
+      "institutional_email": "ananya.gupta@iitd.ac.in",
+      "is_verified": 1,
+      "created_at": "2026-01-10 09:00:00",
+      "id": "SylJrbGO3B8"
+    },
+    {
+      "user_id": 8,
+      "program_id": 4,
+      "academic_year": 2,
+      "semester": 3,
+      "batch": "2024",
+      "section": "C",
+      "institutional_email": null,
+      "is_verified": 0,
+      "created_at": "2026-01-10 09:00:00",
+      "id": "T2zxgd8KSp4"
+    },
+    {
+      "user_id": 9,
+      "program_id": 6,
+      "academic_year": 2,
+      "semester": 4,
+      "batch": "2024",
+      "section": "A",
+      "institutional_email": "kavya.iyer@iitd.ac.in",
+      "is_verified": 1,
+      "created_at": "2026-01-10 09:00:00",
+      "id": "ElQWeBkN6_w"
+    },
+    {
+      "user_id": "zB2qaIT99aI",
+      "program_id": 2,
+      "academic_year": 1,
+      "semester": 3,
+      "institutional_email": "",
+      "is_verified": false,
+      "batch": "2024",
+      "section": "C",
+      "created_at": "2026-07-15 14:43:26",
+      "id": "nL9yCLJ-2ro"
+    }
+  ],
+  "audit_logs": [
+    {
+      "id": "1",
+      "user_id": 7,
+      "university_id": 1,
+      "action": "UPDATE",
+      "entity_type": "UniversitySettings",
+      "entity_id": 1,
+      "details": "Updated password length to 8",
+      "created_at": "2026-07-13 10:09:38",
+      "updated_at": "2026-07-13 10:09:38"
+    },
+    {
+      "id": "2",
+      "user_id": 1,
+      "university_id": 1,
+      "action": "CREATE",
+      "entity_type": "Event",
+      "entity_id": 1,
+      "details": "Created Kickoff event",
+      "created_at": "2026-07-14 10:09:38",
+      "updated_at": "2026-07-14 10:09:38"
+    },
+    {
+      "id": "3",
+      "user_id": 7,
+      "university_id": 1,
+      "action": "DELETE",
+      "entity_type": "User",
+      "entity_id": 10,
+      "details": "Removed spam account",
+      "created_at": "2026-07-15 05:09:38",
+      "updated_at": "2026-07-15 05:09:38"
     }
   ],
   "auth_sessions": [
     {
       "id": "1",
       "user_id": 1,
-      "token": "<mock-not-a-real-jwt-see-README-security-note>",
-      "created_at": "2026-06-01 09:00:00",
-      "expires_at": "2026-06-01 10:00:00"
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc4NDExMDE3OCwianRpIjoiNjA0NmIwZWQtYzhmZS00ODJiLTljYjgtN2NmZTMwMDAwNmZkIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjEiLCJuYmYiOjE3ODQxMTAxNzgsImNzcmYiOiJjNWE4NDQ4Yi1mZmRhLTQ5YmYtYmQ0ZS1iYWI0ZGJjN2EzZDYiLCJleHAiOjE3ODQxMTM3Nzh9.NXjR8vfarGk4F9tnO39Ho_A8-oJjvnQdxhtdiI780gI",
+      "expires_at": "2026-07-15 11:09:38.140377",
+      "created_at": "2026-07-15 10:09:38.140936",
+      "updated_at": null
     },
     {
       "id": "2",
       "user_id": 2,
-      "token": "<mock-not-a-real-jwt-see-README-security-note>",
-      "created_at": "2026-06-02 10:00:00",
-      "expires_at": "2026-06-02 11:00:00"
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc4NDExMDE3OCwianRpIjoiYmRiZDcwYzktODQxZi00OTNmLTliZWItYjA0NDUxNjQzZDJiIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjIiLCJuYmYiOjE3ODQxMTAxNzgsImNzcmYiOiI3M2ZjNmE3ZC03YTM2LTQ0ZWEtYmJlZC0wOWZmYTk5MjhlYjAiLCJleHAiOjE3ODQxMTM3Nzh9.i5fqc6dSo9FQJSc18qMtw91lgp_-nVwdcXIR-kRElzc",
+      "expires_at": "2026-07-15 11:09:38.154155",
+      "created_at": "2026-07-15 10:09:38.154469",
+      "updated_at": null
     }
   ],
-  "budgets": [
+  "clubs": [
     {
       "id": "1",
-      "club_id": 1,
-      "title": "Chess Club FY26 Budget",
-      "period_start": "2026-01-01 00:00:00",
-      "period_end": "2026-12-31 00:00:00",
-      "allocated_amount": 15000,
-      "status": "approved",
-      "created_by": 4,
-      "created_at": "2026-01-05 10:00:00"
+      "name": "Chess Club",
+      "slug": "chess-club",
+      "category": "Games",
+      "description": "Strategy and tournament chess.",
+      "objectives": null,
+      "logo_url": null,
+      "status": "active",
+      "faculty_advisor_id": 4,
+      "member_count_cache": 2,
+      "university_id": 1,
+      "created_at": "2026-01-10 12:00:00",
+      "updated_at": null,
+      "deleted_at": null
     },
     {
       "id": "2",
-      "club_id": 2,
-      "title": "Robotics Society FY26 Budget",
-      "period_start": "2026-01-01 00:00:00",
-      "period_end": "2026-12-31 00:00:00",
-      "allocated_amount": 40000,
-      "status": "submitted",
-      "created_by": 4,
-      "created_at": "2026-01-06 10:00:00"
+      "name": "Robotics Society",
+      "slug": "robotics-society",
+      "category": "Technical",
+      "description": "Builds and competes with robots.",
+      "objectives": null,
+      "logo_url": null,
+      "status": "active",
+      "faculty_advisor_id": 4,
+      "member_count_cache": 1,
+      "university_id": 1,
+      "created_at": "2026-01-11 12:00:00",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    {
+      "id": "3",
+      "name": "Photography Club",
+      "slug": "photography-club",
+      "category": "Arts",
+      "description": "Campus photo-walks and exhibitions.",
+      "objectives": null,
+      "logo_url": null,
+      "status": "pending",
+      "faculty_advisor_id": null,
+      "member_count_cache": 0,
+      "university_id": 1,
+      "created_at": "2026-02-01 09:00:00",
+      "updated_at": null,
+      "deleted_at": null
+    }
+  ],
+  "notifications": [
+    {
+      "id": "1",
+      "user_id": 1,
+      "type": "membership_update",
+      "title": "Membership Approved",
+      "body": "Your membership to Chess Club has been approved.",
+      "channel": "in_app",
+      "is_read": 1,
+      "sent_via_resend": 0,
+      "related_entity_type": "club_membership",
+      "related_entity_id": 1,
+      "created_at": "2026-01-11 09:05:00"
+    },
+    {
+      "id": "2",
+      "user_id": 2,
+      "type": "membership_update",
+      "title": "Membership Pending",
+      "body": "Your membership request to Robotics Society is pending review.",
+      "channel": "in_app",
+      "is_read": 0,
+      "sent_via_resend": 0,
+      "related_entity_type": "club_membership",
+      "related_entity_id": 3,
+      "created_at": "2026-02-05 12:35:00"
+    },
+    {
+      "id": "3",
+      "user_id": 1,
+      "type": "event_reminder",
+      "title": "Event Tomorrow",
+      "body": "Inter-College Chess Championship starts tomorrow.",
+      "channel": "both",
+      "is_read": 0,
+      "sent_via_resend": 1,
+      "related_entity_type": "event",
+      "related_entity_id": 1,
+      "created_at": "2026-07-31 09:00:00"
+    },
+    {
+      "user_id": "2",
+      "title": "Support Ticket Updated",
+      "message": "An admin has responded to your ticket #EF2G6j6nsL8: \"test 1\"",
+      "is_read": false,
+      "created_at": "2026-07-15 16:57:16",
+      "id": "2lw1z24hEkY"
+    }
+  ],
+  "user_interests": [
+    {
+      "id": "3",
+      "user_id": 3,
+      "interest_id": 3,
+      "created_at": "2026-02-02 09:00:00"
+    },
+    {
+      "id": "4",
+      "user_id": 9,
+      "interest_id": 1,
+      "created_at": "2026-01-15 09:00:00"
+    },
+    {
+      "user_id": 1,
+      "interest_id": 2,
+      "created_at": "2026-07-15 13:49:52",
+      "id": "xX8x2Az5QbA"
+    },
+    {
+      "user_id": 1,
+      "interest_id": 6,
+      "created_at": "2026-07-15 13:49:52",
+      "id": "dc6E88kHmUw"
+    },
+    {
+      "user_id": "zB2qaIT99aI",
+      "interest_id": 3,
+      "created_at": "2026-07-15 15:12:00",
+      "id": "L_O12MKBeqk"
+    },
+    {
+      "user_id": "zB2qaIT99aI",
+      "interest_id": 6,
+      "created_at": "2026-07-15 15:12:00",
+      "id": "keS4CYIGVTc"
+    },
+    {
+      "user_id": 2,
+      "interest_id": 4,
+      "created_at": "2026-07-15 17:09:41",
+      "id": "jvb5ec1V_Io"
+    },
+    {
+      "user_id": 2,
+      "interest_id": 3,
+      "created_at": "2026-07-15 17:09:41",
+      "id": "4NmgEOY0cAA"
+    }
+  ],
+  "reward_redemptions": [
+    {
+      "id": "1",
+      "user_id": 1,
+      "points_spent": 30,
+      "reward_description": "Cafeteria Voucher (INR 200)",
+      "status": "fulfilled",
+      "approved_by": 6,
+      "created_at": "2026-08-05 09:00:00"
+    },
+    {
+      "id": "2",
+      "user_id": 2,
+      "points_spent": 15,
+      "reward_description": "Campus Store Discount Coupon",
+      "status": "requested",
+      "approved_by": null,
+      "created_at": "2026-08-06 09:00:00"
     }
   ],
   "club_creation_requests": [
@@ -118,6 +738,161 @@
       "decided_at": null
     }
   ],
+  "club_memberships": [
+    {
+      "id": "1",
+      "user_id": 1,
+      "club_id": 1,
+      "role_in_club": "president",
+      "status": "approved",
+      "applied_at": "2026-01-10 12:30:00",
+      "decided_at": "2026-01-11 09:00:00",
+      "approved_by": 4,
+      "rejection_reason": null
+    },
+    {
+      "id": "2",
+      "user_id": 2,
+      "club_id": 1,
+      "role_in_club": "member",
+      "status": "approved",
+      "applied_at": "2026-01-12 12:30:00",
+      "decided_at": "2026-01-13 09:00:00",
+      "approved_by": 4,
+      "rejection_reason": null
+    },
+    {
+      "id": "3",
+      "user_id": 3,
+      "club_id": 2,
+      "role_in_club": "member",
+      "status": "pending",
+      "applied_at": "2026-02-05 12:30:00",
+      "decided_at": null,
+      "approved_by": null,
+      "rejection_reason": null
+    },
+    {
+      "id": "4",
+      "user_id": 8,
+      "club_id": 2,
+      "role_in_club": "member",
+      "status": "rejected",
+      "applied_at": "2026-02-06 12:30:00",
+      "decided_at": "2026-02-07 09:00:00",
+      "approved_by": 4,
+      "rejection_reason": "Membership capacity reached"
+    }
+  ],
+  "committees": [
+    {
+      "id": "1",
+      "club_id": 1,
+      "name": "Tournament Committee",
+      "description": "Organizes internal and inter-college tournaments.",
+      "created_at": "2026-01-15 09:00:00"
+    }
+  ],
+  "announcements": [
+    {
+      "id": "1",
+      "club_id": 1,
+      "posted_by": 4,
+      "title": "Chess Club Weekly Meet",
+      "body": "We meet every Friday at 5 PM in Room 204.",
+      "target_audience": "all_members",
+      "created_at": "2026-01-20 08:00:00"
+    },
+    {
+      "id": "2",
+      "club_id": null,
+      "posted_by": 6,
+      "title": "Annual Fest Dates Announced",
+      "body": "The annual college fest will be held in October.",
+      "target_audience": "all_students",
+      "created_at": "2026-02-15 08:00:00"
+    }
+  ],
+  "events": [
+    {
+      "id": "1",
+      "club_id": 1,
+      "title": "Inter-College Chess Championship",
+      "description": "Open chess tournament.",
+      "venue": "Main Auditorium",
+      "start_at": "2026-08-01 09:00:00",
+      "end_at": "2026-08-01 18:00:00",
+      "registration_deadline": "2026-07-25 23:59:00",
+      "capacity": 64,
+      "status": "scheduled",
+      "created_by": 4,
+      "requires_external_participants": 1,
+      "is_public": 1,
+      "created_at": "2026-06-01 10:00:00",
+      "updated_at": null
+    },
+    {
+      "id": "2",
+      "club_id": 2,
+      "title": "Robotics Demo Day",
+      "description": "Showcase of student robotics projects.",
+      "venue": "Engineering Lab 3",
+      "start_at": "2026-07-20 10:00:00",
+      "end_at": "2026-07-20 13:00:00",
+      "registration_deadline": "2026-07-18 23:59:00",
+      "capacity": 40,
+      "status": "scheduled",
+      "created_by": 4,
+      "requires_external_participants": 0,
+      "is_public": 0,
+      "created_at": "2026-06-10 10:00:00",
+      "updated_at": null
+    }
+  ],
+  "club_sponsors": [
+    {
+      "id": "1",
+      "club_id": 1,
+      "sponsor_id": 1,
+      "sponsorship_details": "Cash sponsorship of INR 10,000 for the championship."
+    },
+    {
+      "id": "2",
+      "club_id": 2,
+      "sponsor_id": 1,
+      "sponsorship_details": "Equipment sponsorship: 5 Arduino starter kits."
+    },
+    {
+      "id": "3",
+      "club_id": 1,
+      "sponsor_id": 2,
+      "sponsorship_details": "Free refreshments during the tournament."
+    }
+  ],
+  "budgets": [
+    {
+      "id": "1",
+      "club_id": 1,
+      "title": "Chess Club FY26 Budget",
+      "period_start": "2026-01-01 00:00:00",
+      "period_end": "2026-12-31 00:00:00",
+      "allocated_amount": 15000,
+      "status": "approved",
+      "created_by": 4,
+      "created_at": "2026-01-05 10:00:00"
+    },
+    {
+      "id": "2",
+      "club_id": 2,
+      "title": "Robotics Society FY26 Budget",
+      "period_start": "2026-01-01 00:00:00",
+      "period_end": "2026-12-31 00:00:00",
+      "allocated_amount": 40000,
+      "status": "submitted",
+      "created_by": 4,
+      "created_at": "2026-01-06 10:00:00"
+    }
+  ],
   "club_interests": [
     {
       "id": "1",
@@ -136,6 +911,307 @@
       "club_id": 3,
       "interest_id": 3,
       "created_at": "2026-02-01 09:00:00"
+    }
+  ],
+  "support_tickets": [
+    {
+      "id": "1",
+      "raised_by": 8,
+      "club_id": null,
+      "title": "Cannot reset password",
+      "description": "The password reset email never arrives.",
+      "assigned_agent_id": 6,
+      "status": "Open",
+      "priority": "Medium",
+      "ticket_type": "Bug",
+      "is_offensive": 0,
+      "resolution_rating": null,
+      "university_id": 1,
+      "created_at": "2026-06-01 10:00:00",
+      "updated_at": null
+    },
+    {
+      "id": "2",
+      "raised_by": 3,
+      "club_id": 2,
+      "title": "Membership stuck in pending",
+      "description": "My membership request has been pending for 2 weeks.",
+      "assigned_agent_id": 6,
+      "status": "Closed",
+      "priority": "Low",
+      "ticket_type": "Support",
+      "is_offensive": 0,
+      "resolution_rating": 5,
+      "university_id": 1,
+      "created_at": "2026-06-05 14:30:00",
+      "updated_at": "2026-06-07 10:15:00"
+    },
+    {
+      "id": "3",
+      "raised_by": 2,
+      "club_id": null,
+      "title": "Event page not loading",
+      "description": "The events page throws an error when I try to open it.",
+      "assigned_agent_id": null,
+      "status": "Open",
+      "priority": "High",
+      "ticket_type": "Bug",
+      "is_offensive": 0,
+      "resolution_rating": null,
+      "university_id": 1,
+      "created_at": "2026-07-10 09:15:00",
+      "updated_at": null
+    },
+    {
+      "id": "4",
+      "raised_by": 3,
+      "club_id": 1,
+      "title": "Feature request: Dark mode for club pages",
+      "description": "Would be great to have a dark mode toggle on the club pages.",
+      "assigned_agent_id": null,
+      "status": "In Progress",
+      "priority": "Low",
+      "ticket_type": "Feature Request",
+      "is_offensive": 0,
+      "resolution_rating": null,
+      "university_id": 1,
+      "created_at": "2026-07-12 14:00:00",
+      "updated_at": null
+    },
+    {
+      "title": "test 1",
+      "description": "BUgggggggggggggggggggggggggggggggggggggggggggggg",
+      "raised_by": "2",
+      "assigned_to": "system_admin",
+      "club_id": null,
+      "status": "Closed",
+      "priority": "High",
+      "ticket_type": "Bug",
+      "created_at": "2026-07-15T16:35:46.440Z",
+      "id": "EF2G6j6nsL8"
+    },
+    {
+      "title": "zdnb",
+      "description": "aEG",
+      "raised_by": "2",
+      "assigned_to": "system_admin",
+      "club_id": null,
+      "status": "Open",
+      "priority": "Medium",
+      "ticket_type": "Support",
+      "created_at": "2026-07-15T16:46:43.937Z",
+      "id": "JQFZv3HR4UU"
+    }
+  ],
+  "committee_memberships": [
+    {
+      "id": "1",
+      "committee_id": 1,
+      "membership_id": 1,
+      "joined_at": "2026-01-15 09:30:00"
+    },
+    {
+      "id": "2",
+      "committee_id": 1,
+      "membership_id": 2,
+      "joined_at": "2026-01-16 09:30:00"
+    }
+  ],
+  "documents": [
+    {
+      "id": "1",
+      "owner_id": 4,
+      "club_id": 1,
+      "event_id": null,
+      "doc_type": "general",
+      "file_url": "https://storage.example.com/docs/chess-constitution.pdf",
+      "title": "Chess Club Constitution",
+      "created_at": "2026-01-08 09:00:00"
+    },
+    {
+      "id": "2",
+      "owner_id": 1,
+      "club_id": 1,
+      "event_id": 1,
+      "doc_type": "receipt",
+      "file_url": "https://storage.example.com/docs/receipt-001.pdf",
+      "title": "Trophy Purchase Receipt",
+      "created_at": "2026-07-10 09:00:00"
+    },
+    {
+      "id": "3",
+      "owner_id": 4,
+      "club_id": 1,
+      "event_id": 1,
+      "doc_type": "certificate",
+      "file_url": "https://storage.example.com/docs/cert-priya.pdf",
+      "title": "Champion Certificate - Priya Sharma",
+      "created_at": "2026-08-02 09:00:00"
+    },
+    {
+      "id": "4",
+      "owner_id": 9,
+      "club_id": null,
+      "event_id": null,
+      "doc_type": "general",
+      "file_url": "https://storage.example.com/docs/resume-kavya.pdf",
+      "title": "Kavya Iyer - Resume",
+      "created_at": "2026-01-19 09:00:00"
+    }
+  ],
+  "event_registrations": [
+    {
+      "id": "1",
+      "event_id": 1,
+      "user_id": 1,
+      "registered_at": "2026-06-15 09:00:00",
+      "status": "registered",
+      "qr_code_token": null
+    },
+    {
+      "id": "2",
+      "event_id": 1,
+      "user_id": 2,
+      "registered_at": "2026-06-16 09:00:00",
+      "status": "registered",
+      "qr_code_token": null
+    },
+    {
+      "id": "3",
+      "event_id": 2,
+      "user_id": 3,
+      "registered_at": "2026-06-20 09:00:00",
+      "status": "registered",
+      "qr_code_token": null
+    }
+  ],
+  "attendance_records": [
+    {
+      "id": "1",
+      "event_id": 1,
+      "user_id": 1,
+      "checked_in_at": "2026-08-01 09:05:00",
+      "recorded_by": 4
+    }
+  ],
+  "volunteer_assignments": [
+    {
+      "id": "1",
+      "event_id": 1,
+      "assignee_membership_id": 2,
+      "assigned_by": 4,
+      "task_description": "Manage registration desk on tournament day.",
+      "status": "assigned",
+      "due_at": "2026-08-01 08:00:00",
+      "created_at": "2026-06-20 10:00:00"
+    }
+  ],
+  "external_participants": [
+    {
+      "id": "1",
+      "event_id": 1,
+      "user_id": null,
+      "full_name": "Grandmaster Vikram Rao",
+      "email": "vikram.rao@chessfed.org",
+      "affiliation": "National Chess Federation",
+      "participant_type": "guest_speaker",
+      "registered_at": "2026-06-05 09:00:00"
+    }
+  ],
+  "event_interests": [
+    {
+      "id": "1",
+      "event_id": 2,
+      "interest_id": 2,
+      "created_at": "2026-06-10 09:00:00"
+    },
+    {
+      "id": "2",
+      "event_id": 2,
+      "interest_id": 6,
+      "created_at": "2026-06-10 09:00:00"
+    }
+  ],
+  "reward_points_ledger": [
+    {
+      "id": "1",
+      "user_id": 1,
+      "points": 100,
+      "reason": "Won chess championship",
+      "source_event_id": 1,
+      "created_at": "2026-08-02 09:00:00"
+    },
+    {
+      "id": "2",
+      "user_id": 2,
+      "points": 20,
+      "reason": "Volunteered at registration desk",
+      "source_event_id": 1,
+      "created_at": "2026-08-01 19:00:00"
+    },
+    {
+      "id": "3",
+      "user_id": 1,
+      "points": -30,
+      "reason": "Redeemed for cafeteria voucher",
+      "source_event_id": null,
+      "created_at": "2026-08-05 09:00:00"
+    }
+  ],
+  "ticket_responses": [
+    {
+      "id": "1",
+      "ticket_id": 1,
+      "responder_id": 6,
+      "body": "Please check your spam folder; resending the email now.",
+      "is_resolution": 0,
+      "created_at": "2026-06-01 11:00:00"
+    },
+    {
+      "id": "2",
+      "ticket_id": 2,
+      "responder_id": 6,
+      "body": "Followed up with the club advisor; status updated.",
+      "is_resolution": 1,
+      "created_at": "2026-05-20 09:00:00"
+    },
+    {
+      "ticket_id": "EF2G6j6nsL8",
+      "responder_id": 7,
+      "message": "sbdsBD",
+      "created_at": "2026-07-15 16:36:46",
+      "id": "qHHmMph1i2I"
+    },
+    {
+      "ticket_id": "EF2G6j6nsL8",
+      "responder_id": 7,
+      "message": "uviu;b",
+      "created_at": "2026-07-15 16:57:16",
+      "id": "5bh5kznm0pg"
+    }
+  ],
+  "emergency_reports": [
+    {
+      "id": "1",
+      "reported_by": 3,
+      "event_id": 2,
+      "category": "medical",
+      "description": "A participant fainted during the robotics demo.",
+      "status": "resolved",
+      "handled_by": 5,
+      "created_at": "2026-07-20 11:00:00",
+      "resolved_at": "2026-07-20 11:30:00"
+    },
+    {
+      "id": "2",
+      "reported_by": null,
+      "event_id": null,
+      "category": "wheelchair_assistance",
+      "description": "Wheelchair access requested for the auditorium entrance.",
+      "status": "reported",
+      "handled_by": null,
+      "created_at": "2026-07-25 09:00:00",
+      "resolved_at": null
     }
   ],
   "club_join_applications": [
@@ -191,333 +1267,6 @@
       "reviewed_at": "2026-02-07 09:00:00"
     }
   ],
-  "club_memberships": [
-    {
-      "id": "1",
-      "user_id": 1,
-      "club_id": 1,
-      "role_in_club": "president",
-      "status": "approved",
-      "applied_at": "2026-01-10 12:30:00",
-      "decided_at": "2026-01-11 09:00:00",
-      "approved_by": 4,
-      "rejection_reason": null
-    },
-    {
-      "id": "2",
-      "user_id": 2,
-      "club_id": 1,
-      "role_in_club": "member",
-      "status": "approved",
-      "applied_at": "2026-01-12 12:30:00",
-      "decided_at": "2026-01-13 09:00:00",
-      "approved_by": 4,
-      "rejection_reason": null
-    },
-    {
-      "id": "3",
-      "user_id": 3,
-      "club_id": 2,
-      "role_in_club": "member",
-      "status": "pending",
-      "applied_at": "2026-02-05 12:30:00",
-      "decided_at": null,
-      "approved_by": null,
-      "rejection_reason": null
-    },
-    {
-      "id": "4",
-      "user_id": 8,
-      "club_id": 2,
-      "role_in_club": "member",
-      "status": "rejected",
-      "applied_at": "2026-02-06 12:30:00",
-      "decided_at": "2026-02-07 09:00:00",
-      "approved_by": 4,
-      "rejection_reason": "Membership capacity reached"
-    }
-  ],
-  "club_sponsors": [
-    {
-      "id": "1",
-      "club_id": 1,
-      "sponsor_id": 1,
-      "sponsorship_details": "Cash sponsorship of INR 10,000 for the championship."
-    },
-    {
-      "id": "2",
-      "club_id": 2,
-      "sponsor_id": 1,
-      "sponsorship_details": "Equipment sponsorship: 5 Arduino starter kits."
-    },
-    {
-      "id": "3",
-      "club_id": 1,
-      "sponsor_id": 2,
-      "sponsorship_details": "Free refreshments during the tournament."
-    }
-  ],
-  "clubs": [
-    {
-      "id": "1",
-      "name": "Chess Club",
-      "slug": "chess-club",
-      "category": "Games",
-      "description": "Strategy and tournament chess.",
-      "objectives": null,
-      "logo_url": null,
-      "status": "active",
-      "faculty_advisor_id": 4,
-      "member_count_cache": 2,
-      "created_at": "2026-01-10 12:00:00",
-      "updated_at": null,
-      "deleted_at": null
-    },
-    {
-      "id": "2",
-      "name": "Robotics Society",
-      "slug": "robotics-society",
-      "category": "Technical",
-      "description": "Builds and competes with robots.",
-      "objectives": null,
-      "logo_url": null,
-      "status": "active",
-      "faculty_advisor_id": 4,
-      "member_count_cache": 1,
-      "created_at": "2026-01-11 12:00:00",
-      "updated_at": null,
-      "deleted_at": null
-    },
-    {
-      "id": "3",
-      "name": "Photography Club",
-      "slug": "photography-club",
-      "category": "Arts",
-      "description": "Campus photo-walks and exhibitions.",
-      "objectives": null,
-      "logo_url": null,
-      "status": "pending",
-      "faculty_advisor_id": null,
-      "member_count_cache": 0,
-      "created_at": "2026-02-01 09:00:00",
-      "updated_at": null,
-      "deleted_at": null
-    }
-  ],
-  "committee_memberships": [
-    {
-      "id": "1",
-      "committee_id": 1,
-      "membership_id": 1,
-      "joined_at": "2026-01-15 09:30:00"
-    },
-    {
-      "id": "2",
-      "committee_id": 1,
-      "membership_id": 2,
-      "joined_at": "2026-01-16 09:30:00"
-    }
-  ],
-  "committees": [
-    {
-      "id": "1",
-      "club_id": 1,
-      "name": "Tournament Committee",
-      "description": "Organizes internal and inter-college tournaments.",
-      "created_at": "2026-01-15 09:00:00"
-    }
-  ],
-  "departments": [
-    {
-      "id": "1",
-      "name": "Computer Science & Engineering",
-      "code": "CSE",
-      "created_at": "2026-01-01 09:00:00"
-    },
-    {
-      "id": "2",
-      "name": "Electronics & Communication Engineering",
-      "code": "ECE",
-      "created_at": "2026-01-01 09:00:00"
-    },
-    {
-      "id": "3",
-      "name": "Mechanical Engineering",
-      "code": "ME",
-      "created_at": "2026-01-01 09:00:00"
-    },
-    {
-      "id": "4",
-      "name": "Management Studies",
-      "code": "MS",
-      "created_at": "2026-01-01 09:00:00"
-    }
-  ],
-  "documents": [
-    {
-      "id": "1",
-      "owner_id": 4,
-      "club_id": 1,
-      "event_id": null,
-      "doc_type": "general",
-      "file_url": "https://storage.example.com/docs/chess-constitution.pdf",
-      "title": "Chess Club Constitution",
-      "created_at": "2026-01-08 09:00:00"
-    },
-    {
-      "id": "2",
-      "owner_id": 1,
-      "club_id": 1,
-      "event_id": 1,
-      "doc_type": "receipt",
-      "file_url": "https://storage.example.com/docs/receipt-001.pdf",
-      "title": "Trophy Purchase Receipt",
-      "created_at": "2026-07-10 09:00:00"
-    },
-    {
-      "id": "3",
-      "owner_id": 4,
-      "club_id": 1,
-      "event_id": 1,
-      "doc_type": "certificate",
-      "file_url": "https://storage.example.com/docs/cert-priya.pdf",
-      "title": "Champion Certificate - Priya Sharma",
-      "created_at": "2026-08-02 09:00:00"
-    },
-    {
-      "id": "4",
-      "owner_id": 9,
-      "club_id": null,
-      "event_id": null,
-      "doc_type": "general",
-      "file_url": "https://storage.example.com/docs/resume-kavya.pdf",
-      "title": "Kavya Iyer - Resume",
-      "created_at": "2026-01-19 09:00:00"
-    }
-  ],
-  "emergency_reports": [
-    {
-      "id": "1",
-      "reported_by": 3,
-      "event_id": 2,
-      "category": "medical",
-      "description": "A participant fainted during the robotics demo.",
-      "status": "resolved",
-      "handled_by": 5,
-      "created_at": "2026-07-20 11:00:00",
-      "resolved_at": "2026-07-20 11:30:00"
-    },
-    {
-      "id": "2",
-      "reported_by": null,
-      "event_id": null,
-      "category": "wheelchair_assistance",
-      "description": "Wheelchair access requested for the auditorium entrance.",
-      "status": "reported",
-      "handled_by": null,
-      "created_at": "2026-07-25 09:00:00",
-      "resolved_at": null
-    }
-  ],
-  "event_interests": [
-    {
-      "id": "1",
-      "event_id": 2,
-      "interest_id": 2,
-      "created_at": "2026-06-10 09:00:00"
-    },
-    {
-      "id": "2",
-      "event_id": 2,
-      "interest_id": 6,
-      "created_at": "2026-06-10 09:00:00"
-    }
-  ],
-  "event_registrations": [
-    {
-      "id": "1",
-      "event_id": 1,
-      "user_id": 1,
-      "registered_at": "2026-06-15 09:00:00",
-      "status": "registered",
-      "qr_code_token": null
-    },
-    {
-      "id": "2",
-      "event_id": 1,
-      "user_id": 2,
-      "registered_at": "2026-06-16 09:00:00",
-      "status": "registered",
-      "qr_code_token": null
-    },
-    {
-      "id": "3",
-      "event_id": 2,
-      "user_id": 3,
-      "registered_at": "2026-06-20 09:00:00",
-      "status": "registered",
-      "qr_code_token": null
-    }
-  ],
-  "events": [
-    {
-      "id": "1",
-      "club_id": 1,
-      "title": "Inter-College Chess Championship",
-      "description": "Open chess tournament.",
-      "venue": "Main Auditorium",
-      "start_at": "2026-08-01 09:00:00",
-      "end_at": "2026-08-01 18:00:00",
-      "registration_deadline": "2026-07-25 23:59:00",
-      "capacity": 64,
-      "status": "scheduled",
-      "created_by": 4,
-      "requires_external_participants": 1,
-      "created_at": "2026-06-01 10:00:00",
-      "updated_at": null,
-      "approval_status": "approved",
-      "reviewed_by": 4,
-      "review_comments": null
-    },
-    {
-      "id": "2",
-      "club_id": 2,
-      "title": "Robotics Demo Day",
-      "description": "Showcase of student robotics projects.",
-      "venue": "Engineering Lab 3",
-      "start_at": "2026-07-20 10:00:00",
-      "end_at": "2026-07-20 13:00:00",
-      "registration_deadline": "2026-07-18 23:59:00",
-      "capacity": 40,
-      "status": "scheduled",
-      "created_by": 4,
-      "requires_external_participants": 0,
-      "created_at": "2026-06-10 10:00:00",
-      "updated_at": null,
-      "approval_status": "approved",
-      "reviewed_by": 4,
-      "review_comments": null
-    },
-    {
-      "id": "3",
-      "club_id": 2,
-      "title": "Robotics Workshop for Freshers",
-      "description": "Hands-on Arduino workshop introducing first-year students to robotics.",
-      "venue": "Lab 3, Engineering Block",
-      "start_at": "2026-08-20 14:00:00",
-      "end_at": "2026-08-20 17:00:00",
-      "registration_deadline": "2026-08-15 23:59:00",
-      "capacity": 40,
-      "status": "scheduled",
-      "created_by": 4,
-      "requires_external_participants": 0,
-      "created_at": "2026-07-10 09:00:00",
-      "updated_at": null,
-      "approval_status": "pending",
-      "reviewed_by": null,
-      "review_comments": null
-    }
-  ],
   "expenses": [
     {
       "id": "1",
@@ -565,769 +1314,27 @@
       "created_at": "2026-07-12 12:00:00"
     }
   ],
-  "external_participants": [
+  "application_interests": [
     {
       "id": "1",
-      "event_id": 1,
-      "full_name": "Grandmaster Vikram Rao",
-      "email": "vikram.rao@chessfed.org",
-      "affiliation": "National Chess Federation",
-      "participant_type": "guest_speaker",
-      "registered_at": "2026-06-05 09:00:00"
-    }
-  ],
-  "interests": [
-    {
-      "id": "1",
-      "name": "Artificial Intelligence",
-      "created_at": "2026-01-01 09:00:00"
+      "application_id": 1,
+      "interest_id": 2
     },
     {
       "id": "2",
-      "name": "Robotics",
-      "created_at": "2026-01-01 09:00:00"
+      "application_id": 2,
+      "interest_id": 2
     },
     {
       "id": "3",
-      "name": "Photography",
-      "created_at": "2026-01-01 09:00:00"
+      "application_id": 2,
+      "interest_id": 6
     },
     {
       "id": "4",
-      "name": "Music",
-      "created_at": "2026-01-01 09:00:00"
-    },
-    {
-      "id": "5",
-      "name": "Entrepreneurship",
-      "created_at": "2026-01-01 09:00:00"
-    },
-    {
-      "id": "6",
-      "name": "Machine Learning",
-      "created_at": "2026-01-01 09:00:00"
+      "application_id": 2,
+      "interest_id": 1
     }
   ],
-  "notifications": [
-    {
-      "id": "1",
-      "user_id": 1,
-      "type": "membership_update",
-      "title": "Membership Approved",
-      "body": "Your membership to Chess Club has been approved.",
-      "channel": "in_app",
-      "is_read": 1,
-      "sent_via_resend": 0,
-      "related_entity_type": "club_membership",
-      "related_entity_id": 1,
-      "created_at": "2026-01-11 09:05:00"
-    },
-    {
-      "id": "2",
-      "user_id": 3,
-      "type": "membership_update",
-      "title": "Membership Pending",
-      "body": "Your membership request to Robotics Society is pending review.",
-      "channel": "in_app",
-      "is_read": 0,
-      "sent_via_resend": 0,
-      "related_entity_type": "club_membership",
-      "related_entity_id": 3,
-      "created_at": "2026-02-05 12:35:00"
-    },
-    {
-      "id": "3",
-      "user_id": 1,
-      "type": "event_reminder",
-      "title": "Event Tomorrow",
-      "body": "Inter-College Chess Championship starts tomorrow.",
-      "channel": "both",
-      "is_read": 0,
-      "sent_via_resend": 1,
-      "related_entity_type": "event",
-      "related_entity_id": 1,
-      "created_at": "2026-07-31 09:00:00"
-    }
-  ],
-  "programs": [
-    {
-      "id": "1",
-      "department_id": 1,
-      "name": "B.Tech Computer Science",
-      "created_at": "2026-01-01 09:00:00"
-    },
-    {
-      "id": "2",
-      "department_id": 1,
-      "name": "M.Tech Artificial Intelligence",
-      "created_at": "2026-01-01 09:00:00"
-    },
-    {
-      "id": "3",
-      "department_id": 2,
-      "name": "B.Tech Electronics",
-      "created_at": "2026-01-01 09:00:00"
-    },
-    {
-      "id": "4",
-      "department_id": 3,
-      "name": "B.Tech Mechanical Engineering",
-      "created_at": "2026-01-01 09:00:00"
-    },
-    {
-      "id": "5",
-      "department_id": 4,
-      "name": "MBA",
-      "created_at": "2026-01-01 09:00:00"
-    },
-    {
-      "id": "6",
-      "department_id": 1,
-      "name": "B.Sc Data Science",
-      "created_at": "2026-01-01 09:00:00"
-    }
-  ],
-  "reward_points_ledger": [
-    {
-      "id": "1",
-      "user_id": 1,
-      "points": 100,
-      "reason": "Won chess championship",
-      "source_event_id": 1,
-      "created_at": "2026-08-02 09:00:00"
-    },
-    {
-      "id": "2",
-      "user_id": 2,
-      "points": 20,
-      "reason": "Volunteered at registration desk",
-      "source_event_id": 1,
-      "created_at": "2026-08-01 19:00:00"
-    },
-    {
-      "id": "3",
-      "user_id": 1,
-      "points": -30,
-      "reason": "Redeemed for cafeteria voucher",
-      "source_event_id": null,
-      "created_at": "2026-08-05 09:00:00"
-    }
-  ],
-  "reward_redemptions": [
-    {
-      "id": "1",
-      "user_id": 1,
-      "points_spent": 30,
-      "reward_description": "Cafeteria Voucher (INR 200)",
-      "status": "fulfilled",
-      "approved_by": 6,
-      "created_at": "2026-08-05 09:00:00"
-    },
-    {
-      "id": "2",
-      "user_id": 2,
-      "points_spent": 15,
-      "reward_description": "Campus Store Discount Coupon",
-      "status": "requested",
-      "approved_by": null,
-      "created_at": "2026-08-06 09:00:00"
-    }
-  ],
-  "sponsors": [
-    {
-      "id": "1",
-      "organization_name": "TechNova Pvt Ltd",
-      "contact_email": "partnerships@technova.example.com",
-      "contact_person": "Karan Mehra",
-      "created_at": "2026-03-01 09:00:00"
-    },
-    {
-      "id": "2",
-      "organization_name": "Campus Cafe",
-      "contact_email": "owner@campuscafe.example.com",
-      "contact_person": "Sunita Verma",
-      "created_at": "2026-03-05 09:00:00"
-    }
-  ],
-  "student_profiles": [
-    {
-      "user_id": 1,
-      "program_id": 1,
-      "academic_year": 2,
-      "semester": 4,
-      "batch": "2024",
-      "section": "A",
-      "created_at": "2026-01-10 09:00:00",
-      "id": "yfCnpR4k6UQ"
-    },
-    {
-      "user_id": 2,
-      "program_id": 1,
-      "academic_year": 2,
-      "semester": 4,
-      "batch": "2024",
-      "section": "B",
-      "created_at": "2026-01-10 09:00:00",
-      "id": "tiBK52SiEdA"
-    },
-    {
-      "user_id": 3,
-      "program_id": 3,
-      "academic_year": 3,
-      "semester": 6,
-      "batch": "2023",
-      "section": "A",
-      "created_at": "2026-01-10 09:00:00",
-      "id": "d4yehDupp7Y"
-    },
-    {
-      "user_id": 8,
-      "program_id": 4,
-      "academic_year": 2,
-      "semester": 3,
-      "batch": "2024",
-      "section": "C",
-      "created_at": "2026-01-10 09:00:00",
-      "id": "HijNadxNW-8"
-    },
-    {
-      "user_id": 9,
-      "program_id": 6,
-      "academic_year": 2,
-      "semester": 4,
-      "batch": "2024",
-      "section": "A",
-      "created_at": "2026-01-10 09:00:00",
-      "id": "r1FY4FSuA7I"
-    },
-    {
-      "user_id": "iU23FRmn_Z8",
-      "program_id": 1,
-      "academic_year": 2,
-      "semester": 3,
-      "batch": "",
-      "section": "",
-      "created_at": "2026-07-14 15:57:28",
-      "id": "8tyOORP03sg"
-    },
-    {
-      "user_id": "hjpOOZjbqJ0",
-      "program_id": 3,
-      "academic_year": 3,
-      "semester": 2,
-      "batch": "",
-      "section": "",
-      "created_at": "2026-07-14 16:20:11",
-      "id": "l9HSGg0sKXg"
-    }
-  ],
-  "support_tickets": [
-    {
-      "id": "1",
-      "raised_by": 8,
-      "club_id": null,
-      "title": "Cannot reset password",
-      "description": "The password reset email never arrives.",
-      "assigned_agent_id": 6,
-      "is_open": 1,
-      "is_offensive": 0,
-      "resolution_rating": null,
-      "created_at": "2026-06-01 10:00:00",
-      "updated_at": null
-    },
-    {
-      "id": "2",
-      "raised_by": 3,
-      "club_id": 2,
-      "title": "Membership stuck in pending",
-      "description": "My membership request has been pending for 2 weeks.",
-      "assigned_agent_id": 6,
-      "is_open": 0,
-      "is_offensive": 0,
-      "resolution_rating": 4,
-      "created_at": "2026-05-15 10:00:00",
-      "updated_at": null
-    }
-  ],
-  "ticket_responses": [
-    {
-      "id": "1",
-      "ticket_id": 1,
-      "responder_id": 6,
-      "body": "Please check your spam folder; resending the email now.",
-      "is_resolution": 0,
-      "created_at": "2026-06-01 11:00:00"
-    },
-    {
-      "id": "2",
-      "ticket_id": 2,
-      "responder_id": 6,
-      "body": "Followed up with the club advisor; status updated.",
-      "is_resolution": 1,
-      "created_at": "2026-05-20 09:00:00"
-    }
-  ],
-  "user_interests": [
-    {
-      "id": "3",
-      "user_id": 3,
-      "interest_id": 3,
-      "created_at": "2026-02-02 09:00:00"
-    },
-    {
-      "id": "4",
-      "user_id": 9,
-      "interest_id": 1,
-      "created_at": "2026-01-15 09:00:00"
-    },
-    {
-      "user_id": "iU23FRmn_Z8",
-      "interest_id": 2,
-      "created_at": "2026-07-14 16:17:37",
-      "id": "X308tlBJVoU"
-    },
-    {
-      "user_id": "iU23FRmn_Z8",
-      "interest_id": 4,
-      "created_at": "2026-07-14 16:17:37",
-      "id": "wMbr2AmA1b0"
-    },
-    {
-      "user_id": "iU23FRmn_Z8",
-      "interest_id": 6,
-      "created_at": "2026-07-14 16:17:37",
-      "id": "UPzU7sRx8Yw"
-    },
-    {
-      "user_id": "hjpOOZjbqJ0",
-      "interest_id": 2,
-      "created_at": "2026-07-14 16:20:52",
-      "id": "x0K-bjUtbcA"
-    },
-    {
-      "user_id": "hjpOOZjbqJ0",
-      "interest_id": 4,
-      "created_at": "2026-07-14 16:20:52",
-      "id": "uB_373o8spI"
-    },
-    {
-      "user_id": 1,
-      "interest_id": 2,
-      "created_at": "2026-07-14 16:45:24",
-      "id": "75xQ5Suvncw"
-    },
-    {
-      "user_id": 1,
-      "interest_id": 6,
-      "created_at": "2026-07-14 16:45:24",
-      "id": "dQ6gGUxxY8Q"
-    },
-    {
-      "user_id": 1,
-      "interest_id": 4,
-      "created_at": "2026-07-14 16:45:24",
-      "id": "b3yL9NrFtww"
-    },
-    {
-      "user_id": 1,
-      "interest_id": 3,
-      "created_at": "2026-07-14 16:45:24",
-      "id": "UQ2JwlV_r1w"
-    },
-    {
-      "user_id": 1,
-      "interest_id": 5,
-      "created_at": "2026-07-14 16:45:24",
-      "id": "UsnrDdf5HqY"
-    }
-  ],
-  "users": [
-    {
-      "id": "1",
-      "email": "priya.sharma@campus.edu",
-      "full_name": "Priya Sharma",
-      "roll_number": "CS2023001",
-      "role": "student",
-      "phone": "9990000001",
-      "profile_photo_url": "",
-      "accessibility_prefs": "",
-      "is_active": 1,
-      "email_verified": 1,
-      "google_id": null,
-      "dob": "2004-03-12",
-      "auth_provider": "local",
-      "department_id": 1,
-      "gender": "female",
-      "color_blind_mode": true,
-      "created_at": "2026-07-14 08:58:41.153133",
-      "updated_at": null,
-      "deleted_at": null,
-      "password_hash": "Password@123"
-    },
-    {
-      "id": "2",
-      "email": "arjun.mehta@campus.edu",
-      "full_name": "Arjun Mehta",
-      "roll_number": "CS2023002",
-      "role": "student",
-      "phone": "9990000002",
-      "profile_photo_url": null,
-      "accessibility_prefs": null,
-      "is_active": 1,
-      "email_verified": 1,
-      "google_id": null,
-      "dob": "2004-07-22",
-      "auth_provider": "local",
-      "department_id": 1,
-      "gender": "male",
-      "color_blind_mode": 0,
-      "created_at": "2026-07-14 08:58:41.153138",
-      "updated_at": null,
-      "deleted_at": null,
-      "password_hash": "Password@123"
-    },
-    {
-      "id": "3",
-      "email": "ananya.gupta@campus.edu",
-      "full_name": "Ananya Gupta",
-      "roll_number": "EC2023011",
-      "role": "student",
-      "phone": "9990000003",
-      "profile_photo_url": null,
-      "accessibility_prefs": null,
-      "is_active": 1,
-      "email_verified": 1,
-      "google_id": null,
-      "dob": "2003-11-04",
-      "auth_provider": "local",
-      "department_id": 2,
-      "gender": "female",
-      "color_blind_mode": 0,
-      "created_at": "2026-07-14 08:58:41.153140",
-      "updated_at": null,
-      "deleted_at": null,
-      "password_hash": "Password@123"
-    },
-    {
-      "id": "4",
-      "email": "dr.rao@campus.edu",
-      "full_name": "Dr. Rao",
-      "roll_number": null,
-      "role": "faculty_advisor",
-      "phone": "9990000004",
-      "profile_photo_url": null,
-      "accessibility_prefs": null,
-      "is_active": 1,
-      "email_verified": 1,
-      "google_id": null,
-      "dob": "1975-08-15",
-      "auth_provider": "local",
-      "department_id": 1,
-      "gender": "male",
-      "color_blind_mode": 0,
-      "created_at": "2026-07-14 08:58:41.153141",
-      "updated_at": null,
-      "deleted_at": null,
-      "password_hash": "Password@123"
-    },
-    {
-      "id": "5",
-      "email": "dean.welfare@campus.edu",
-      "full_name": "Dean of Student Welfare",
-      "roll_number": "",
-      "role": "dean_student_welfare",
-      "phone": "9990000005",
-      "profile_photo_url": "",
-      "accessibility_prefs": "",
-      "is_active": 1,
-      "email_verified": 1,
-      "google_id": null,
-      "dob": "1968-12-01",
-      "auth_provider": "local",
-      "department_id": 2,
-      "gender": "male",
-      "color_blind_mode": 0,
-      "created_at": "2026-07-14 08:58:41.153142",
-      "updated_at": null,
-      "deleted_at": null,
-      "password_hash": "Password@123"
-    },
-    {
-      "id": "6",
-      "email": "affairs.office@campus.edu",
-      "full_name": "Student Affairs Office",
-      "roll_number": null,
-      "role": "student_affairs_office",
-      "phone": "9990000006",
-      "profile_photo_url": null,
-      "accessibility_prefs": null,
-      "is_active": 1,
-      "email_verified": 1,
-      "google_id": null,
-      "dob": "1980-05-20",
-      "auth_provider": "local",
-      "department_id": 3,
-      "gender": "female",
-      "color_blind_mode": 0,
-      "created_at": "2026-07-14 08:58:41.153143",
-      "updated_at": null,
-      "deleted_at": null,
-      "password_hash": "Password@123"
-    },
-    {
-      "id": "7",
-      "email": "admin@campus.edu",
-      "full_name": "System Admin",
-      "roll_number": null,
-      "role": "system_admin",
-      "phone": "9990000007",
-      "profile_photo_url": null,
-      "accessibility_prefs": null,
-      "is_active": 1,
-      "email_verified": 1,
-      "google_id": null,
-      "dob": "1985-02-10",
-      "auth_provider": "local",
-      "department_id": 4,
-      "gender": "male",
-      "color_blind_mode": 0,
-      "created_at": "2026-07-14 08:58:41.153144",
-      "updated_at": null,
-      "deleted_at": null,
-      "password_hash": "Password@123"
-    },
-    {
-      "id": "8",
-      "email": "rohit.singh@campus.edu",
-      "full_name": "Rohit Singh",
-      "roll_number": "ME2023044",
-      "role": "student",
-      "phone": "9990000008",
-      "profile_photo_url": null,
-      "accessibility_prefs": null,
-      "is_active": 1,
-      "email_verified": 0,
-      "google_id": null,
-      "dob": "2005-01-15",
-      "auth_provider": "local",
-      "department_id": 2,
-      "gender": "male",
-      "color_blind_mode": 1,
-      "created_at": "2026-07-14 08:58:41.153145",
-      "updated_at": null,
-      "deleted_at": null,
-      "password_hash": "Password@123"
-    },
-    {
-      "id": "9",
-      "email": "kavya.iyer@campus.edu",
-      "full_name": "Kavya Iyer",
-      "roll_number": "DS2023019",
-      "role": "student",
-      "phone": "9990000009",
-      "profile_photo_url": null,
-      "accessibility_prefs": null,
-      "is_active": 1,
-      "email_verified": 1,
-      "google_id": "google-oauth2|kavya-iyer-demo",
-      "dob": "2004-10-30",
-      "auth_provider": "google",
-      "department_id": 3,
-      "gender": "female",
-      "color_blind_mode": 0,
-      "created_at": "2026-07-14 08:58:41.153145",
-      "updated_at": null,
-      "deleted_at": null,
-      "password_hash": "Password@123"
-    },
-    {
-      "full_name": "Admin",
-      "email": "admin@admin.com",
-      "confirmPassword": "Admin@123",
-      "password_hash": "Admin@123",
-      "is_active": true,
-      "email_verified": true,
-      "role": "student",
-      "created_at": "2026-07-14T16:19:06.055Z",
-      "id": "hjpOOZjbqJ0",
-      "phone": "9990000001",
-      "dob": "",
-      "profile_photo_url": "",
-      "accessibility_prefs": "",
-      "roll_number": "",
-      "gender": "",
-      "department_id": 2,
-      "color_blind_mode": false
-    }
-  ],
-  "volunteer_assignments": [
-    {
-      "id": "1",
-      "event_id": 1,
-      "assignee_membership_id": 2,
-      "assigned_by": 4,
-      "task_description": "Manage registration desk on tournament day.",
-      "status": "assigned",
-      "due_at": "2026-08-01 08:00:00",
-      "created_at": "2026-06-20 10:00:00"
-    }
-  ],
-  "api_response_examples": {
-    "login_success": {
-      "user": {
-        "id": 1,
-        "email": "priya.sharma@campus.edu",
-        "full_name": "Priya Sharma",
-        "role": "student"
-      },
-      "access_token": "<full_jwt_token>",
-      "expires_in": 3600
-    },
-    "user_profile": {
-      "id": 1,
-      "email": "priya.sharma@campus.edu",
-      "full_name": "Priya Sharma",
-      "role": "student",
-      "auth_provider": "local",
-      "gender": "female",
-      "color_blind_mode": false,
-      "department": "Computer Science & Engineering"
-    },
-    "student_profile": {
-      "user_id": 1,
-      "program": "B.Tech Computer Science",
-      "academic_year": 2,
-      "semester": 4,
-      "batch": "2024",
-      "section": "A"
-    },
-    "user_interests": {
-      "user_id": 1,
-      "interests": [
-        {
-          "id": 2,
-          "name": "Robotics"
-        },
-        {
-          "id": 6,
-          "name": "Machine Learning"
-        }
-      ]
-    },
-    "club_details": {
-      "id": 2,
-      "name": "Robotics Society",
-      "slug": "robotics-society",
-      "category": "Technical",
-      "status": "active",
-      "member_count_cache": 1
-    },
-    "club_with_interests": {
-      "id": 2,
-      "name": "Robotics Society",
-      "interests": [
-        {
-          "id": 2,
-          "name": "Robotics"
-        },
-        {
-          "id": 6,
-          "name": "Machine Learning"
-        }
-      ]
-    },
-    "event_details": {
-      "id": 2,
-      "club_id": 2,
-      "title": "Robotics Demo Day",
-      "start_at": "2026-07-20 10:00:00",
-      "venue": "Engineering Lab 3",
-      "status": "scheduled"
-    },
-    "event_with_interests": {
-      "id": 2,
-      "title": "Robotics Demo Day",
-      "interests": [
-        {
-          "id": 2,
-          "name": "Robotics"
-        },
-        {
-          "id": 6,
-          "name": "Machine Learning"
-        }
-      ]
-    },
-    "club_join_application": {
-      "id": 1,
-      "user_id": 3,
-      "club_id": 2,
-      "motivation": "Interested in building autonomous robots.",
-      "status": "pending",
-      "applied_at": "2026-02-05 12:00:00"
-    },
-    "club_join_application_with_interests": {
-      "id": 2,
-      "user_id": 9,
-      "club_id": 2,
-      "status": "approved",
-      "interests": [
-        {
-          "id": 2,
-          "name": "Robotics"
-        },
-        {
-          "id": 6,
-          "name": "Machine Learning"
-        },
-        {
-          "id": 1,
-          "name": "Artificial Intelligence"
-        }
-      ]
-    },
-    "pending_club_applications": [
-      {
-        "id": 1,
-        "user_id": 3,
-        "club_id": 2,
-        "status": "pending"
-      }
-    ],
-    "recommended_clubs_for_user": {
-      "user_id": 1,
-      "clubs": [
-        {
-          "id": 2,
-          "name": "Robotics Society",
-          "matched_interest": "Robotics"
-        }
-      ]
-    },
-    "recommended_events_for_user": {
-      "user_id": 1,
-      "events": [
-        {
-          "id": 2,
-          "title": "Robotics Demo Day",
-          "matched_interest": "Robotics"
-        }
-      ]
-    },
-    "notifications_for_user": [
-      {
-        "id": 1,
-        "type": "membership_update",
-        "title": "Membership Approved",
-        "is_read": true
-      },
-      {
-        "id": 3,
-        "type": "event_reminder",
-        "title": "Event Tomorrow",
-        "is_read": false
-      }
-    ]
-  },
   "$schema": "./node_modules/json-server/schema.json"
 }

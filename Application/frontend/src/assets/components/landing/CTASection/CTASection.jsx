@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import styles from './CTASection.module.css';
 import { Button } from '../../ui/Button/Button';
 import { motion } from 'framer-motion';
-import { useSession, getDashboardLink } from '../../../../context/SessionContext';
+import { useSession } from '../../../../context/SessionContext';
+import { authApi } from '../../../../api/auth.api';
 
 export const CTASection = () => {
   const { user } = useSession();
@@ -11,11 +12,15 @@ export const CTASection = () => {
   return (
     <section className={styles.section}>
       <motion.div className={styles.card} initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }}>
-        <h2>Your campus is <span className={styles.accent}>waiting.</span></h2>
-        <p>Don't miss out on the best part of your university life.</p>
-        <Link to={user ? getDashboardLink(user.role) : "/register"}>
+        <div className={styles.content}>
+        <h2 className={styles.title}>Ready to Find Your Community?</h2>
+        <p className={styles.subtitle}>
+          Join thousands of students who have already discovered their passions and made lifelong friends.
+        </p>
+        <Link to={user ? authApi.getDashboardRoute(user.role) : "/register"}>
           <Button size="lg" className={styles.ctaBtn}>Get Started Today</Button>
         </Link>
+        </div>
       </motion.div>
     </section>
   );

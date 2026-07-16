@@ -1,64 +1,54 @@
-import React, { useEffect } from 'react';
-import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from 'framer-motion';
 import styles from './ConfirmModal.module.css';
 import { Icon } from '@iconify/react';
+import { uiIcons } from '../../../icons/registry';
+import { motion, AnimatePresence } from 'framer-motion';
+import { createPortal } from 'react-dom';
+import { Button } from '../Button/Button';
 
 export const ConfirmModal = ({ 
   isOpen, 
-  title, 
-  message, 
+  onClose, 
   onConfirm, 
-  onCancel, 
-  confirmText = 'Confirm', 
-  cancelText = 'Cancel',
-  type = 'primary' // 'primary' or 'danger'
+  title = "Confirm Action", 
+  message = "Are you sure you want to proceed?", 
+  confirmText = "Confirm", 
+  cancelText = "Cancel",
+  type = "danger" // danger, warning, primary
 }) => {
-  // Prevent body scroll when open
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'auto';
-    }
-    return () => {
-      document.body.style.overflow = 'auto';
-    };
-  }, [isOpen]);
-
   const modalContent = (
     <AnimatePresence>
       {isOpen && (
-        <div className={styles.overlay} onClick={onCancel}>
+        <div className={styles.overlay} onClick={onClose}>
           <motion.div 
-            className={styles.modalContent}
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            className={styles.modal} 
             onClick={e => e.stopPropagation()}
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            transition={{ duration: 0.2 }}
           >
             <div className={styles.header}>
-              <div className={`${styles.iconWrapper} ${type === 'danger' ? styles.iconDanger : styles.iconPrimary}`}>
-                <Icon icon={type === 'danger' ? "mdi:alert-circle-outline" : "mdi:information-outline"} />
+              <div className={`${styles.iconWrapper} ${styles[type]}`}>
+                <Icon icon={type === 'danger' ? uiIcons.alertOutline : uiIcons.infoOutline} width="24" height="24" />
               </div>
               <h3 className={styles.title}>{title}</h3>
             </div>
             
             <div className={styles.body}>
-              <p>{message}</p>
+              <p className={styles.message}>{message}</p>
             </div>
             
-            <div className={styles.actions}>
-              <button className={styles.cancelBtn} onClick={onCancel}>
+            <div className={styles.footer}>
+              <Button variant="outline" className={styles.cancelBtn} onClick={onClose}>
                 {cancelText}
-              </button>
-              <button 
-                className={`${styles.confirmBtn} ${type === 'danger' ? styles.btnDanger : styles.btnPrimary}`} 
-                onClick={onConfirm}
+              </Button>
+              <Button 
+                variant={type === 'danger' ? 'destructive' : type === 'primary' ? 'primary' : 'secondary'}
+                className={`${styles.confirmBtn} ${styles[type + 'Btn']}`} 
+                onClick={() => { onConfirm(); onClose(); }}
               >
                 {confirmText}
-              </button>
+              </Button>
             </div>
           </motion.div>
         </div>
@@ -66,5 +56,5 @@ export const ConfirmModal = ({
     </AnimatePresence>
   );
 
-  return createPortal(modalContent, document.body);
+  return typeof document !== 'undefined' ? createPortal(modalContent, document.body) : null;
 };

@@ -1,27 +1,31 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Icon } from '@iconify/react';
+import { uiIcons } from '../../../icons/registry';
 import styles from './SearchInput.module.css';
 
-export const SearchInput = ({ placeholder = 'Search...', onChange, debounceMs = 500, style }) => {
-  const [value, setValue] = useState('');
-  const timeoutRef = useRef(null);
+export const SearchInput = ({ placeholder = "Search...", onChange, delay = 500, style }) => {
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    clearTimeout(timeoutRef.current);
-    timeoutRef.current = setTimeout(() => onChange?.(value), debounceMs);
-    return () => clearTimeout(timeoutRef.current);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value]);
+    const handler = setTimeout(() => {
+      if (onChange) onChange(searchTerm);
+    }, delay);
+
+    return () => clearTimeout(handler);
+  }, [searchTerm, delay, onChange]);
 
   return (
     <div className={styles.wrapper} style={style}>
-      <Icon icon="mdi:magnify" className={styles.icon} />
+      <Icon 
+        icon={uiIcons.search} 
+        className={styles.icon}
+      />
       <input
         type="text"
-        className={styles.input}
         placeholder={placeholder}
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className={styles.input}
       />
     </div>
   );

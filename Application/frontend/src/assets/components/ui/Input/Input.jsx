@@ -10,6 +10,7 @@ export const Input = forwardRef(({
   type = 'text', 
   className,
   wrapperClassName,
+  as: Component = 'input',
   ...props 
 }, ref) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -21,11 +22,12 @@ export const Input = forwardRef(({
       {label && <label className={styles.label}>{label}</label>}
       <div className={styles.inputContainer}>
         {icon && <Icon icon={icon} className={styles.leadingIcon} />}
-        <input
+        <Component
           ref={ref}
-          type={inputType}
+          type={Component === 'input' ? inputType : undefined}
           className={clsx(
             styles.input,
+            Component === 'textarea' && styles.textarea,
             icon && styles.hasLeadingIcon,
             isPassword && styles.hasTrailingIcon,
             error && styles.hasError,

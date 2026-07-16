@@ -1,29 +1,30 @@
-import React from 'react';
-import clsx from 'clsx';
 import styles from './StatusBadge.module.css';
 
-// Maps a status string to a badge variant. Pass an explicit `variant` to override.
-const DEFAULT_STATUS_VARIANTS = {
-  approved: 'success',
-  active: 'success',
-  resolved: 'success',
-  submitted: 'warning',
-  pending: 'warning',
-  scheduled: 'info',
-  rejected: 'error',
-  inactive: 'neutral',
-  closed: 'neutral',
-};
-
-export const StatusBadge = ({ status, variant, label }) => {
-  const resolvedVariant = variant || DEFAULT_STATUS_VARIANTS[String(status).toLowerCase()] || 'neutral';
-  const text = label || (typeof status === 'string'
-    ? status.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
-    : status);
+export const StatusBadge = ({ status }) => {
+  const getStyles = () => {
+    switch (status?.toLowerCase()) {
+      case 'active':
+      case 'approved':
+      case 'open':
+      case 'resolved':
+        return { backgroundColor: 'var(--badge-success-bg)', color: 'var(--badge-success-text)' };
+      case 'inactive':
+      case 'closed':
+      case 'rejected':
+      case 'suspended':
+        return { backgroundColor: 'var(--badge-error-bg)', color: 'var(--badge-error-text)' };
+      case 'pending':
+      case 'in progress':
+      case 'assigned':
+        return { backgroundColor: 'var(--badge-warning-bg)', color: 'var(--badge-warning-text)' };
+      default:
+        return { backgroundColor: 'var(--badge-info-bg)', color: 'var(--badge-info-text)' };
+    }
+  };
 
   return (
-    <span className={clsx(styles.badge, styles[resolvedVariant])}>
-      {text}
+    <span className={styles.badge} style={getStyles()}>
+      {status}
     </span>
   );
 };

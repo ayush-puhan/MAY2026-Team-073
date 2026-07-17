@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Icon } from '@iconify/react';
 import { StatCard } from '../../ui/StatCard/StatCard';
 import { DataTable } from '../../ui/DataTable/DataTable';
 import { StatusBadge } from '../../ui/StatusBadge/StatusBadge';
-import { universityAdminApi } from '../../../../api/universityAdmin.api';
+import { universityAdminApi } from '@api/universityAdminApis/universityAdmin';
 import styles from './AdminOverviewHome.module.css';
 
 export const AdminOverviewHome = () => {

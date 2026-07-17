@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { adminApi } from '../../../../api/admin.api';
+﻿import { useState, useEffect } from 'react';
+import { adminApi } from '@api/adminApis/admin';
 import { DataTable } from '../../ui/DataTable/DataTable';
 import { StatusBadge } from '../../ui/StatusBadge/StatusBadge';
 import { PriorityBadge } from '../../ui/PriorityBadge/PriorityBadge';
@@ -10,6 +10,7 @@ import { Icon } from '@iconify/react';
 import { uiIcons } from '../../../icons/registry';
 import { SupportTicketModal } from './SupportTicketModal/SupportTicketModal';
 import { TICKET_PRIORITY_OPTIONS } from '../../../../config/enums';
+import { useSession } from '../../../../context/SessionContext';
 import styles from './SupportManagement.module.css';
 
 export const SupportManagement = () => {
@@ -34,8 +35,14 @@ export const SupportManagement = () => {
     setLoading(true);
     try {
       const data = await adminApi.getSupportTickets();
-      setTickets(data);
-      setFilteredTickets(data);
+      
+      let authorizedTickets = data;
+      if (user?.role !== 'system_admin') {
+        authorizedTickets = authorizedTickets.filter(t => String(t.assigned_agent_id) === String(user?.id));
+      }
+      
+      setTickets(authorizedTickets);
+      setFilteredTickets(authorizedTickets);
     } catch (error) {
       console.error("Failed to load tickets", error);
     } finally {
@@ -104,7 +111,7 @@ export const SupportManagement = () => {
     },
     { header: 'Priority', cell: (row) => <PriorityBadge priority={row.priority} /> },
     { header: 'Status', cell: (row) => <StatusBadge status={row.status} /> },
-    { header: 'Created', cell: (row) => new Date(row.created_at).toLocaleDateString() },
+    { header: 'Created', cell: (row) => new Date(row.created_at).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' }) },
     { header: '', cell: () => <Icon icon={uiIcons.chevronRight} color="var(--muted-foreground)" width="20" /> }
   ];
 

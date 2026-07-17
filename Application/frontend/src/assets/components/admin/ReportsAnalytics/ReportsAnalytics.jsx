@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { adminApi } from '../../../../api/admin.api';
+import { adminApi } from '@api/adminApis/admin';
 import { FilterTabs } from '../../ui/FilterTabs/FilterTabs';
 import { Icon } from '@iconify/react';
 import { adminIcons, uiIcons } from '../../../icons/registry';
+import { useToast } from '../../../../context/ToastContext';
 import { 
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer,
   BarChart, Bar
@@ -13,6 +14,7 @@ export const ReportsAnalytics = () => {
   const [activeTab, setActiveTab] = useState('growth');
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { showInfo } = useToast();
 
   const tabs = [
     { id: 'growth', label: 'Platform Growth' },
@@ -62,10 +64,10 @@ export const ReportsAnalytics = () => {
         </div>
         
         <div className={styles.actions}>
-          <button className={styles.exportBtn} disabled title="Coming Soon">
+          <button className={styles.exportBtn} onClick={() => showInfo("Feature coming soon")}>
             <Icon icon={adminIcons.download} /> Export PDF
           </button>
-          <button className={styles.exportBtn} disabled title="Coming Soon">
+          <button className={styles.exportBtn} onClick={() => showInfo("Feature coming soon")}>
             <Icon icon={adminIcons.exportCsv} /> Export CSV
           </button>
         </div>

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { adminApi } from '../../../../../api/admin.api';
+﻿import React, { useState, useEffect } from 'react';
+import { adminApi } from '@api/adminApis/admin';
 import { api } from '../../../../../api/api';
 import { Icon } from '@iconify/react';
 import { uiIcons, adminIcons } from '../../../../icons/registry';
@@ -146,7 +146,7 @@ export const SupportTicketModal = ({ ticket, onClose, onUpdate }) => {
             </div>
             <div className={styles.infoItem}>
               <span className={styles.infoLabel}>Created</span>
-              <span className={styles.infoValue}>{new Date(ticket.created_at).toLocaleString()}</span>
+              <span className={styles.infoValue}>{new Date(ticket.created_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}</span>
             </div>
             <div className={styles.infoItem}>
               <span className={styles.infoLabel}>Raised By</span>
@@ -171,7 +171,7 @@ export const SupportTicketModal = ({ ticket, onClose, onUpdate }) => {
                   <div key={resp.id} className={styles.responseCard}>
                     <div className={styles.responseHeader}>
                       <span>{resp.responder_id === 7 ? 'Admin' : 'Support'}</span>
-                      <small>{new Date(resp.created_at).toLocaleString()}</small>
+                      <small>{new Date(resp.created_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}</small>
                     </div>
                     <div className={styles.responseBody}>{resp.message}</div>
                   </div>

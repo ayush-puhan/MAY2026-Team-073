@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '../../../../api/api';
+import { logAudit, istNow } from '../../../../api/mockbackendApis/auditHelper';
 import { useSession } from '../../../../context/SessionContext';
 import { useToast } from '../../../../context/ToastContext';
 import { Icon } from '@iconify/react';
@@ -43,6 +44,7 @@ export const Helpdesk = () => {
     description: '',
     priority: 'Medium',
     ticket_type: 'Support',
+    target_category: '', // 'system', 'university', 'club'
     assigned_role: '',
     assigned_club_id: ''
   });
@@ -79,20 +81,28 @@ export const Helpdesk = () => {
         title: formData.title,
         description: formData.description,
         raised_by: user.id,
-        // Since this is mock DB, we just save the intent. In real backend: 
-        // backend finds user ID for that role & club and assigns assigned_agent_id.
-        assigned_to: formData.assigned_role, 
         club_id: formData.assigned_club_id ? parseInt(formData.assigned_club_id) : null,
+        university_id: user.university_id || null,
         status: 'Open',
         priority: formData.priority,
         ticket_type: formData.ticket_type,
-        created_at: new Date().toISOString()
+        assigned_agent_id: null,
+        created_at: istNow()
       };
       
       const savedTicket = await api.post('/support_tickets', newTicket);
+      
+      await logAudit({
+        userId: user.id,
+        action: 'CREATE',
+        entityType: 'SupportTicket',
+        entityId: savedTicket.id,
+        details: `Student created support ticket: ${formData.title}`,
+      });
+      
       setTickets(prev => [...prev, savedTicket]);
       setIsModalOpen(false);
-      setFormData({ title: '', description: '', assigned_role: '', assigned_club_id: '' });
+      setFormData({ title: '', description: '', priority: 'Medium', ticket_type: 'Support', target_category: '', assigned_role: '', assigned_club_id: '' });
     } catch (err) {
       console.error("Failed to create ticket", err);
     } finally {
@@ -116,16 +126,20 @@ export const Helpdesk = () => {
     { header: 'Title', accessor: 'title' },
     { header: 'Priority', cell: (row) => <PriorityBadge priority={row.priority || 'Medium'} /> },
     { header: 'Status', cell: (row) => <StatusBadge status={row.status || 'Open'} /> },
-    { header: 'Created', cell: (row) => new Date(row.created_at).toLocaleDateString() }
+    { header: 'Created', cell: (row) => new Date(row.created_at).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' }) }
   ];
 
-  const selectedRoleObj = SUPPORT_ROLES.find(r => r.id === formData.assigned_role);
-  const requiresClub = selectedRoleObj?.type === 'club';
-
   const isVerified = checkIsVerified(user);
-  const availableRoles = isVerified 
-    ? SUPPORT_ROLES 
-    : SUPPORT_ROLES.filter(r => r.id === 'system_admin');
+
+  const getFilteredRoles = () => {
+    if (!formData.target_category) return [];
+    let roles = SUPPORT_ROLES.filter(r => r.type === formData.target_category);
+    if (!isVerified && formData.target_category !== 'system') {
+      return [];
+    }
+    return roles;
+  };
+  const availableRoles = getFilteredRoles();
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -205,29 +219,51 @@ export const Helpdesk = () => {
 
               <div className={styles.row}>
                 <div className={styles.field}>
-                  <label>Assign To (Role)</label>
+                  <label>Support Category</label>
                   <Dropdown 
-                    name="assigned_role"
-                    value={formData.assigned_role}
-                    onChange={(e) => setFormData({...formData, assigned_role: e.target.value, assigned_club_id: ''})}
-                    placeholder="-- Select Role --"
-                    options={availableRoles.map(r => ({ value: r.id, label: r.label }))}
+                    name="target_category"
+                    value={formData.target_category}
+                    onChange={(e) => setFormData({...formData, target_category: e.target.value, assigned_role: '', assigned_club_id: ''})}
+                    placeholder="-- Select Category --"
+                    options={[
+                      { value: 'system', label: 'System Admin' },
+                      { value: 'university', label: 'University Staff' },
+                      { value: 'club', label: 'Club Officer' }
+                    ]}
                   />
                 </div>
 
-                {requiresClub && (
+                {formData.target_category === 'club' && (
                   <div className={styles.field}>
                     <label>Select Club</label>
                     <Dropdown 
                       name="assigned_club_id"
                       value={formData.assigned_club_id}
-                      onChange={(e) => setFormData({...formData, assigned_club_id: e.target.value})}
+                      onChange={(e) => setFormData({...formData, assigned_club_id: e.target.value, assigned_role: ''})}
                       placeholder="-- Select Club --"
                       options={clubs.map(c => ({ value: c.id, label: c.name }))}
                     />
                   </div>
                 )}
               </div>
+
+              {formData.target_category && (formData.target_category !== 'club' || formData.assigned_club_id) && (
+                <div className={styles.field}>
+                  <label>Assign To (Role)</label>
+                  <Dropdown 
+                    name="assigned_role"
+                    value={formData.assigned_role}
+                    onChange={(e) => setFormData({...formData, assigned_role: e.target.value})}
+                    placeholder="-- Select Role --"
+                    options={availableRoles.map(r => ({ value: r.id, label: r.label }))}
+                  />
+                  {!isVerified && formData.target_category !== 'system' && (
+                    <small style={{ color: 'var(--destructive)', marginTop: '4px', display: 'block', fontSize: '0.8rem' }}>
+                      You must verify your email in Profile Settings to contact this role.
+                    </small>
+                  )}
+                </div>
+              )}
 
               <div className={styles.field}>
                 <label>Description</label>
@@ -288,7 +324,7 @@ export const Helpdesk = () => {
                     <div key={resp.id} className={styles.responseCard}>
                       <div className={styles.responseHeader}>
                         <span>Admin</span>
-                        <small>{new Date(resp.created_at).toLocaleString()}</small>
+                        <small>{new Date(resp.created_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}</small>
                       </div>
                       <div className={styles.responseBody}>{resp.message}</div>
                     </div>

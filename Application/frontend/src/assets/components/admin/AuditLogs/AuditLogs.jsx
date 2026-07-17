@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { adminApi } from '../../../../api/admin.api';
+import { adminApi } from '@api/adminApis/admin';
 import { DataTable } from '../../ui/DataTable/DataTable';
 import { FilterTabs } from '../../ui/FilterTabs/FilterTabs';
 import { SearchInput } from '../../ui/SearchInput/SearchInput';
@@ -42,7 +42,7 @@ export const AuditLogs = () => {
     
     // Filter by Tab
     if (activeTab !== 'all') {
-      result = result.filter(log => log.action === activeTab);
+      result = result.filter(log => log.action?.toUpperCase() === activeTab);
     }
     
     // Filter by Search
@@ -62,15 +62,16 @@ export const AuditLogs = () => {
     { 
       header: 'Action', 
       cell: (row) => {
+        const action = row.action?.toUpperCase();
         let color = 'var(--foreground)';
         let icon = 'mdi:help-circle';
-        if (row.action === 'CREATE') { color = '#10b981'; icon = 'mdi:plus-circle'; }
-        if (row.action === 'UPDATE') { color = '#3b82f6'; icon = 'mdi:pencil-circle'; }
-        if (row.action === 'DELETE') { color = '#ef4444'; icon = 'mdi:minus-circle'; }
+        if (action === 'CREATE') { color = '#10b981'; icon = 'mdi:plus-circle'; }
+        if (action === 'UPDATE') { color = '#3b82f6'; icon = 'mdi:pencil-circle'; }
+        if (action === 'DELETE') { color = '#ef4444'; icon = 'mdi:minus-circle'; }
         return (
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color, fontWeight: 600 }}>
             <Icon icon={icon} width="20" />
-            {row.action}
+            {action}
           </div>
         );
       } 
@@ -79,8 +80,7 @@ export const AuditLogs = () => {
     { header: 'Entity ID', accessor: 'entity_id' },
     { header: 'User ID', accessor: 'user_id' },
     { header: 'Details', cell: (row) => <span className={styles.detailsCell} title={row.details}>{row.details}</span> },
-    { header: 'IP Address', accessor: 'ip_address' },
-    { header: 'Timestamp', cell: (row) => new Date(row.created_at).toLocaleString() }
+    { header: 'Timestamp', cell: (row) => new Date(row.created_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) }
   ];
 
   return (

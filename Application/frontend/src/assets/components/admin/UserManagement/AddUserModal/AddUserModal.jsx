@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { adminApi } from '../../../../../api/admin.api';
+﻿import { useState, useEffect } from 'react';
+import { adminApi } from '@api/adminApis/admin';
 import { Icon } from '@iconify/react';
 import { uiIcons } from '../../../../icons/registry';
 import { Dropdown } from '../../../ui/Dropdown/Dropdown';

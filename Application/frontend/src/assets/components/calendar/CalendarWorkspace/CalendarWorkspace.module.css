@@ -1,0 +1,181 @@
+.workspaceContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 1.5rem;
+  overflow: hidden;
+}
+
+.calendarHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.calendarHeader h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--foreground);
+  margin: 0;
+}
+
+.calendarWrapper {
+  flex: 1;
+  position: relative;
+  background-color: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.04);
+}
+
+.loadingOverlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: color-mix(in oklab, var(--background) 80%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  100% { transform: rotate(360deg); }
+}
+
+/* React Big Calendar Overrides */
+:global(.rbc-toolbar-label) {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--foreground);
+  white-space: nowrap;
+}
+
+:global(.rbc-calendar) {
+  font-family: inherit;
+  color: var(--foreground);
+}
+
+:global(.rbc-toolbar) {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  flex-wrap: nowrap;
+  gap: 1rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+:global(.rbc-toolbar)::-webkit-scrollbar {
+  display: none;
+}
+
+:global(.rbc-toolbar button) {
+  white-space: nowrap;
+  flex-shrink: 0;
+  color: var(--muted-foreground);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.4rem 0.8rem;
+  transition: all 0.2s ease;
+  background-color: var(--background);
+}
+
+:global(.rbc-toolbar button:hover) {
+  background-color: var(--muted);
+  color: var(--foreground);
+}
+
+:global(.rbc-toolbar button.rbc-active),
+:global(.rbc-toolbar button.rbc-active:hover),
+:global(.rbc-toolbar button.rbc-active:focus) {
+  background-color: var(--primary) !important;
+  color: white !important;
+  border-color: var(--primary) !important;
+}
+
+:global(.rbc-off-range-bg) {
+  background-color: var(--muted) !important;
+}
+
+:global(.rbc-today) {
+  background: color-mix(in oklab, var(--primary) 8%, transparent) !important;
+}
+
+:global(.rbc-day-bg:hover) {
+  background-color: var(--card);
+}
+
+:global(.rbc-event) {
+  border-radius: 4px;
+  padding: 2px 4px;
+  border: none;
+}
+
+:global(.rbc-month-view), 
+:global(.rbc-time-view), 
+:global(.rbc-agenda-view) {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+:global(.rbc-calendar *),
+:global(.rbc-calendar *:before),
+:global(.rbc-calendar *:after) {
+  border-color: var(--border) !important;
+}
+
+:global(.rbc-header) {
+  padding: 0.5rem;
+  font-weight: 600;
+}
+
+/* Bulletproof alignment fix for laptop/desktop */
+:global(.rbc-time-header.rbc-overflowing) {
+  margin-right: 0 !important;
+}
+
+:global(.rbc-time-content::-webkit-scrollbar) {
+  display: none;
+}
+
+:global(.rbc-time-content) {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+:global(.rbc-day-slot .rbc-events-container) {
+  margin-right: 5px;
+}
+
+@media (max-width: 1081px) {
+  .workspaceContainer {
+    padding: 1rem;
+  }
+  
+  :global(.rbc-toolbar .rbc-btn-group:last-child) {
+    display: none !important;
+  }
+}
+
+:global(.rbc-agenda-empty) {
+  text-align: center !important;
+  padding: 4rem 1rem !important;
+  color: var(--muted-foreground);
+  font-weight: 500;
+  background-color: var(--background);
+}

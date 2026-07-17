@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Icon } from '@iconify/react';
 import { DataTable, RowChevron } from '../../ui/DataTable/DataTable';
 import { StatusBadge } from '../../ui/StatusBadge/StatusBadge';
 import { SearchInput } from '../../ui/SearchInput/SearchInput';
-import { facultyAdvisorApi } from '../../../../api/facultyAdvisor.api';
+import { facultyAdvisorApi } from '@api/facultyAdvisorApis/facultyAdvisor';
 import { useSession } from '../../../../context/SessionContext';
 import { ClubDetailModal } from './ClubDetailModal/ClubDetailModal';
 import styles from './AdvisedClubs.module.css';

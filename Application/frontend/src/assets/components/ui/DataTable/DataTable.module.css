@@ -79,3 +79,20 @@
   font-size: 0.9rem;
   color: var(--muted-foreground);
 }
+
+@media (max-width: 768px) {
+  .pagination {
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem 0.5rem;
+  }
+  
+  .pageBtn {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.85rem;
+  }
+  
+  .pageInfo {
+    font-size: 0.85rem;
+  }
+}

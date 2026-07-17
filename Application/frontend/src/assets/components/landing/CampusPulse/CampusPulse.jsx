@@ -4,7 +4,7 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { landingIcons } from '../../../../assets/icons/registry';
 import { Icon } from '@iconify/react';
 import { SectionHeader } from '../SectionHeader/SectionHeader';
-import { EventCard } from '../../ui/EventCard/EventCard';
+import { PulseCard } from '../../ui/PulseCard/PulseCard';
 
 const pulseItems = [
   { icon: landingIcons.pulseCode, color: 'var(--innovation)', text: 'Hackathon registrations open', time: '2h ago' },
@@ -39,7 +39,7 @@ export const CampusPulse = () => {
       <div className={styles.marqueeWrapper}>
         <div className={styles.marqueeTrack}>
           {items.map((item, i) => (
-            <EventCard key={`r1-${i}`} {...item} />
+            <PulseCard key={`r1-${i}`} {...item} />
           ))}
         </div>
       </div>
@@ -48,7 +48,7 @@ export const CampusPulse = () => {
       <div className={styles.marqueeWrapper}>
         <div className={`${styles.marqueeTrack} ${styles.reverse}`}>
           {[...items].reverse().map((item, i) => (
-            <EventCard key={`r2-${i}`} {...item} />
+            <PulseCard key={`r2-${i}`} {...item} />
           ))}
         </div>
       </div>

@@ -1,7 +1,7 @@
-import React, { useState, useMemo } from 'react';
+﻿import React, { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styles from './RegisterForm.module.css';
-import { authApi } from '../../../../api/auth.api';
+import { authApi } from '@api/authApis/auth';
 import { validateEmail, validatePassword, validateName, getStrengthLabel } from '../../../../api/validation';
 import { useToast } from '../../../../context/ToastContext';
 import { Icon } from '@iconify/react';
@@ -157,7 +157,7 @@ export const RegisterForm = () => {
                     <div key={level} className={clsx(styles.bar, pwResult.strength >= level && styles[`str${pwResult.strength}`])} />
                   ))}
                 </div>
-                <span className={styles.strengthLabel}>Strength · {getStrengthLabel(pwResult.strength)}</span>
+                <span className={styles.strengthLabel}>Strength Â· {getStrengthLabel(pwResult.strength)}</span>
               </>
             )}
             {errors.password && <span className={styles.errorText}>{errors.password}</span>}

@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import styles from './Header.module.css';
 import { Logo } from '../../ui/Logo/Logo';
 import { ThemeToggle } from '../../ui/ThemeToggle/ThemeToggle';
 import { Button } from '../../ui/Button/Button';
 import { Link } from 'react-router-dom';
 import { useSession } from '../../../../context/SessionContext';
-import { authApi } from '../../../../api/auth.api';
+import { authApi } from '@api/authApis/auth';
 
 export const Header = () => {
   const [isVisible, setIsVisible] = useState(true);

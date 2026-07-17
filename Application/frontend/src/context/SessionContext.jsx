@@ -1,6 +1,6 @@
-import { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
+﻿import { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { authApi } from '../api/auth.api';
+import { authApi } from '@api/authApis/auth';
 
 const SESSION_KEY = 'session_user';
 

@@ -1,20 +1,21 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Icon } from '@iconify/react';
-import { authApi } from '../../../../../api/auth.api';
+import { authApi } from '@api/authApis/auth';
 import { useToast } from '../../../../../context/ToastContext';
 import { useSession } from '../../../../../context/SessionContext';
 import { Button } from '../../Button/Button';
 import { Input } from '../../Input/Input';
 import { useNavigate } from 'react-router-dom';
 import { ConfirmModal } from '../../ConfirmModal/ConfirmModal';
-import { hasCampusDomain } from '../../../../../utils/verification';
+
 import styles from '../ProfileSettingsModal.module.css';
 
 export const SecurityTab = ({
   fullUser,
   formData,
   handleChange,
+  isAdminOrFaculty
 }) => {
   const { showSuccess, showError } = useToast();
   const { logout } = useSession();
@@ -62,17 +63,19 @@ export const SecurityTab = ({
               <label>Registered/Primary Email <span className={styles.required}>*</span></label>
               <div className={styles.secInputWrapper}>
                 <Input type="email" value={fullUser?.email || ''} disabled className={styles.secInput} />
-                {fullUser?.email_verified ? (
-                  <span className={styles.secBadge}><Icon icon="mdi:check-decagram" /> Verified</span>
-                ) : (
-                  fullUser?.auth_provider === 'LOCAL' && (
-                    <Button variant="outline" size="sm" type="button" className={styles.secVerifyBtn} onClick={triggerVerify("Verification link sent!")}>Verify</Button>
+                {!isAdminOrFaculty && (
+                  fullUser?.email_verified ? (
+                    <span className={styles.secBadge}><Icon icon="mdi:check-decagram" /> Verified</span>
+                  ) : (
+                    fullUser?.auth_provider === 'LOCAL' && (
+                      <Button variant="outline" size="sm" type="button" className={styles.secVerifyBtn} onClick={triggerVerify("Verification link sent!")}>Verify</Button>
+                    )
                   )
                 )}
               </div>
             </div>
 
-            {fullUser?.role === 'student' && (
+            {!isAdminOrFaculty && fullUser?.role === 'student' && (
               <div className={styles.secField}>
                 <label>Campus Email</label>
                 <div className={styles.secInputWrapper}>
@@ -101,7 +104,7 @@ export const SecurityTab = ({
         <div className={styles.secSection}>
           <h4 className={styles.secTitle}>Identity & Security</h4>
           <div className={styles.secGrid}>
-            {fullUser?.role !== 'system_admin' && (
+            {!isAdminOrFaculty && (
               <div className={styles.secField}>
                 <label>University ID</label>
                 <Input type="text" name="roll_number" value={formData.roll_number || ''} onChange={handleChange} className={styles.secInput} placeholder="e.g. UID12345" />

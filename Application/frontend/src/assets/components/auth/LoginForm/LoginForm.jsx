@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styles from './LoginForm.module.css';
-import { authApi } from '../../../../api/auth.api';
+import { authApi } from '@api/authApis/auth';
 import { validateEmail } from '../../../../api/validation';
 import { useToast } from '../../../../context/ToastContext';
 import { useSession } from '../../../../context/SessionContext';
 import { Icon } from '@iconify/react';
 import { motion } from 'framer-motion';
 import { checkIsVerified } from '../../../../utils/verification';
-import { notificationApi } from '../../../../api/notification.api';
+import { notificationApi } from '@api/notificationApis/notification';
 
 export const LoginForm = () => {
   const [email, setEmail] = useState('');
@@ -61,7 +61,9 @@ export const LoginForm = () => {
       
       // Reminder for unverified users
       const hasOptedOut = data.user.browse_public_only || data.user.preferences?.browse_public_only;
-      if (!checkIsVerified(data.user) && !hasOptedOut) {
+      const isAdminOrFaculty = data.user.role?.toLowerCase() !== 'student';
+      
+      if (!isAdminOrFaculty && !checkIsVerified(data.user) && !hasOptedOut) {
         setTimeout(() => {
           showInfo("Reminder: Please add and verify your university email in Profile Settings.", 5000);
         }, 1000);

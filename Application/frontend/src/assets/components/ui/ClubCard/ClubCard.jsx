@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import styles from './ClubCard.module.css';
 import { Icon } from '@iconify/react';

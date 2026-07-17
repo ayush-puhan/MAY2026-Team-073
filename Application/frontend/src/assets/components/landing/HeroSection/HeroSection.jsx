@@ -1,13 +1,13 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import styles from './HeroSection.module.css';
 import { Button } from '../../ui/Button/Button';
-import { motion } from 'framer-motion';
 import { landingIcons } from '../../../icons/registry';
 import { Icon } from '@iconify/react';
-import roboticsBanner from '../../../images/robotics_banner.png';
+import roboticsBanner from "../../../images/clubs/robotics_banner.png";
 import { useSession } from '../../../../context/SessionContext';
-import { authApi } from '../../../../api/auth.api';
+import { authApi } from '@api/authApis/auth';
 
 export const HeroSection = () => {
   const { user } = useSession();
@@ -86,7 +86,7 @@ export const HeroSection = () => {
               <Icon icon={landingIcons.heroMusicCircle} className={styles.fcIcon} style={{ color: 'var(--soft-purple)' }} />
               <div>
                 <strong>Open Mic Night</strong>
-                <p className={styles.fcSub}>Music Club · Friday, 7pm</p>
+                <p className={styles.fcSub}>Music Club Â· Friday, 7pm</p>
               </div>
             </div>
             <div className={styles.fcSeats}>

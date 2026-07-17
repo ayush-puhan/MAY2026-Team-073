@@ -5,6 +5,8 @@ import { getNavForUser } from '../../../config/navigation';
 import { useSession } from '../../../context/SessionContext';
 import { useToast } from '../../../context/ToastContext';
 import { Helpdesk } from '../../../assets/components/student/Helpdesk/Helpdesk';
+import { AnnouncementCenter } from '../../../assets/components/announcements/AnnouncementCenter/AnnouncementCenter';
+import { GlobalCalendar } from '../../../assets/components/calendar/GlobalCalendar/GlobalCalendar';
 import styles from './StudentDashboard.module.css';
 
 export const StudentDashboard = () => {
@@ -79,6 +81,8 @@ export const StudentDashboard = () => {
           } />
           
           <Route path="helpdesk/*" element={<Helpdesk />} />
+          <Route path="announcements/*" element={<AnnouncementCenter />} />
+          <Route path="calendar/*" element={<GlobalCalendar />} />
           
           <Route path="*" element={<Navigate to="" replace />} />
         </Routes>

@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Icon } from '@iconify/react';
 import { DataTable } from '../../ui/DataTable/DataTable';
 import { StatusBadge } from '../../ui/StatusBadge/StatusBadge';
 import { FilterTabs } from '../../ui/FilterTabs/FilterTabs';
 import { Button } from '../../ui/Button/Button';
-import { facultyAdvisorApi } from '../../../../api/facultyAdvisor.api';
+import { facultyAdvisorApi } from '@api/facultyAdvisorApis/facultyAdvisor';
 import { useSession } from '../../../../context/SessionContext';
 import { useToast } from '../../../../context/ToastContext';
 import styles from './FacultyReports.module.css';
@@ -72,7 +72,7 @@ export const FacultyReports = () => {
           { header: 'Description', accessor: 'description' },
           { header: 'Budget', accessor: 'budget_title' },
           { header: 'Category', accessor: 'category' },
-          { header: 'Amount', cell: (row) => `₹${row.amount}` },
+          { header: 'Amount', cell: (row) => `â‚¹${row.amount}` },
           { header: 'Status', cell: (row) => <StatusBadge status={row.approval_status} /> },
           {
             header: '',

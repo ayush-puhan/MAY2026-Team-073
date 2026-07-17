@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { adminApi } from '../../../../../api/admin.api';
+import { adminApi } from '@api/adminApis/admin';
 import { Dropdown } from '../../../ui/Dropdown/Dropdown';
 import { USER_ROLES_OPTIONS } from '../../../../../config/enums';
 import { Icon } from '@iconify/react';
@@ -26,6 +26,21 @@ export const UserDetailModal = ({ user, onClose, onUpdate }) => {
       console.error("Failed to update status", error);
     } finally {
       setLoading(false);
+      setShowConfirm(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    setLoading(true);
+    try {
+      await adminApi.deleteUser(user.id);
+      onClose(); // Close details modal
+      onUpdate(); // Refresh table
+    } catch (error) {
+      console.error("Failed to delete user", error);
+    } finally {
+      setLoading(false);
+      setShowConfirm(false);
     }
   };
 
@@ -95,7 +110,7 @@ export const UserDetailModal = ({ user, onClose, onUpdate }) => {
             </div>
             <div className={modalStyles.detailItem}>
               <label>Joined</label>
-              <span>{new Date(user.created_at).toLocaleString()}</span>
+              <span>{new Date(user.created_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}</span>
             </div>
             {user.student_profile && (
               <>
@@ -130,6 +145,20 @@ export const UserDetailModal = ({ user, onClose, onUpdate }) => {
                 {user.is_active ? 'Deactivate' : 'Activate'}
               </button>
             </div>
+            
+            <div className={modalStyles.dangerBox} style={{ marginTop: '1rem', borderTop: '1px solid var(--border)', paddingTop: '1rem' }}>
+              <div>
+                <strong>Delete Account completely</strong>
+                <p>Permanently remove this user and all associated data. This action cannot be undone.</p>
+              </div>
+              <button 
+                className={modalStyles.dangerBtn}
+                onClick={() => openConfirm('delete')}
+                disabled={loading}
+              >
+                Delete User
+              </button>
+            </div>
           </div>
         </div>
         </motion.div>
@@ -137,11 +166,11 @@ export const UserDetailModal = ({ user, onClose, onUpdate }) => {
         <ConfirmModal 
           isOpen={showConfirm}
           onClose={() => setShowConfirm(false)}
-          onConfirm={handleStatusToggle}
-          title={confirmAction === 'deactivate' ? "Deactivate User" : "Activate User"}
-          message={`Are you sure you want to ${confirmAction} ${user.full_name}?`}
-          confirmText={confirmAction === 'deactivate' ? "Yes, Deactivate" : "Yes, Activate"}
-          type={confirmAction === 'deactivate' ? 'danger' : 'primary'}
+          onConfirm={confirmAction === 'delete' ? handleDelete : handleStatusToggle}
+          title={confirmAction === 'delete' ? "Delete User" : confirmAction === 'deactivate' ? "Deactivate User" : "Activate User"}
+          message={confirmAction === 'delete' ? `Are you absolutely sure you want to permanently delete ${user.full_name}? All data will be lost.` : `Are you sure you want to ${confirmAction} ${user.full_name}?`}
+          confirmText={confirmAction === 'delete' ? "Yes, Delete Permanently" : confirmAction === 'deactivate' ? "Yes, Deactivate" : "Yes, Activate"}
+          type={confirmAction === 'delete' || confirmAction === 'deactivate' ? 'danger' : 'primary'}
         />
       </div>
       )}

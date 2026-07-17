@@ -5,12 +5,13 @@ import { motion } from 'framer-motion';
 import { Icon } from '@iconify/react';
 import { Logo } from '../../ui/Logo/Logo';
 import { ThemeToggle } from '../../ui/ThemeToggle/ThemeToggle';
+import { uiIcons } from '../../../icons/registry';
 
 const floatingCards = [
-  { icon: 'mdi:trophy-outline', color: 'var(--primary)', title: 'Shaastra Hackathon', sub: '340 registered · starts Fri 9AM' },
-  { icon: 'mdi:account-group', color: 'var(--campus-orange)', title: 'Robotics recruiting', sub: 'Round 1 open · 124 applied' },
+  { icon: 'mdi:trophy-outline', color: 'var(--primary)', title: 'Shaastra Hackathon', sub: '340 registered • starts Fri 9AM' },
+  { icon: 'mdi:account-group', color: 'var(--campus-orange)', title: 'Robotics recruiting', sub: 'Round 1 open • 124 applied' },
   { icon: 'mdi:medal', color: 'var(--achievement)', title: 'Ananya K. — SIH Winner', sub: 'Represented in National Hackathon' },
-  { icon: 'mdi:music-note', color: 'var(--campus-orange)', title: 'Open Mic Night', sub: '37 / 50 seats · Friday' },
+  { icon: 'mdi:music-note', color: 'var(--campus-orange)', title: 'Open Mic Night', sub: '37 / 50 seats • Friday' },
 ];
 
 export const AuthLayout = ({ children }) => {
@@ -69,8 +70,8 @@ export const AuthLayout = ({ children }) => {
         />
         <div className={styles.topBar}>
           <Link to="/" className={styles.backLink}>
-            <Icon icon="mdi:star-four-points" className={styles.backIcon} />
-            ← Back to campus
+            <Icon icon={uiIcons.arrowLeft} className={styles.backIcon} />
+            Back to campus
           </Link>
           <ThemeToggle />
         </div>

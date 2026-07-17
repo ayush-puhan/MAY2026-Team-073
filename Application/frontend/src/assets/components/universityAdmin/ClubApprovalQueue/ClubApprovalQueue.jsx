@@ -3,7 +3,7 @@ import { Icon } from '@iconify/react';
 import { DataTable, RowChevron } from '../../ui/DataTable/DataTable';
 import { StatusBadge } from '../../ui/StatusBadge/StatusBadge';
 import { FilterTabs } from '../../ui/FilterTabs/FilterTabs';
-import { universityAdminApi } from '../../../../api/universityAdmin.api';
+import { universityAdminApi } from '@api/universityAdminApis/universityAdmin';
 import { useSession } from '../../../../context/SessionContext';
 import { useToast } from '../../../../context/ToastContext';
 import { ApprovalDecisionModal } from './ApprovalDecisionModal/ApprovalDecisionModal';
@@ -37,9 +37,9 @@ export const ClubApprovalQueue = () => {
 
   const filtered = requests.filter((r) => r.status === activeTab);
   const tabs = [
-    { value: 'submitted', label: 'Pending', count: requests.filter((r) => r.status === 'submitted').length },
-    { value: 'approved', label: 'Approved', count: requests.filter((r) => r.status === 'approved').length },
-    { value: 'rejected', label: 'Rejected', count: requests.filter((r) => r.status === 'rejected').length },
+    { id: 'submitted', label: 'Pending', count: requests.filter((r) => r.status === 'submitted').length },
+    { id: 'approved', label: 'Approved', count: requests.filter((r) => r.status === 'approved').length },
+    { id: 'rejected', label: 'Rejected', count: requests.filter((r) => r.status === 'rejected').length },
   ];
 
   const handleDecide = async (status, { comments, facultyAdvisorId }) => {
@@ -101,6 +101,7 @@ export const ClubApprovalQueue = () => {
       )}
 
       <div className={styles.section}>
+        <h3 className={styles.sectionTitle}>Proposal History</h3>
         <FilterTabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
         <DataTable
           columns={[
@@ -111,9 +112,11 @@ export const ClubApprovalQueue = () => {
             { header: '', cell: (row) => row.status === 'submitted' ? <RowChevron /> : null },
           ]}
           data={filtered}
-          onRowClick={(row) => row.status === 'submitted' && setSelectedRequest(row)}
+          onRowClick={(row) => setSelectedRequest(row)}
+          isRowClickable={(row) => row.status === 'submitted'}
           emptyIcon="mdi:check-decagram-outline"
           emptyTitle={`No ${activeTab} proposals`}
+          emptyDesc={`There are currently no ${activeTab} club creation requests.`}
         />
       </div>
 

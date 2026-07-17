@@ -74,6 +74,9 @@ export const landingIcons = {
   clubMusic: 'mdi:music-note',
   clubCode: 'mdi:code-tags',
   clubFinance: 'mdi:chart-line',
+  clubMentalHealth: 'mdi:brain',
+  clubCultural: 'mdi:palette',
+  clubFood: 'mdi:silverware-fork-knife',
 
   // AuthLayout / Stats
   hackathon: 'mdi:trophy-outline',
@@ -88,6 +91,11 @@ export const dashboardIcons = {
   discover: 'mdi:compass-outline',
   myClubs: 'mdi:account-group-outline',
   events: 'mdi:calendar-blank-outline',
+  calendar: 'mdi:calendar-outline',
+  helpdesk: 'mdi:lifebuoy',
+  announcements: 'mdi:bullhorn-outline',
+  rewards: 'mdi:trophy-outline',
+  aiAssistant: 'mdi:robot-outline',
   notifications: 'mdi:bell-outline',
   settings: 'mdi:cog-outline',
   messages: 'mdi:message-outline',
@@ -132,3 +140,18 @@ export const adminIcons = {
   history: 'mdi:history',
   save: 'mdi:content-save-outline',
 };
+
+// ── Calendar ──
+export const calendarIcons = {
+  googleSync: 'mdi:google',
+  calendarViewMonth: 'mdi:calendar-month',
+  calendarViewWeek: 'mdi:calendar-week',
+  calendarViewDay: 'mdi:calendar-today',
+  calendarAgenda: 'mdi:view-agenda-outline',
+  conflict: 'mdi:alert-octagon',
+  addSession: 'mdi:calendar-plus',
+  eventPublic: 'mdi:earth',
+  eventPrivate: 'mdi:lock',
+};
+
+

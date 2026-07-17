@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Icon } from '@iconify/react';
-import { DataTable, RowChevron } from '../../ui/DataTable/DataTable';
+import { EventCard } from '../../ui/EventCard/EventCard';
 import { StatusBadge } from '../../ui/StatusBadge/StatusBadge';
 import { FilterTabs } from '../../ui/FilterTabs/FilterTabs';
-import { facultyAdvisorApi } from '../../../../api/facultyAdvisor.api';
+import { facultyAdvisorApi } from '@api/facultyAdvisorApis/facultyAdvisor';
 import { useSession } from '../../../../context/SessionContext';
 import { useToast } from '../../../../context/ToastContext';
 import { EventDecisionModal } from './EventDecisionModal/EventDecisionModal';
@@ -61,19 +61,34 @@ export const EventApprovals = () => {
 
       <FilterTabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
 
-      <DataTable
-        columns={[
-          { header: 'Event', accessor: 'title' },
-          { header: 'Club', accessor: 'club_name' },
-          { header: 'Date', cell: (row) => new Date(row.start_at).toLocaleDateString() },
-          { header: 'Status', cell: (row) => <StatusBadge status={row.approval_status} /> },
-          { header: '', cell: (row) => row.approval_status === 'pending' ? <RowChevron /> : null },
-        ]}
-        data={filtered}
-        onRowClick={(row) => row.approval_status === 'pending' && setSelectedEvent(row)}
-        emptyIcon="mdi:calendar-check-outline"
-        emptyTitle={`No ${activeTab} events`}
-      />
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1rem', marginTop: '1.5rem' }}>
+        {filtered.length === 0 ? (
+          <div className={styles.emptyState} style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '3rem', color: 'var(--muted-foreground)' }}>
+            <Icon icon="mdi:calendar-check-outline" width="48" style={{ marginBottom: '1rem', opacity: 0.5 }} />
+            <h3>No {activeTab} events</h3>
+          </div>
+        ) : (
+          filtered.map(ev => (
+            <EventCard
+              key={ev.id}
+              title={ev.title}
+              subtitle={`${ev.club_name} • ${new Date(ev.start_at).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })}`}
+              icon="mdi:calendar-text"
+              bannerKeyword={ev.bannerKeyword}
+              color={activeTab === 'pending' ? 'var(--campus-orange)' : activeTab === 'approved' ? 'var(--success)' : 'var(--destructive)'}
+              onClick={() => ev.approval_status === 'pending' && setSelectedEvent(ev)}
+              rightElement={
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', alignItems: 'flex-end' }}>
+                  <StatusBadge status={ev.approval_status} />
+                  {ev.approval_status === 'pending' && (
+                    <Icon icon="mdi:chevron-right" style={{ color: 'var(--muted-foreground)' }} />
+                  )}
+                </div>
+              }
+            />
+          ))
+        )}
+      </div>
 
       {selectedEvent && (
         <EventDecisionModal

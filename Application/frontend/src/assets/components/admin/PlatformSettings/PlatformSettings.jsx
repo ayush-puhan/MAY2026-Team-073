@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { adminApi } from '../../../../api/admin.api';
+import { adminApi } from '@api/adminApis/admin';
 import { Icon } from '@iconify/react';
 import { DataTable } from '../../ui/DataTable/DataTable';
 import { StatusBadge } from '../../ui/StatusBadge/StatusBadge';
@@ -72,7 +72,7 @@ export const PlatformSettings = () => {
     },
     { header: 'Domain', accessor: 'domain' },
     { header: 'Status', cell: (row) => <StatusBadge status={row.is_active ? 'Active' : 'Maintenance'} /> },
-    { header: 'Added', cell: (row) => row.created_at ? new Date(row.created_at).toLocaleDateString() : '—' },
+    { header: 'Added', cell: (row) => row.created_at ? new Date(row.created_at).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' }) : '—' },
     { header: '', cell: () => <Icon icon={uiIcons.chevronRight} color="var(--muted-foreground)" width="20" /> }
   ];
 
@@ -80,7 +80,7 @@ export const PlatformSettings = () => {
     <div className={styles.container}>
       <div className={styles.header}>
         <div className={styles.titleSection}>
-          <h2 className={styles.title}>Platform Settings (Universities)</h2>
+          <h2 className={styles.title}>University Management</h2>
           <p className={styles.subtitle}>Manage universities onboarded to the platform.</p>
         </div>
       </div>

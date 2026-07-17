@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { AuthLayout } from '../../assets/components/auth/AuthLayout/AuthLayout';
 import { RegisterForm } from '../../assets/components/auth/RegisterForm/RegisterForm';
 

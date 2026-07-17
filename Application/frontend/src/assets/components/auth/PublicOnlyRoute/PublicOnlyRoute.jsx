@@ -1,7 +1,7 @@
-import React, { useEffect, useRef } from 'react';
+﻿import React, { useEffect, useRef } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useSession } from '../../../../context/SessionContext';
-import { authApi } from '../../../../api/auth.api';
+import { authApi } from '@api/authApis/auth';
 import { useToast } from '../../../../context/ToastContext';
 
 export const PublicOnlyRoute = ({ children }) => {

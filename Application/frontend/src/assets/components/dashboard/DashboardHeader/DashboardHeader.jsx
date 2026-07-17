@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import styles from './DashboardHeader.module.css';
 import { ThemeToggle } from '../../ui/ThemeToggle/ThemeToggle';
 import { NotificationModal } from '../../ui/NotificationModal/NotificationModal';
 import { Icon } from '@iconify/react';
 import { useSidebarContext } from '../../../../context/SidebarContext';
 import { useSession } from '../../../../context/SessionContext';
-import { notificationApi } from '../../../../api/notification.api';
+import { notificationApi } from '@api/notificationApis/notification';
 
 export const DashboardHeader = () => {
   const [isNotifOpen, setIsNotifOpen] = useState(false);

@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Icon } from '@iconify/react';
 import { ResponsiveContainer, LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
-import { universityAdminApi } from '../../../../api/universityAdmin.api';
+import { universityAdminApi } from '@api/universityAdminApis/universityAdmin';
 import styles from './UniversityAnalytics.module.css';
 
 export const UniversityAnalytics = () => {

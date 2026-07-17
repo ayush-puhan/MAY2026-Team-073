@@ -88,7 +88,7 @@
   width: 100%;
   align-items: center;
   padding: 0.5rem 0;
-  /* Removed overflow to prevent tooltip clipping */
+  overflow: visible;
 }
 
 /* Hide scrollbar for nav */
@@ -162,8 +162,8 @@
   left: calc(100% + 14px);
   top: 50%;
   transform: translateY(-50%) scale(0.95);
-  background: var(--sidebar-tooltip);
-  color: var(--sidebar-tooltip-foreground);
+  background: var(--sidebar-tooltip, var(--foreground));
+  color: var(--sidebar-tooltip-foreground, var(--background));
   padding: 6px 12px;
   border-radius: 6px;
   font-size: 0.85rem;
@@ -174,7 +174,7 @@
   transition: opacity 0.15s, transform 0.15s;
   transform-origin: left center;
   box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  z-index: 100;
+  z-index: 9999;
 }
 
 /* Tooltip arrow */
@@ -198,6 +198,21 @@
 }
 
 /* ── Responsive ── */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 64px;
+  }
+  .nav {
+    overflow-y: auto;
+  }
+  .navItem::after {
+    display: none; /* Hide tooltips on tablet/mobile */
+  }
+  .logoLink::after {
+    display: none;
+  }
+}
+
 @media (max-width: 641px) {
   .sidebar {
     width: 56px;
@@ -205,8 +220,5 @@
   .navItem {
     width: 40px;
     height: 40px;
-  }
-  .navItem::after {
-    display: none; /* Hide tooltips on mobile */
   }
 }

@@ -60,3 +60,12 @@
   background-color: var(--primary);
   color: #fff;
 }
+
+.mobileDropdownContainer {
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
+.mobileDropdown {
+  width: 100%;
+}

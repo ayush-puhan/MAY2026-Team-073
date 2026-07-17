@@ -1,10 +1,10 @@
-import React from 'react';
+﻿import React from 'react';
 import { Link } from 'react-router-dom';
 import styles from './CTASection.module.css';
 import { Button } from '../../ui/Button/Button';
 import { motion } from 'framer-motion';
 import { useSession } from '../../../../context/SessionContext';
-import { authApi } from '../../../../api/auth.api';
+import { authApi } from '@api/authApis/auth';
 
 export const CTASection = () => {
   const { user } = useSession();

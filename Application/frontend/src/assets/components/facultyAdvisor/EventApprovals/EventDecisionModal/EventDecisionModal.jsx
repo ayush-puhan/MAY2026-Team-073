@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Icon } from '@iconify/react';
@@ -34,7 +34,7 @@ export const EventDecisionModal = ({ event, onClose, onDecide }) => {
           </button>
 
           <h3 className={styles.title}>{event.title}</h3>
-          <p className={styles.meta}>{event.club_name} &middot; {new Date(event.start_at).toLocaleString()}</p>
+          <p className={styles.meta}>{event.club_name} &middot; {new Date(event.start_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}</p>
           <p className={styles.description}>{event.description}</p>
 
           <textarea

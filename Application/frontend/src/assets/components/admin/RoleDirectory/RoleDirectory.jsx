@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { adminApi } from '../../../../api/admin.api';
+import { adminApi } from '@api/adminApis/admin';
 import { DataTable } from '../../ui/DataTable/DataTable';
 import { StatusBadge } from '../../ui/StatusBadge/StatusBadge';
 import { SearchInput } from '../../ui/SearchInput/SearchInput';
+import { Dropdown } from '../../ui/Dropdown/Dropdown';
 import { Icon } from '@iconify/react';
 import { uiIcons } from '../../../icons/registry';
 import { USER_ROLES_OPTIONS } from '../../../../config/enums';
@@ -13,6 +14,14 @@ export const RoleDirectory = () => {
   const [selectedRole, setSelectedRole] = useState(USER_ROLES_OPTIONS[0]?.value);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth <= 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -40,7 +49,7 @@ export const RoleDirectory = () => {
   const columns = [
     { header: 'Name', cell: (row) => <span style={{ fontWeight: 500 }}>{row.full_name}</span> },
     { header: 'Status', cell: (row) => <StatusBadge status={row.is_active ? 'Active' : 'Inactive'} /> },
-    { header: 'Joined', cell: (row) => new Date(row.created_at).toLocaleDateString() }
+    { header: 'Joined', cell: (row) => new Date(row.created_at).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' }) }
   ];
 
   if (loading) {
@@ -55,18 +64,32 @@ export const RoleDirectory = () => {
       </div>
 
       <div className={styles.layout}>
-        <div className={styles.rolesSidebar}>
-          {USER_ROLES_OPTIONS.map(role => (
-            <button
-              key={role.value}
-              className={`${styles.roleBtn} ${selectedRole === role.value ? styles.active : ''}`}
-              onClick={() => setSelectedRole(role.value)}
-            >
-              <div className={styles.roleName}>{role.label}</div>
-              <span className={styles.roleCount}>{getUserCountForRole(role.value)}</span>
-            </button>
-          ))}
-        </div>
+        {isMobile ? (
+          <div className={styles.mobileDropdownContainer}>
+            <Dropdown
+              options={USER_ROLES_OPTIONS.map(r => ({
+                value: r.value,
+                label: `${r.label} (${getUserCountForRole(r.value)})`
+              }))}
+              value={selectedRole}
+              onChange={(e) => setSelectedRole(e.target.value)}
+              className={styles.mobileDropdown}
+            />
+          </div>
+        ) : (
+          <div className={styles.rolesSidebar}>
+            {USER_ROLES_OPTIONS.map(role => (
+              <button
+                key={role.value}
+                className={`${styles.roleBtn} ${selectedRole === role.value ? styles.active : ''}`}
+                onClick={() => setSelectedRole(role.value)}
+              >
+                <div className={styles.roleName}>{role.label}</div>
+                <span className={styles.roleCount}>{getUserCountForRole(role.value)}</span>
+              </button>
+            ))}
+          </div>
+        )}
 
         <div className={styles.roleContent}>
           <div className={styles.contentHeader}>

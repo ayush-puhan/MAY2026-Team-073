@@ -21,18 +21,18 @@
 
 /* Sizes */
 .sm {
-  padding: 0.35rem 0.6rem;
-  font-size: 0.8rem;
+  padding: 0.4rem 1.2rem;
+  font-size: 0.85rem;
 }
 
 .md {
-  padding: 0.5rem 0.85rem;
-  font-size: 0.9rem;
+  padding: 0.5rem 1.5rem;
+  font-size: 0.95rem;
 }
 
 .lg {
-  padding: 0.75rem 1.25rem;
-  font-size: 1rem;
+  padding: 0.75rem 1.75rem;
+  font-size: 1.05rem;
 }
 
 /* Variants */

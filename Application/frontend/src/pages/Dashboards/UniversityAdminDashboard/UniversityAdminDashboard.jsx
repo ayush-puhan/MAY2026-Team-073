@@ -3,8 +3,15 @@ import { DashboardLayout } from '../../../assets/components/dashboard/DashboardL
 import { getNavForUser } from '../../../config/navigation';
 import { useSession } from '../../../context/SessionContext';
 
-// Re-use SupportManagement from admin components
 import { SupportManagement } from '../../../assets/components/admin/SupportManagement/SupportManagement';
+import { Helpdesk } from '../../../assets/components/student/Helpdesk/Helpdesk';
+import { AnnouncementCenter } from '../../../assets/components/announcements/AnnouncementCenter/AnnouncementCenter';
+
+import { AdminOverviewHome } from '../../../assets/components/universityAdmin/AdminOverviewHome/AdminOverviewHome';
+import { ClubApprovalQueue } from '../../../assets/components/universityAdmin/ClubApprovalQueue/ClubApprovalQueue';
+import { EventOversight } from '../../../assets/components/universityAdmin/EventOversight/EventOversight';
+import { UniversityAnalytics } from '../../../assets/components/universityAdmin/UniversityAnalytics/UniversityAnalytics';
+import { GlobalCalendar } from '../../../assets/components/calendar/GlobalCalendar/GlobalCalendar';
 
 export const UniversityAdminDashboard = () => {
   const { user } = useSession();
@@ -17,20 +24,14 @@ export const UniversityAdminDashboard = () => {
     <DashboardLayout title="University Admin Dashboard" user={user} sidebarLinks={sidebarLinks}>
       <div style={{ width: '100%' }}>
         <Routes>
-          <Route path="/" element={
-            <div>
-              <h2 style={{ color: 'var(--foreground)', marginBottom: '1rem' }}>University Overview</h2>
-              <p style={{ color: 'var(--muted-foreground)' }}>Manage student affairs, club approvals, and academic events here.</p>
-            </div>
-          } />
-          
+          <Route path="/" element={<AdminOverviewHome />} />
+          <Route path="helpdesk/*" element={<Helpdesk />} />
           <Route path="support/*" element={<SupportManagement />} />
-          
-          {/* Redirect unbuilt routes back to overview for now */}
-          <Route path="approvals/*" element={<Navigate to="" replace />} />
-          <Route path="reports/*" element={<Navigate to="" replace />} />
-          <Route path="events/*" element={<Navigate to="" replace />} />
-          <Route path="settings/*" element={<Navigate to="" replace />} />
+          <Route path="approvals/*" element={<ClubApprovalQueue />} />
+          <Route path="reports/*" element={<UniversityAnalytics />} />
+          <Route path="events/*" element={<EventOversight />} />
+          <Route path="announcements/*" element={<AnnouncementCenter />} />
+          <Route path="calendar/*" element={<GlobalCalendar />} />
           
           <Route path="*" element={<Navigate to="" replace />} />
         </Routes>

@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import styles from './StatsSection.module.css';
 import { motion } from 'framer-motion';
 import { SectionHeader } from '../SectionHeader/SectionHeader';

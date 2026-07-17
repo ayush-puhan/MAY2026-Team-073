@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Icon } from '@iconify/react';
 import { useToast } from '../../../../../context/ToastContext';
@@ -12,7 +12,8 @@ export const PreferencesTab = ({
   handleChange,
   showInterests,
   masterData,
-  isVerified
+  isVerified,
+  isAdminOrFaculty
 }) => {
   const { showError } = useToast();
   const [showInterestSearch, setShowInterestSearch] = useState(false);
@@ -100,8 +101,9 @@ export const PreferencesTab = ({
 
       <div className={styles.accessibilitySection} style={{ marginTop: showInterests ? '2rem' : '0' }}>
         <div className={styles.interestsHeader}>
-          <label>Preferences & Options</label>
+          <label>Notification & Preferences</label>
         </div>
+        
         <div className={styles.toggleField}>
           <div className={styles.toggleLabel}>
             <Icon icon="mdi:eye-outline" className={styles.toggleIcon} />
@@ -119,7 +121,24 @@ export const PreferencesTab = ({
           </label>
         </div>
 
-        {!isVerified && (
+        <div className={styles.toggleField} style={{ marginTop: '1.5rem' }}>
+          <div className={styles.toggleLabel}>
+            <Icon icon="mdi:email-outline" className={styles.toggleIcon} />
+            <div>
+              <strong>Email Notifications</strong>
+              <p className={styles.hint}>Receive important updates and reminders via email.</p>
+            </div>
+          </div>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer' }}>
+            <div className={styles.switch}>
+              <input type="checkbox" name="email_notifications" checked={Boolean(formData.email_notifications ?? true)} onChange={handleChange} />
+              <span className={styles.slider}></span>
+            </div>
+            <span style={{ fontSize: '0.9rem', color: 'var(--foreground)' }}>Enable Email Alerts</span>
+          </label>
+        </div>
+
+        {!isAdminOrFaculty && !isVerified && (
           <div className={styles.toggleField} style={{ marginTop: '1.5rem' }}>
             <div className={styles.toggleLabel}>
               <Icon icon="mdi:incognito" className={styles.toggleIcon} />
@@ -138,6 +157,8 @@ export const PreferencesTab = ({
           </div>
         )}
       </div>
+
+
     </motion.div>
   );
 };

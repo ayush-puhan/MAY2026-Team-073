@@ -1,0 +1,45 @@
+// Central API Switch File
+// This file determines whether to use the mock backend or the real backend
+// based on the VITE_USE_MOCK_BACKEND environment variable.
+
+const USE_MOCK = import.meta.env.VITE_USE_MOCK_BACKEND === 'true';
+
+// ── Admin APIs ──
+import { adminApi as adminMockApi } from './mockbackendApis/adminApis/admin';
+import { adminApi as adminRealApi } from './backendApis/adminApis/admin';
+export const adminApi = USE_MOCK ? adminMockApi : adminRealApi;
+
+// ── Auth APIs ──
+import { authApi as authMockApi } from './mockbackendApis/authApis/auth';
+import { authApi as authRealApi } from './backendApis/authApis/auth';
+export const authApi = USE_MOCK ? authMockApi : authRealApi;
+
+// ── Student APIs ──
+// import { studentApi as studentMockApi } from './mockbackendApis/studentApis/student';
+// import { studentApi as studentRealApi } from './backendApis/studentApis/student';
+// export const studentApi = USE_MOCK ? studentMockApi : studentRealApi;
+
+// ── Faculty Advisor APIs ──
+import { facultyAdvisorApi as facultyAdvisorMockApi } from './mockbackendApis/facultyAdvisorApis/facultyAdvisor';
+import { facultyAdvisorApi as facultyAdvisorRealApi } from './backendApis/facultyAdvisorApis/facultyAdvisor';
+export const facultyAdvisorApi = USE_MOCK ? facultyAdvisorMockApi : facultyAdvisorRealApi;
+
+// ── University Admin APIs ──
+import { universityAdminApi as universityAdminMockApi } from './mockbackendApis/universityAdminApis/universityAdmin';
+import { universityAdminApi as universityAdminRealApi } from './backendApis/universityAdminApis/universityAdmin';
+export const universityAdminApi = USE_MOCK ? universityAdminMockApi : universityAdminRealApi;
+
+// ── Notification APIs ──
+import { notificationApi as notificationMockApi } from './mockbackendApis/notificationApis/notification';
+import { notificationApi as notificationRealApi } from './backendApis/notificationApis/notification';
+export const notificationApi = USE_MOCK ? notificationMockApi : notificationRealApi;
+
+// ── Announcement APIs ──
+import { announcementsApi as announcementsMockApi } from './mockbackendApis/announcementsApis/announcements';
+import { announcementsApi as announcementsRealApi } from './backendApis/announcementsApis/announcements';
+export const announcementsApi = USE_MOCK ? announcementsMockApi : announcementsRealApi;
+
+// ── Calendar APIs ──
+import { calendarMockApi } from './mockbackendApis/calendarApis/calendar';
+import { calendarRealApi } from './backendApis/calendarApis/calendar';
+export const calendarApi = USE_MOCK ? calendarMockApi : calendarRealApi;

@@ -1,0 +1,52 @@
+.contextPanel {
+  width: 280px;
+  min-width: 280px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  z-index: 10;
+  padding: 1.5rem 0 1.5rem 1rem;
+}
+
+.panelContainer {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  height: 100%;
+  overflow-y: auto;
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
+}
+
+@media (max-width: 1081px) {
+  .contextPanel {
+    width: 100%;
+    min-width: 100%;
+    height: auto;
+    max-height: 50vh;
+    padding: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  
+  .panelContainer {
+    padding: 1rem;
+    gap: 1rem;
+  }
+}
+
+/* Scrollbar styling for the panel */
+.panelContainer::-webkit-scrollbar {
+  width: 6px;
+}
+
+.panelContainer::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.panelContainer::-webkit-scrollbar-thumb {
+  background-color: var(--border);
+  border-radius: 10px;
+}

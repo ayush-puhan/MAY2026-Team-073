@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Icon } from '@iconify/react';
 import { StatusBadge } from '../../../ui/StatusBadge/StatusBadge';
-import { facultyAdvisorApi } from '../../../../../api/facultyAdvisor.api';
+import { facultyAdvisorApi } from '@api/facultyAdvisorApis/facultyAdvisor';
 import styles from './ClubDetailModal.module.css';
 
 export const ClubDetailModal = ({ clubId, onClose }) => {

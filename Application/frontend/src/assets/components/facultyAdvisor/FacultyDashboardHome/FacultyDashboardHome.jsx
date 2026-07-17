@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Icon } from '@iconify/react';
 import { StatCard } from '../../ui/StatCard/StatCard';
-import { DataTable } from '../../ui/DataTable/DataTable';
+import { EventCard } from '../../ui/EventCard/EventCard';
 import { StatusBadge } from '../../ui/StatusBadge/StatusBadge';
-import { facultyAdvisorApi } from '../../../../api/facultyAdvisor.api';
+import { facultyAdvisorApi } from '@api/facultyAdvisorApis/facultyAdvisor';
 import { useSession } from '../../../../context/SessionContext';
 import styles from './FacultyDashboardHome.module.css';
 
@@ -56,18 +56,28 @@ export const FacultyDashboardHome = () => {
 
       <div className={styles.section}>
         <h3 className={styles.sectionTitle}>Events Awaiting Your Approval</h3>
-        <DataTable
-          columns={[
-            { header: 'Event', accessor: 'title' },
-            { header: 'Club', accessor: 'club_name' },
-            { header: 'Date', cell: (row) => new Date(row.start_at).toLocaleDateString() },
-            { header: 'Status', cell: (row) => <StatusBadge status={row.approval_status} /> },
-          ]}
-          data={pendingEvents}
-          emptyIcon="mdi:calendar-check-outline"
-          emptyTitle="No events awaiting approval"
-          emptyDesc="New event submissions from your advised clubs will show up here."
-        />
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1rem' }}>
+          {pendingEvents.length === 0 ? (
+            <p className={styles.emptyText} style={{ gridColumn: '1 / -1', color: 'var(--muted-foreground)' }}>
+              No events awaiting approval. New event submissions from your advised clubs will show up here.
+            </p>
+          ) : (
+            pendingEvents.map(ev => (
+              <EventCard
+                key={ev.id}
+                title={ev.title}
+                subtitle={`${ev.club_name} • ${new Date(ev.start_at).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })}`}
+                icon="mdi:calendar-alert"
+                color="var(--campus-orange)"
+                bannerKeyword={ev.bannerKeyword}
+                onClick={() => navigate('/faculty-advisor-dashboard/events')}
+                rightElement={
+                  <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--campus-orange)' }}>Needs Review</span>
+                }
+              />
+            ))
+          )}
+        </div>
       </div>
     </div>
   );

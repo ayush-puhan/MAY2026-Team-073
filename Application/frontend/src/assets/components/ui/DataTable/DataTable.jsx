@@ -8,6 +8,7 @@ export const DataTable = ({
   columns, 
   data, 
   onRowClick,
+  isRowClickable,
   emptyTitle = "No data found",
   emptyDesc = "There are no records to display."
 }) => {
@@ -32,19 +33,22 @@ export const DataTable = ({
           </tr>
         </thead>
         <tbody>
-          {currentData.map((row, rIdx) => (
-            <tr 
-              key={row.id || rIdx} 
-              onClick={() => onRowClick && onRowClick(row)}
-              className={onRowClick ? styles.clickableRow : ''}
-            >
+          {currentData.map((row, rIdx) => {
+            const clickable = isRowClickable ? isRowClickable(row) : !!onRowClick;
+            return (
+              <tr 
+                key={row.id || rIdx} 
+                onClick={() => clickable && onRowClick && onRowClick(row)}
+                className={clickable ? styles.clickableRow : ''}
+              >
               {columns.map((col, cIdx) => (
                 <td key={cIdx}>
                   {col.cell ? col.cell(row) : row[col.accessor]}
                 </td>
               ))}
-            </tr>
-          ))}
+              </tr>
+            );
+          })}
         </tbody>
       </table>
       
@@ -74,3 +78,7 @@ export const DataTable = ({
     </div>
   );
 };
+
+export const RowChevron = () => (
+  <Icon icon="mdi:chevron-right" style={{ color: 'var(--muted-foreground)' }} />
+);

@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Header } from '../../assets/components/landing/Header/Header';
 import { HeroSection } from '../../assets/components/landing/HeroSection/HeroSection';
 import { CampusPulse } from '../../assets/components/landing/CampusPulse/CampusPulse';

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Icon } from '@iconify/react';
 import styles from './NotificationModal.module.css';
@@ -52,8 +52,15 @@ export const NotificationModal = ({ isOpen, onClose, hasUnread, notifications = 
                     <Icon icon="mdi:bell" />
                   </div>
                   <div className={styles.content}>
-                    <h4>{notif.title}</h4>
-                    <p>{notif.message}</p>
+                    <div className={styles.titleRow}>
+                      <h4>{notif.title}</h4>
+                      {notif.created_at && (
+                        <span className={styles.timestamp}>
+                          {new Date(notif.created_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata',  month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                      )}
+                    </div>
+                    <p>{notif.body}</p>
                   </div>
                   {!notif.is_read && <div className={styles.dot} />}
                 </div>

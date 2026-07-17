@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { adminApi } from '../../../../api/admin.api';
+﻿import { useState, useEffect } from 'react';
+import { adminApi } from '@api/adminApis/admin';
 import { StatCard } from '../../ui/StatCard/StatCard';
 import { DataTable } from '../../ui/DataTable/DataTable';
 import { StatusBadge } from '../../ui/StatusBadge/StatusBadge';
@@ -42,7 +42,7 @@ export const DashboardHome = () => {
     { header: 'Details', accessor: 'details' },
     { 
       header: 'Date', 
-      cell: (row) => new Date(row.created_at).toLocaleString()
+      cell: (row) => new Date(row.created_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
     }
   ];
 

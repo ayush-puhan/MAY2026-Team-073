@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import styles from './DashboardLayout.module.css';
 import { Sidebar } from '../Sidebar/Sidebar';
 import { DashboardHeader } from '../DashboardHeader/DashboardHeader';
-import { authApi } from '../../../../api/auth.api';
+import { authApi } from '@api/authApis/auth';
 import { useSession } from '../../../../context/SessionContext';
 
 import { SidebarProvider, useSidebarContext } from '../../../../context/SidebarContext';

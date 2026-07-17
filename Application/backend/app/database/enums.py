@@ -121,7 +121,8 @@ class AnnouncementAudience(str, enum.Enum):
     ALL_MEMBERS = "all_members"
     COMMITTEE = "committee"
     LEADERSHIP = "leadership"
-    ALL_STUDENTS = "all_students"
+    SYSTEM_WIDE = "system_wide"
+    UNIVERSITY_WIDE = "university_wide"
 
 
 class TicketStatus(str, enum.Enum):

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import styles from './Footer.module.css';
 import { Logo } from '../../ui/Logo/Logo';

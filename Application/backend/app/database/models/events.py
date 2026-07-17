@@ -36,6 +36,7 @@ class Event(Base, TimestampMixin):
     registration_deadline = Column(DateTime, nullable=True)
     capacity = Column(Integer, nullable=True)
     status = Column(SAEnum(EventStatus), default=EventStatus.SCHEDULED, nullable=False)
+    banner = Column(String(255), nullable=True)
     created_by = Column(Integer, ForeignKey("users.id", ondelete="RESTRICT"), nullable=False)
     requires_external_participants = Column(Boolean, default=False, nullable=False)
     is_public = Column(Boolean, default=False, nullable=False)
@@ -53,6 +54,24 @@ class Event(Base, TimestampMixin):
         "ExternalParticipant", back_populates="event", cascade="all, delete-orphan"
     )
     interest_links = relationship("EventInterest", back_populates="event", cascade="all, delete-orphan")
+    event_sessions = relationship("EventSession", back_populates="event", cascade="all, delete-orphan")
+
+
+class EventSession(Base):
+    __tablename__ = "event_sessions"
+    __table_args__ = (CheckConstraint("end_at >= start_at", name="ck_session_dates"),)
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    event_id = Column(Integer, ForeignKey("events.id", ondelete="CASCADE"), nullable=False)
+    title = Column(String(255), nullable=False)
+    description = Column(Text, nullable=True)
+    venue = Column(String(255), nullable=True)
+    start_at = Column(DateTime, nullable=False)
+    end_at = Column(DateTime, nullable=False)
+    session_order = Column(Integer, default=1, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+
+    event = relationship("Event", back_populates="event_sessions")
 
 
 class EventRegistration(Base):

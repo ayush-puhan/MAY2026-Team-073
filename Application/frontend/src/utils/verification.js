@@ -1,15 +1,24 @@
-// Valid domains from the university_domains / universities table
-const VALID_CAMPUS_DOMAINS = ['iitd.ac.in', 'admin.iitd.ac.in', 'campus.edu', 'bits-pilani.ac.in'];
+import { authApi } from '@api/authApis/auth';
 
-export const hasCampusDomain = (email) => {
+export const hasCampusDomain = async (email) => {
   if (!email) return false;
   const lower = email.toLowerCase();
-  
-  // Extract domain from email (e.g., "arjun@campus.edu" -> "campus.edu")
+  if (!lower.includes('@')) return false;
+
   const domain = lower.split('@')[1];
   
-  // Check strictly against the database's available university domains
-  return VALID_CAMPUS_DOMAINS.includes(domain);
+  try {
+    const res = await authApi.getValidDomains();
+    // Support both direct array and object with data property responses
+    const domainsData = Array.isArray(res) ? res : (res.data || []);
+    // Map objects to strings if they are returned as objects (like { domain: 'iitd.ac.in' })
+    const validDomains = domainsData.map(d => typeof d === 'string' ? d : d.domain);
+    
+    return validDomains.includes(domain);
+  } catch (err) {
+    console.error('Failed to fetch valid domains:', err);
+    return false;
+  }
 };
 
 export const checkIsVerified = (user) => {
@@ -17,8 +26,8 @@ export const checkIsVerified = (user) => {
   
   const role = user.role?.toLowerCase();
   
-  // These roles don't need verification checks for features
-  if (['faculty_advisor', 'student_affairs_office', 'dean_student_welfare', 'system_admin'].includes(role)) {
+  // These roles don't need verification checks for features (Staff/Admins)
+  if (role !== 'student') {
     return true;
   }
   

@@ -28,6 +28,7 @@ class Club(Base, TimestampMixin, SoftDeleteMixin):
     description = Column(Text, nullable=True)
     objectives = Column(Text, nullable=True)
     logo_url = Column(Text, nullable=True)
+    banner = Column(String(255), nullable=True)
     status = Column(SAEnum(ClubStatus), default=ClubStatus.ACTIVE, nullable=False)
     faculty_advisor_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
     member_count_cache = Column(Integer, default=0, nullable=False)

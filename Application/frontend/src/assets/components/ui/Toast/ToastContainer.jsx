@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { createPortal } from 'react-dom';
 import styles from './ToastContainer.module.css';
 import { Icon } from '@iconify/react';

@@ -19,6 +19,7 @@ class University(Base, TimestampMixin, SoftDeleteMixin):
     domain = Column(String(100), unique=True, nullable=False)
     address = Column(Text, nullable=True)
     website = Column(String(500), nullable=True)
+    banner = Column(String(255), nullable=True)
     is_active = Column(Boolean, default=True, nullable=False)
 
     # Relationships

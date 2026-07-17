@@ -6,22 +6,28 @@ import { Icon } from '@iconify/react';
 import { SectionHeader } from '../SectionHeader/SectionHeader';
 import { ClubCard } from '../../ui/ClubCard/ClubCard';
 import { useSession } from '../../../../context/SessionContext';
-import { authApi } from '../../../../api/auth.api';
+import { authApi } from '@api/authApis/auth';
 
-import mentalHealthBanner from '../../../images/mental_health_banner.png';
-import culturalBanner from '../../../images/cultural_banner.png';
-import musicBanner from '../../../images/music_banner.png';
-import codingBanner from '../../../images/coding_banner.png';
-import foodBanner from '../../../images/food_banner.png';
+const bannerModules = import.meta.glob('../../../images/clubs/*.png', { eager: true, import: 'default' });
 import { landingIcons } from '../../../icons/registry';
 
-const clubs = [
-  { name: 'Mind & Body Alliance', category: 'Wellness', members: 310, awards: 6, image: mentalHealthBanner, icon: landingIcons.clubMentalHealth, event: 'Mental Health Week' },
-  { name: 'Cultural Club', category: 'Arts', members: 260, awards: 12, image: culturalBanner, icon: landingIcons.clubCultural, event: 'Nukkad Natak Competition' },
-  { name: 'Music Society', category: 'Culture', members: 315, awards: 22, image: musicBanner, icon: landingIcons.clubMusic, event: 'Open Mic Friday' },
-  { name: 'Coding Club', category: 'Engineering', members: 540, awards: 35, image: codingBanner, icon: landingIcons.clubCode, event: 'Web3 Workshop' },
-  { name: 'Culinary Club', category: 'Lifestyle', members: 220, awards: 10, image: foodBanner, icon: landingIcons.clubFood, event: 'Bake with us Day' },
+const findBanner = (keyword) => {
+  const match = Object.keys(bannerModules).find(k => k.includes(keyword));
+  return match ? bannerModules[match] : Object.values(bannerModules)[0] || '';
+};
+
+const baseClubs = [
+  { name: 'Mind & Body Alliance', category: 'Wellness', members: 310, awards: 6, icon: landingIcons.clubMentalHealth, event: 'Mental Health Week', bannerKeyword: 'mental_health' },
+  { name: 'Cultural Club', category: 'Arts', members: 260, awards: 12, icon: landingIcons.clubCultural, event: 'Nukkad Natak Competition', bannerKeyword: 'cultural' },
+  { name: 'Music Society', category: 'Culture', members: 315, awards: 22, icon: landingIcons.clubMusic, event: 'Open Mic Friday', bannerKeyword: 'music' },
+  { name: 'Coding Club', category: 'Engineering', members: 540, awards: 35, icon: landingIcons.clubCode, event: 'Web3 Workshop', bannerKeyword: 'coding' },
+  { name: 'Culinary Club', category: 'Lifestyle', members: 220, awards: 10, icon: landingIcons.clubFood, event: 'Bake with us Day', bannerKeyword: 'food' },
 ];
+
+const clubs = baseClubs.map((club) => ({
+  ...club,
+  image: findBanner(club.bannerKeyword)
+}));
 
 export const FeaturedClubs = () => {
   const { user } = useSession();

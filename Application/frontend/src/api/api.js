@@ -20,14 +20,14 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000',
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000',
   headers: {
     'Content-Type': 'application/json',
   },
   timeout: 10000, // 10 second timeout
 });
 
-// ── Request Interceptor ──
+// â”€â”€ Request Interceptor â”€â”€
 // Automatically attach JWT token from localStorage to every request
 apiClient.interceptors.request.use(
   (config) => {
@@ -40,7 +40,7 @@ apiClient.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// ── Response Interceptor ──
+// â”€â”€ Response Interceptor â”€â”€
 // Handle global errors like 401 Unauthorized
 apiClient.interceptors.response.use(
   (response) => response,

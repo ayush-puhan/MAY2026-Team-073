@@ -1,0 +1,23 @@
+.calendarModule {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  background-color: var(--background);
+  overflow: hidden;
+}
+
+.workspace {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--background);
+  position: relative;
+  overflow: hidden;
+}
+
+@media (max-width: 1081px) {
+  .calendarModule {
+    flex-direction: column;
+  }
+}
+

@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { adminApi } from '../../../../api/admin.api';
+﻿import { useState, useEffect } from 'react';
+import { adminApi } from '@api/adminApis/admin';
 import { DataTable } from '../../ui/DataTable/DataTable';
 import { StatusBadge } from '../../ui/StatusBadge/StatusBadge';
 import { FilterTabs } from '../../ui/FilterTabs/FilterTabs';
@@ -99,7 +99,7 @@ export const UserManagement = () => {
     },
     { header: 'Role', cell: (row) => <span className={styles.roleLabel}>{USER_ROLES_OPTIONS.find(r => r.value === row.role)?.label || row.role}</span> },
     { header: 'Status', cell: (row) => <StatusBadge status={row.is_active ? 'Active' : 'Inactive'} /> },
-    { header: 'Joined', cell: (row) => new Date(row.created_at).toLocaleDateString() },
+    { header: 'Joined', cell: (row) => new Date(row.created_at).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' }) },
     { header: '', cell: () => <Icon icon={uiIcons.chevronRight} color="var(--muted-foreground)" width="20" /> }
   ];
 

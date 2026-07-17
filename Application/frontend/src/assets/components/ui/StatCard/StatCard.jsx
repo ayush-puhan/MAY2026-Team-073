@@ -1,4 +1,4 @@
-import styles from './StatCard.module.css';
+﻿import styles from './StatCard.module.css';
 import { Icon } from '@iconify/react';
 
 export const StatCard = ({ title, value, icon, trend, trendLabel, color = 'var(--primary)' }) => {

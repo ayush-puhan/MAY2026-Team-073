@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { adminApi } from '../../../../../api/admin.api';
+import { adminApi } from '@api/adminApis/admin';
 import { Icon } from '@iconify/react';
 import { uiIcons } from '../../../../icons/registry';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -13,6 +13,7 @@ export const UniversityModal = ({ onClose, onSave, university = null }) => {
   const [formData, setFormData] = useState({
     name: '',
     domain: '',
+    banner: '',
     allowed_domains: '',
     is_active: true
   });
@@ -22,6 +23,7 @@ export const UniversityModal = ({ onClose, onSave, university = null }) => {
       setFormData({
         name: university.name || '',
         domain: university.domain || '',
+        banner: university.banner || '',
         allowed_domains: Array.isArray(university.allowed_domains) 
           ? university.allowed_domains.map(d => d.domain).join(', ') 
           : '',
@@ -108,15 +110,46 @@ export const UniversityModal = ({ onClose, onSave, university = null }) => {
               </div>
 
               <div className={modalStyles.field}>
-                <label>Allowed Email Domains (Comma separated)</label>
+                <label>Allowed Domains <span className={modalStyles.hint}>(comma separated)</span></label>
                 <Input 
                   type="text" 
                   name="allowed_domains" 
                   value={formData.allowed_domains} 
                   onChange={handleChange} 
-                  placeholder="e.g. student.state.edu, faculty.state.edu"
+                  placeholder="e.g. student.state.edu, alumni.state.edu"
                 />
               </div>
+
+              <div className={modalStyles.field}>
+                <label>Banner Image <span className={modalStyles.hint}>(optional)</span></label>
+                <input 
+                  type="file" 
+                  accept="image/png, image/jpeg"
+                  onChange={(e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                      const reader = new FileReader();
+                      reader.onloadend = () => {
+                        setFormData(prev => ({ ...prev, banner: reader.result }));
+                      };
+                      reader.readAsDataURL(file);
+                    }
+                  }} 
+                />
+                {formData.banner && (
+                  <div style={{ marginTop: '0.5rem', width: '100%', height: '80px', backgroundImage: `url(${formData.banner})`, backgroundSize: 'cover', backgroundPosition: 'center', borderRadius: '4px' }}></div>
+                )}
+              </div>
+
+              <label className={modalStyles.checkbox}>
+                <input 
+                  type="checkbox" 
+                  name="is_active" 
+                  checked={formData.is_active} 
+                  onChange={handleChange} 
+                />
+                Active Status
+              </label>
 
               <div className={modalStyles.footer}>
                 <Button type="button" variant="outline" onClick={onClose} disabled={loading}>

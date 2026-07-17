@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import styles from './ForgotPasswordForm.module.css';
-import { authApi } from '../../../../api/auth.api';
+import { authApi } from '@api/authApis/auth';
 import { useToast } from '../../../../context/ToastContext';
 import { Icon } from '@iconify/react';
 import { motion } from 'framer-motion';
+import { uiIcons } from '../../../icons/registry';
 
 export const ForgotPasswordForm = () => {
   const [email, setEmail] = useState('');
@@ -14,8 +15,7 @@ export const ForgotPasswordForm = () => {
 
   const handleReset = async (e) => {
     e.preventDefault();
-    if (!email) { showError('Please enter your campus email'); return; }
-
+    if (!email) return showError('Please enter your email');
     setIsLoading(true);
     try {
       await authApi.forgotPassword(email);
@@ -39,7 +39,10 @@ export const ForgotPasswordForm = () => {
         <button className={styles.submitBtn} onClick={() => setIsSent(false)}>
           Did not receive the email?
         </button>
-        <Link to="/login" className={styles.backLink}>← Back to sign in</Link>
+        <Link to="/login" className={styles.backLink}>
+          <Icon icon={uiIcons.arrowLeft} className={styles.backIcon} />
+          Back to sign in
+        </Link>
       </div>
     );
   }

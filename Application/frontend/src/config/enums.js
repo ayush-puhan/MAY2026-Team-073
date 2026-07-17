@@ -1,4 +1,4 @@
-export const USER_ROLE = {
+﻿export const USER_ROLE = {
   STUDENT: 'student',
   FACULTY_ADVISOR: 'faculty_advisor',
   STUDENT_AFFAIRS_OFFICE: 'student_affairs_office',

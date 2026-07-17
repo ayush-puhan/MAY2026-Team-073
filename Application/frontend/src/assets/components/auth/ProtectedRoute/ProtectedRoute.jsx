@@ -1,7 +1,7 @@
-import React from 'react';
+﻿import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useSession } from '../../../../context/SessionContext';
-import { authApi } from '../../../../api/auth.api';
+import { authApi } from '@api/authApis/auth';
 
 export const ProtectedRoute = ({ children, allowedRoles }) => {
   const { user, isAuthenticated } = useSession();

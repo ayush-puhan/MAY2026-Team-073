@@ -11,6 +11,8 @@ import { ReportsAnalytics } from '../../../assets/components/admin/ReportsAnalyt
 import { PlatformSettings } from '../../../assets/components/admin/PlatformSettings/PlatformSettings';
 import { SupportManagement } from '../../../assets/components/admin/SupportManagement/SupportManagement';
 import { AuditLogs } from '../../../assets/components/admin/AuditLogs/AuditLogs';
+import { AnnouncementCenter } from '../../../assets/components/announcements/AnnouncementCenter/AnnouncementCenter';
+import { GlobalCalendar } from '../../../assets/components/calendar/GlobalCalendar/GlobalCalendar';
 
 import styles from './AdminDashboard.module.css';
 
@@ -32,6 +34,8 @@ export const AdminDashboard = () => {
           <Route path="settings/*" element={<PlatformSettings />} />
           <Route path="support/*" element={<SupportManagement />} />
           <Route path="audit/*" element={<AuditLogs />} />
+          <Route path="announcements/*" element={<AnnouncementCenter />} />
+          <Route path="calendar/*" element={<GlobalCalendar />} />
           
           <Route path="*" element={<Navigate to="" replace />} />
         </Routes>

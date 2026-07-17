@@ -96,6 +96,20 @@
   margin: 0;
 }
 
+.titleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.timestamp {
+  font-size: 0.65rem;
+  color: var(--muted-foreground);
+  opacity: 0.8;
+  white-space: nowrap;
+}
+
 .content p {
   font-size: 0.75rem;
   color: var(--muted-foreground);
@@ -104,8 +118,8 @@
 
 .dot {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
+  top: 0.4rem;
+  right: 0.4rem;
   width: 8px;
   height: 8px;
   border-radius: 50%;

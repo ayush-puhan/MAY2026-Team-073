@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ClubConnect Validation Rules
  * Centralized validation for forms across the app.
  */

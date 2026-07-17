@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Icon } from '@iconify/react';
-import { authApi } from '../../../../api/auth.api';
+import { authApi } from '@api/authApis/auth';
 import { validateDOB } from '../../../../api/validation';
 import { useSession } from '../../../../context/SessionContext';
 import { useToast } from '../../../../context/ToastContext';
@@ -67,6 +67,15 @@ export const ProfileSettingsModal = ({ isOpen, onClose, user }) => {
         
         setFullUser(latestUser);
         
+        let accPrefs = {};
+        try {
+          if (latestUser.accessibility_prefs) {
+            accPrefs = typeof latestUser.accessibility_prefs === 'string' 
+              ? JSON.parse(latestUser.accessibility_prefs) 
+              : latestUser.accessibility_prefs;
+          }
+        } catch(e) { console.error('Failed to parse accessibility_prefs', e); }
+
         setFormData(prev => ({
           ...prev,
           full_name: latestUser.full_name || latestUser.name || '',
@@ -76,7 +85,8 @@ export const ProfileSettingsModal = ({ isOpen, onClose, user }) => {
           roll_number: latestUser.roll_number || '',
           profile_photo_url: latestUser.profile_photo_url || latestUser.avatar || '',
           color_blind_mode: Boolean(latestUser.color_blind_mode),
-          browse_public_only: Boolean(latestUser.browse_public_only),
+          browse_public_only: Boolean(accPrefs.browse_public_only),
+          email_notifications: accPrefs.email_notifications ?? true,
           department_id: latestUser.department_id || '',
           interests: latestUser.interests || [],
           student_profile: {
@@ -210,6 +220,25 @@ export const ProfileSettingsModal = ({ isOpen, onClose, user }) => {
       try {
         const payload = { ...formData };
         
+        let oldAccPrefs = {};
+        try {
+          if (user.accessibility_prefs) {
+            oldAccPrefs = typeof user.accessibility_prefs === 'string'
+              ? JSON.parse(user.accessibility_prefs)
+              : user.accessibility_prefs;
+          }
+        } catch(e) {}
+        const oldEmailNotifications = oldAccPrefs.email_notifications ?? true;
+        const newEmailNotifications = payload.email_notifications;
+
+        // Pack UI preferences into accessibility_prefs to align with auth.py schema
+        payload.accessibility_prefs = JSON.stringify({
+          browse_public_only: payload.browse_public_only,
+          email_notifications: newEmailNotifications
+        });
+        delete payload.browse_public_only;
+        delete payload.email_notifications;
+
         // Remove irrelevant fields based on role
         if (!showDepartment) {
           delete payload.department_id;
@@ -233,9 +262,32 @@ export const ProfileSettingsModal = ({ isOpen, onClose, user }) => {
         const updatedUser = { ...user, ...updated };
         updatedUser.name = updatedUser.full_name;
         updatedUser.avatar = updatedUser.profile_photo_url;
+        
+        // Ensure frontend state has browse_public_only flatly available for other UI components if needed
+        let accPrefs = {};
+        try {
+          if (updatedUser.accessibility_prefs) {
+            accPrefs = typeof updatedUser.accessibility_prefs === 'string'
+              ? JSON.parse(updatedUser.accessibility_prefs)
+              : updatedUser.accessibility_prefs;
+          }
+        } catch(e) {}
+        updatedUser.browse_public_only = Boolean(accPrefs.browse_public_only);
+        updatedUser.email_notifications = accPrefs.email_notifications ?? true;
+
         localStorage.setItem('user', JSON.stringify(updatedUser));
         updateUser(updatedUser);
-        showSuccess("Profile updated successfully!");
+        
+        if (oldEmailNotifications !== newEmailNotifications) {
+          if (newEmailNotifications) {
+            showSuccess("Profile updated! You will now receive email alerts.");
+          } else {
+            showSuccess("Profile updated! You won't receive email alerts anymore.");
+          }
+        } else {
+          showSuccess("Profile updated successfully!");
+        }
+        
         onClose();
       } catch (err) {
         showError("Failed to update profile");
@@ -246,21 +298,17 @@ export const ProfileSettingsModal = ({ isOpen, onClose, user }) => {
   };
 
   const getRoleConfig = (role) => {
-    switch (role?.toLowerCase()) {
-      case 'student':
-        return { isStudent: true, showDepartment: true, showPreferences: true, showInterests: true };
-      case 'faculty_advisor':
-        return { isStudent: false, showDepartment: false, showPreferences: true, showInterests: false };
-      case 'system_admin':
-      case 'student_affairs_office':
-      case 'dean_student_welfare':
-        return { isStudent: false, showDepartment: false, showPreferences: true, showInterests: false };
-      default:
-        return { isStudent: false, showDepartment: false, showPreferences: true, showInterests: false };
-    }
+    const isStudentRole = role?.toLowerCase() === 'student';
+    return { 
+      isStudent: isStudentRole, 
+      showDepartment: isStudentRole, 
+      showPreferences: true, 
+      showInterests: isStudentRole, 
+      isAdminOrFaculty: !isStudentRole 
+    };
   };
 
-  const { isStudent, showDepartment, showPreferences, showInterests } = getRoleConfig(user?.role);
+  const { isStudent, showDepartment, showPreferences, showInterests, isAdminOrFaculty } = getRoleConfig(user?.role);
   const resolvedUser = fullUser || user;
   const isVerified = checkIsVerified(resolvedUser);
 
@@ -312,6 +360,8 @@ export const ProfileSettingsModal = ({ isOpen, onClose, user }) => {
                         user={resolvedUser}
                         errors={errors}
                         key="profile"
+                        isStudent={isStudent}
+                        isAdminOrFaculty={isAdminOrFaculty}
                       />
                     )}
                     {showDepartment && activeTab === 'academic' && (
@@ -334,6 +384,7 @@ export const ProfileSettingsModal = ({ isOpen, onClose, user }) => {
                         masterData={masterData}
                         isVerified={isVerified}
                         key="preferences"
+                        isAdminOrFaculty={isAdminOrFaculty}
                       />
                     )}
                     {activeTab === 'security' && (
@@ -342,6 +393,7 @@ export const ProfileSettingsModal = ({ isOpen, onClose, user }) => {
                         formData={formData}
                         handleChange={handleChange}
                         key="security"
+                        isAdminOrFaculty={isAdminOrFaculty}
                       />
                     )}
                   </AnimatePresence>

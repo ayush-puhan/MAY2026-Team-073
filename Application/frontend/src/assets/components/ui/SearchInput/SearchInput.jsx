@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Icon } from '@iconify/react';
 import { uiIcons } from '../../../icons/registry';
 import styles from './SearchInput.module.css';

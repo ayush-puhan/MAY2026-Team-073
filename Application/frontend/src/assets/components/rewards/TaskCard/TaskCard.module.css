@@ -1,0 +1,155 @@
+.card {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  border-color: var(--gold, #FFD700);
+  box-shadow: 0 4px 20px rgba(255, 215, 0, 0.1);
+}
+
+.card.completed {
+  opacity: 0.8;
+  border-color: var(--success);
+  background: rgba(var(--success-rgb, 46, 213, 115), 0.05);
+}
+
+.iconWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: rgba(255, 215, 0, 0.1);
+  border-radius: 12px;
+  color: var(--gold, #FFD700);
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.completed .iconWrapper {
+  background: rgba(var(--success-rgb, 46, 213, 115), 0.1);
+  color: var(--success);
+}
+
+.content {
+  flex: 1;
+}
+
+.title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.3rem 0;
+}
+
+.desc {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  min-width: 100px;
+}
+
+.points {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--gold, #FFD700);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.pointsIcon {
+  font-size: 1.2rem;
+}
+
+.actionBtn, .completedBtn {
+  width: 100%;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.actionBtn {
+  background: var(--gold, #FFD700);
+  color: #000;
+}
+
+.actionBtn:hover:not(:disabled) {
+  background: #E5C100;
+  transform: scale(1.05);
+}
+
+.actionBtn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.completedBtn {
+  background: transparent;
+  color: var(--success);
+  border: 1px solid var(--success);
+  cursor: default;
+}
+
+.checkmarkOverlay {
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  width: 60px;
+  height: 60px;
+  background: var(--success);
+  color: white;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  padding: 0 0 10px 10px;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  opacity: 0.2;
+}
+
+@media (max-width: 600px) {
+  .card {
+    flex-direction: column;
+    text-align: center;
+    padding: 1.2rem;
+  }
+  
+  .actions {
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  
+  .actionBtn, .completedBtn {
+    width: auto;
+    flex: 1;
+    margin-left: 1rem;
+  }
+}

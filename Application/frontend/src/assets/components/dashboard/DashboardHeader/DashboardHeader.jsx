@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import styles from './DashboardHeader.module.css';
 import { ThemeToggle } from '../../ui/ThemeToggle/ThemeToggle';
 import { NotificationModal } from '../../ui/NotificationModal/NotificationModal';
@@ -47,7 +47,7 @@ export const DashboardHeader = () => {
     <header className={styles.header}>
       <div className={styles.leftActions}>
         <button className={styles.toggleBtn} onClick={toggleSidebar} data-tooltip={isSidebarOpen ? "Collapse Context Panel" : "Expand Context Panel"}>
-          <Icon icon={isSidebarOpen ? "lucide:panel-left-close" : "lucide:panel-left-open"} width="24" height="24" />
+          <Icon icon={isSidebarOpen ? "mdi:menu-open" : "mdi:menu"} width="24" height="24" />
         </button>
       </div>
 

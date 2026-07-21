@@ -1,0 +1,92 @@
+﻿.widgetCard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--foreground);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.content {
+  padding: 1.5rem;
+  flex: 1;
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+}
+
+.timelineItem {
+  display: flex;
+  gap: 1rem;
+}
+
+.timeLineCol {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 0.25rem;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 3px solid var(--primary);
+  background: var(--surface);
+  z-index: 2;
+}
+
+.line {
+  width: 2px;
+  flex: 1;
+  background: var(--border);
+  margin: 4px 0;
+  min-height: 24px;
+}
+
+.contentCol {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding-bottom: 1.5rem;
+}
+
+.timelineItem:last-child .contentCol {
+  padding-bottom: 0;
+}
+
+.time {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.itemTitle {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--foreground);
+}
+
+.itemDesc {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--muted-foreground);
+}

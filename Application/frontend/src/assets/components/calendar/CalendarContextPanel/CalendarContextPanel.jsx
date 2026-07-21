@@ -4,7 +4,7 @@ import { calendarIcons, uiIcons } from '../../../icons/registry';
 import { calendarApi } from '../../../../api';
 import { useToast } from '../../../../context/ToastContext';
 import { Dropdown } from '../../ui/Dropdown/Dropdown';
-import { ContextPanel } from '../../ui/ContextPanel/ContextPanel';
+import { ContextPanel, ContextPanelSection } from '../../ui/ContextLayout/ContextPanel';
 import styles from './CalendarContextPanel.module.css';
 
 const CalendarContextPanel = ({ filters, setFilters, user }) => {
@@ -54,9 +54,8 @@ const CalendarContextPanel = ({ filters, setFilters, user }) => {
   };
 
   return (
-    <ContextPanel>
+    <ContextPanel title="Calendar">
       <div className={styles.panelHeader}>
-        <h2>Calendar</h2>
         {isGoogleAuth ? (
           <button 
             className={`${styles.syncBtn} ${syncing ? styles.syncing : ''}`} 
@@ -64,6 +63,7 @@ const CalendarContextPanel = ({ filters, setFilters, user }) => {
             title="Sync with Google Calendar"
           >
             <Icon icon={calendarIcons.googleSync} width="20" height="20" />
+            <span style={{marginLeft: '8px', fontSize: '14px', fontWeight: '500'}}>Sync Google Calendar</span>
           </button>
         ) : (
           <button 
@@ -93,71 +93,104 @@ const CalendarContextPanel = ({ filters, setFilters, user }) => {
           
           <div className={styles.filterControls}>
             {(() => {
-              const hasUniversity = !!user?.university_id;
+              const isVerified = user?.is_verified;
+              const isSysAdmin = user?.role === 'system_admin';
+              
+              // System Admin: No filters at all
+              if (isSysAdmin) {
+                return (
+                  <>
+                    <div className={styles.toggleRow}>
+                      <span className={styles.toggleLabel}>Show Public Events</span>
+                      <label className={styles.switch}>
+                        <input 
+                          type="checkbox" 
+                          checked={filters.show_public} 
+                          onChange={handlePublicToggle} 
+                        />
+                        <span className={styles.slider}></span>
+                      </label>
+                    </div>
+                    <div className={`${styles.selectGroup} ${styles.mobileViewSelector}`}>
+                      <label>View Mode</label>
+                      <Dropdown 
+                        value={filters.calendarView || 'month'}
+                        onChange={(e) => setFilters(prev => ({ ...prev, calendarView: e.target.value }))}
+                        options={[
+                          { value: 'month', label: 'Month' },
+                          { value: 'week', label: 'Week' },
+                          { value: 'day', label: 'Day' },
+                          { value: 'agenda', label: 'Agenda' }
+                        ].filter(opt => !isMobile || (opt.value === 'day' || opt.value === 'agenda'))}
+                        placeholder="Select view"
+                      />
+                    </div>
+                  </>
+                );
+              }
 
               return (
                 <>
                   <div className={styles.toggleRow}>
                     <span className={styles.toggleLabel}>Show Public Events</span>
-                <label className={styles.switch}>
-                  <input 
-                    type="checkbox" 
-                    checked={filters.show_public} 
-                    onChange={handlePublicToggle} 
-                  />
-                  <span className={styles.slider}></span>
-                </label>
-              </div>
-
-              {/* University filter is ONLY shown to users with a university when exploring public events */}
-              {hasUniversity && filters.show_public && (
-                <div className={styles.selectGroup}>
-                  <label>University</label>
-                  <Dropdown 
-                    value={filters.university_id} 
-                    onChange={handleUniversityChange}
-                    options={[
-                      { value: '', label: 'All Universities' },
-                      { value: '1', label: 'IIT Delhi' },
-                      { value: '2', label: 'BITS Pilani' }
-                    ]}
-                    placeholder="All Universities"
-                  />
-                </div>
-              )}
-
-              {/* Club filter is ONLY shown to users with a university */}
-              {hasUniversity && (
-                <div className={styles.selectGroup}>
-                  <label>Club</label>
-                  {(() => {
-                    const allClubs = [
-                      { value: '1', label: 'Robotics Club', university_id: '1' },
-                      { value: '2', label: 'Photography Club', university_id: '1' },
-                      { value: '3', label: 'Music Society', university_id: '2' }
-                    ];
-
-                    const filteredClubs = filters.university_id 
-                      ? allClubs.filter(c => c.university_id === filters.university_id)
-                      : allClubs;
-
-                    const clubOptions = [
-                      { value: '', label: 'All Clubs' },
-                      ...filteredClubs.map(c => ({ value: c.value, label: c.label }))
-                    ];
-
-                    return (
-                      <Dropdown 
-                        value={filters.club_id} 
-                        onChange={handleClubChange}
-                        options={clubOptions}
-                        placeholder="All Clubs"
-                        disabled={filters.show_public && !filters.university_id}
+                    <label className={styles.switch}>
+                      <input 
+                        type="checkbox" 
+                        checked={filters.show_public} 
+                        onChange={handlePublicToggle} 
                       />
-                    );
-                  })()}
-                </div>
-              )}
+                      <span className={styles.slider}></span>
+                    </label>
+                  </div>
+
+                  {/* University filter shown to everyone (except SysAdmin handled above) ONLY when exploring public events */}
+                  {filters.show_public && (
+                    <div className={styles.selectGroup}>
+                      <label>University</label>
+                      <Dropdown 
+                        value={filters.university_id} 
+                        onChange={handleUniversityChange}
+                        options={[
+                          { value: '', label: 'All Universities' },
+                          { value: '1', label: 'IIT Delhi' },
+                          { value: '2', label: 'BITS Pilani' }
+                        ]}
+                        placeholder="All Universities"
+                      />
+                    </div>
+                  )}
+
+                  {/* Club filter shown ONLY to verified users when NOT on public events */}
+                  {isVerified && !filters.show_public && (
+                    <div className={styles.selectGroup}>
+                      <label>Club</label>
+                      {(() => {
+                        const allClubs = [
+                          { value: '1', label: 'Robotics Club', university_id: '1' },
+                          { value: '2', label: 'Photography Club', university_id: '1' },
+                          { value: '3', label: 'Music Society', university_id: '2' }
+                        ];
+
+                        const filteredClubs = filters.university_id 
+                          ? allClubs.filter(c => c.university_id === filters.university_id)
+                          : allClubs;
+
+                        const clubOptions = [
+                          { value: '', label: 'All Clubs' },
+                          ...filteredClubs.map(c => ({ value: c.value, label: c.label }))
+                        ];
+
+                        return (
+                          <Dropdown 
+                            value={filters.club_id} 
+                            onChange={handleClubChange}
+                            options={clubOptions}
+                            placeholder="All Clubs"
+                          />
+                        );
+                      })()}
+                    </div>
+                  )}
 
               <div className={`${styles.selectGroup} ${styles.mobileViewSelector}`}>
                 <label>View Mode</label>

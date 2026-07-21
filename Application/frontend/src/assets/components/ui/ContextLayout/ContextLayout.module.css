@@ -1,0 +1,134 @@
+.layoutContainer {
+  display: flex;
+  height: 100%;
+  flex: 1;
+  width: 100%;
+  overflow: hidden;
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+/* Color Blind Mode Adjustments */
+.layoutContainer.colorBlind {
+  --primary: #005A9C; 
+  --secondary: #E38627;
+}
+
+/* --- Context Panel --- */
+.contextPanel {
+  width: 250px;
+  min-width: 250px;
+  height: 100%;
+  border-right: 1px solid var(--border);
+  background: color-mix(in oklab, var(--surface) 60%, var(--background));
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 1.5rem 1rem;
+}
+
+.panelTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  padding: 0 0.5rem;
+  color: var(--foreground);
+}
+
+.panelContent {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.panelSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sectionTitle {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  color: var(--muted-foreground);
+  padding: 0 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.sectionContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.panelLink {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem;
+  border-radius: 6px;
+  color: var(--muted-foreground);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.panelLink:hover {
+  background-color: var(--border);
+  color: var(--foreground);
+}
+
+.panelLink.active {
+  background-color: var(--primary);
+  color: white;
+  font-weight: 600;
+}
+
+.linkIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+}
+
+/* --- Workspace Area --- */
+.workspaceArea {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
+  background-color: color-mix(in oklab, var(--background) 95%, white);
+}
+
+.workspaceHeader {
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid var(--border);
+  background-color: color-mix(in oklab, var(--background) 95%, white);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.workspaceContent {
+  padding: 2rem;
+  flex: 1;
+}
+
+/* Scrollbars */
+.contextPanel::-webkit-scrollbar,
+.workspaceArea::-webkit-scrollbar {
+  width: 6px;
+}
+.contextPanel::-webkit-scrollbar-track,
+.workspaceArea::-webkit-scrollbar-track {
+  background: transparent;
+}
+.contextPanel::-webkit-scrollbar-thumb,
+.workspaceArea::-webkit-scrollbar-thumb {
+  background-color: var(--border);
+  border-radius: 10px;
+}

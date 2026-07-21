@@ -1,11 +1,11 @@
-/* Import animations */
+﻿/* Import animations */
 @import '../animations/animations.css';
 
 /* Import Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
 /*
- * ══════════ BREAKPOINTS ══════════
+ * â•â•â•â•â•â•â•â•â•â• BREAKPOINTS â•â•â•â•â•â•â•â•â•â•
  * Mobile iPhone Portrait:  max-width: 481px
  * Mobile Android Portrait: max-width: 641px
  * Tablet Portrait:         max-width: 961px
@@ -16,7 +16,7 @@
  */
 
 :root {
-  --radius: 0.875rem;
+  --radius: 1rem;
   --radius-md: 0.625rem;
   --radius-sm: 0.375rem;
   /* Light theme variables */
@@ -42,6 +42,11 @@
   /* Brand extras */
   --gold: oklch(0.78 0.14 82);
   --gold-foreground: oklch(0.22 0.05 30);
+    --surface: oklch(0.995 0.008 85);
+  --orange: oklch(0.72 0.17 45);
+  --orange-rgb: 255, 120, 40;
+  --blue: oklch(0.72 0.12 230);
+  --purple: oklch(0.7 0.12 310);
   --campus-orange: oklch(0.72 0.17 45);
   --innovation: oklch(0.55 0.16 275);
   --achievement: oklch(0.65 0.15 155);
@@ -111,6 +116,16 @@
   --ring: oklch(0.68 0.14 25);
   --gold: oklch(0.82 0.15 85);
   --gold-foreground: oklch(0.18 0.02 30);
+    --surface: oklch(0.995 0.008 85);
+  --orange: oklch(0.72 0.17 45);
+  --orange-rgb: 255, 120, 40;
+  --blue: oklch(0.72 0.12 230);
+  --purple: oklch(0.7 0.12 310);
+    --surface: oklch(0.25 0.02 28);
+  --orange: oklch(0.75 0.18 50);
+  --orange-rgb: 255, 140, 60;
+  --blue: oklch(0.75 0.13 230);
+  --purple: oklch(0.75 0.14 310);
   --campus-orange: oklch(0.75 0.18 50);
   --innovation: oklch(0.68 0.17 275);
   --achievement: oklch(0.72 0.16 155);
@@ -149,11 +164,12 @@
   padding: 0;
 }
 
-/* ══════════ CUSTOM SCROLLBARS ══════════ */
+/* â•â•â•â•â•â•â•â•â•â• CUSTOM SCROLLBARS â•â•â•â•â•â•â•â•â•â• */
 /* Webkit (Chrome, Edge, Safari) */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 0px;
+  height: 0px;
+  display: none;
 }
 
 ::-webkit-scrollbar-track {
@@ -178,7 +194,7 @@
 
 /* Firefox */
 * {
-  scrollbar-width: thin;
+  scrollbar-width: none;
   scrollbar-color: color-mix(in oklab, var(--foreground) 18%, transparent) transparent;
 }
 
@@ -246,7 +262,7 @@ section[id] {
     0 4px 20px -8px color-mix(in oklab, var(--gold) 30%, transparent);
 }
 
-/* ══════════ COLOR BLIND THEMES ══════════ */
+/* â•â•â•â•â•â•â•â•â•â• COLOR BLIND THEMES â•â•â•â•â•â•â•â•â•â• */
 /* Higher contrast, colorblind-friendly palettes (avoiding red/green ambiguity) */
 
 [data-theme="light"] [data-colorblind="true"],
@@ -268,6 +284,11 @@ section[id] {
   --destructive: oklch(0.5 0.2 30); /* Darker Red/Orange with high contrast */
   --destructive-foreground: oklch(0.98 0 0);
   --coral: oklch(0.6 0.2 260); /* Shift coral towards blue/purple */
+    --surface: oklch(0.995 0.008 85);
+  --orange: oklch(0.72 0.17 45);
+  --orange-rgb: 255, 120, 40;
+  --blue: oklch(0.72 0.12 230);
+  --purple: oklch(0.7 0.12 310);
   --campus-orange: oklch(0.7 0.15 85); /* Shift orange to gold */
   
   --sidebar-active: var(--primary);
@@ -306,6 +327,16 @@ section[id] {
   --destructive: oklch(0.65 0.25 30); /* High contrast bright red */
   --destructive-foreground: oklch(0.98 0 0);
   --coral: oklch(0.7 0.2 260); /* Shift coral towards blue/purple */
+    --surface: oklch(0.995 0.008 85);
+  --orange: oklch(0.72 0.17 45);
+  --orange-rgb: 255, 120, 40;
+  --blue: oklch(0.72 0.12 230);
+  --purple: oklch(0.7 0.12 310);
+    --surface: oklch(0.25 0.02 28);
+  --orange: oklch(0.75 0.18 50);
+  --orange-rgb: 255, 140, 60;
+  --blue: oklch(0.75 0.13 230);
+  --purple: oklch(0.75 0.14 310);
   --campus-orange: oklch(0.75 0.18 85); /* Shift orange to gold */
   
   --sidebar-active: var(--primary);
@@ -325,7 +356,7 @@ section[id] {
   --badge-critical-text: oklch(0.8 0.15 30);
 }
 
-/* ═══════ View Transitions (Circle Reveal Theme Toggle) ═══════ */
+/* â•â•â•â•â•â•â• View Transitions (Circle Reveal Theme Toggle) â•â•â•â•â•â•â• */
 ::view-transition-old(root),
 ::view-transition-new(root) {
   animation: none;
@@ -340,7 +371,7 @@ section[id] {
   z-index: 9999;
 }
 
-/* ══════════ CUSTOM SCROLLBARS ══════════ */
+/* â•â•â•â•â•â•â•â•â•â• CUSTOM SCROLLBARS â•â•â•â•â•â•â•â•â•â• */
 ::-webkit-scrollbar {
   width: 0px;
   height: 0px;
@@ -349,7 +380,7 @@ section[id] {
 
 .custom-scroll {
   overflow: auto;
-  scrollbar-width: thin;
+  scrollbar-width: none;
   scrollbar-color: color-mix(in oklab, var(--foreground) 20%, transparent) transparent;
 }
 
@@ -359,6 +390,9 @@ section[id] {
 }
 
 .custom-scroll {
-  scrollbar-width: thin;
+  scrollbar-width: none;
   scrollbar-color: color-mix(in oklab, var(--foreground) 20%, transparent) transparent;
 }
+
+
+

@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styles from './LoginForm.module.css';
 import { authApi } from '@api/authApis/auth';
@@ -60,7 +60,15 @@ export const LoginForm = () => {
       const r = data.user.role;
       
       // Reminder for unverified users
-      const hasOptedOut = data.user.browse_public_only || data.user.preferences?.browse_public_only;
+      let hasOptedOut = data.user.browse_public_only || data.user.preferences?.browse_public_only;
+      if (!hasOptedOut && data.user.accessibility_prefs) {
+        try {
+          const accPrefs = typeof data.user.accessibility_prefs === 'string'
+            ? JSON.parse(data.user.accessibility_prefs)
+            : data.user.accessibility_prefs;
+          hasOptedOut = Boolean(accPrefs.browse_public_only);
+        } catch(e) {}
+      }
       const isAdminOrFaculty = data.user.role?.toLowerCase() !== 'student';
       
       if (!isAdminOrFaculty && !checkIsVerified(data.user) && !hasOptedOut) {

@@ -1,0 +1,76 @@
+﻿.prioritySection {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.sectionTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--foreground);
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+}
+
+.timelineItem {
+  display: flex;
+  gap: 1.25rem;
+  position: relative;
+}
+
+.timeLineCol {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 12px;
+  flex-shrink: 0;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid;
+  margin-top: 0.25rem;
+  box-shadow: 0 0 0 4px var(--background);
+}
+
+.line {
+  width: 2px;
+  flex: 1;
+  background: color-mix(in oklab, var(--border) 60%, transparent);
+  margin: 4px 0;
+  min-height: 32px;
+}
+
+.contentCol {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding-bottom: 2rem;
+}
+
+.timelineItem:last-child .contentCol {
+  padding-bottom: 0;
+}
+
+.time {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--muted-foreground);
+  letter-spacing: 0.05em;
+}
+
+.itemTitle {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--foreground);
+  line-height: 1.3;
+}
+
+

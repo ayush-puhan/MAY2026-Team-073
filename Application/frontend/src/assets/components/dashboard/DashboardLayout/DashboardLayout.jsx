@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './DashboardLayout.module.css';
 import { Sidebar } from '../Sidebar/Sidebar';
 import { DashboardHeader } from '../DashboardHeader/DashboardHeader';
@@ -7,7 +7,7 @@ import { useSession } from '../../../../context/SessionContext';
 
 import { SidebarProvider, useSidebarContext } from '../../../../context/SidebarContext';
 
-const DashboardLayoutContent = ({ children, title, user, sidebarLinks, isInitializing }) => {
+const DashboardLayoutContent = ({ children, title, user, sidebarLinks, isInitializing, noPadding }) => {
   const { isSidebarOpen } = useSidebarContext();
   
   return (
@@ -15,7 +15,7 @@ const DashboardLayoutContent = ({ children, title, user, sidebarLinks, isInitial
       <Sidebar links={sidebarLinks} />
       <div className={`${styles.mainContent} ${!isSidebarOpen ? styles.collapsed : ''}`}>
         <DashboardHeader title={title} user={user} />
-        <main className={styles.pageContent}>
+        <main className={`${styles.pageContent} ${noPadding ? styles.noPadding : ''}`}>
           {children}
         </main>
       </div>
@@ -39,7 +39,7 @@ const DashboardLayoutContent = ({ children, title, user, sidebarLinks, isInitial
  *   their own fetch logic here (clubs, events, stats, etc.) and it will all be covered 
  *   by one unified loading state.
  */
-export const DashboardLayout = ({ children, title, user, sidebarLinks, onLoadData }) => {
+export const DashboardLayout = ({ children, title, user, sidebarLinks, onLoadData, noPadding = false }) => {
   const { updateUser } = useSession();
   const [isInitializing, setIsInitializing] = useState(true);
 
@@ -79,6 +79,7 @@ export const DashboardLayout = ({ children, title, user, sidebarLinks, onLoadDat
         user={user} 
         sidebarLinks={sidebarLinks} 
         isInitializing={isInitializing}
+        noPadding={noPadding}
       >
         {children}
       </DashboardLayoutContent>

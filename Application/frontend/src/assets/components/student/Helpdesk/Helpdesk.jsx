@@ -227,8 +227,10 @@ export const Helpdesk = () => {
                     placeholder="-- Select Category --"
                     options={[
                       { value: 'system', label: 'System Admin' },
-                      { value: 'university', label: 'University Staff' },
-                      { value: 'club', label: 'Club Officer' }
+                      ...(isVerified ? [
+                        { value: 'university', label: 'University Staff' },
+                        { value: 'club', label: 'Club Officer' }
+                      ] : [])
                     ]}
                   />
                 </div>

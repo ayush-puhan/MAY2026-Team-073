@@ -1,7 +1,7 @@
 import { dashboardIcons } from '../assets/icons/registry';
 import { checkIsVerified } from '../utils/verification';
 
-// ── Club Role Hierarchy (index = rank, higher = more permissions) ──
+// "?"? Club Role Hierarchy (index = rank, higher = more permissions) "?"?
 export const CLUB_ROLES = [
   'Student',              // 0
   'Club Member',          // 1
@@ -21,12 +21,11 @@ const getGlobalBottomNav = (basePath) => [
 ];
 
 export const STUDENT_NAV = [
-  { name: 'Dashboard', path: '/student-dashboard', icon: dashboardIcons.dashboard },
-  { name: 'Discover Clubs', path: '/student-dashboard/discover', icon: dashboardIcons.discover },
-  { name: 'Events',         path: '/student-dashboard/events', icon: dashboardIcons.events },
-  { name: 'My Clubs',       path: '/student-dashboard/my-clubs', icon: dashboardIcons.myClubs },
-  { name: 'Rewards',        path: '/student-dashboard/rewards', icon: dashboardIcons.rewards },
-  { name: 'AI Assistant',   path: '/student-dashboard/ai', icon: dashboardIcons.aiAssistant },
+  { name: 'Campus Home', path: '/student-dashboard', icon: dashboardIcons.dashboard },
+  { name: 'Clubs',       path: '/student-dashboard/clubs', icon: dashboardIcons.discover },
+  { name: 'Events',      path: '/student-dashboard/events', icon: dashboardIcons.events },
+  { name: 'Rewards',     path: '/student-dashboard/rewards', icon: dashboardIcons.rewards },
+  { name: 'AI Assistant', path: '/student-dashboard/ai', icon: dashboardIcons.aiAssistant },
   ...getGlobalBottomNav('/student-dashboard')
 ];
 
@@ -60,8 +59,9 @@ export const FACULTY_ADVISOR_NAV = [
 ];
 
 const UNVERIFIED_NAV = [
-  { name: 'Dashboard', path: '/student-dashboard', icon: dashboardIcons.dashboard },
-  { name: 'Events',         path: '/student-dashboard/events', icon: dashboardIcons.events },
+  { name: 'Campus Home', path: '/student-dashboard', icon: dashboardIcons.dashboard },
+  { name: 'Events',      path: '/student-dashboard/events', icon: dashboardIcons.events },
+  { name: 'Rewards',     path: '/student-dashboard/rewards', icon: dashboardIcons.rewards },
   ...getGlobalBottomNav('/student-dashboard')
 ];
 

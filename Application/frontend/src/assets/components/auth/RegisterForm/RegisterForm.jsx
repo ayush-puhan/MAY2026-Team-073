@@ -1,4 +1,4 @@
-﻿import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styles from './RegisterForm.module.css';
 import { authApi } from '@api/authApis/auth';
@@ -58,16 +58,14 @@ export const RegisterForm = () => {
       showError('Please agree to the community guidelines and privacy policy to continue.');
       return;
     }
+    
+    // Simulate sending OTP without saving user to database yet
     setIsLoading(true);
-    try {
-      await authApi.register(formData);
-      showSuccess('Profile created! Please verify your email.');
-      setStep('otp'); // Move to verification step
-    } catch (err) {
-      showError(err.message || 'Registration failed');
-    } finally {
+    setTimeout(() => {
       setIsLoading(false);
-    }
+      showSuccess('OTP Sent! Please verify your email.');
+      setStep('otp'); // Move to verification step
+    }, 800);
   };
 
   const handleVerifyOTP = async (e) => {
@@ -78,8 +76,18 @@ export const RegisterForm = () => {
     }
     setIsLoading(true);
     try {
+      // 1. Verify the dummy OTP (frontend only for now)
+      if (otp !== '123456') {
+        throw new Error('Invalid OTP. Please enter 123456 for testing.');
+      }
+      
+      // 2. Actually register the user in the database now that OTP is valid
+      await authApi.register(formData);
+      
+      // 3. Mark as verified
       await authApi.verifyEmail(formData.email, otp);
-      showSuccess('Email verified! You can now log in.');
+      
+      showSuccess('Email verified and profile created! You can now log in.');
       navigate('/login');
     } catch (err) {
       showError(err.message || 'Verification failed');

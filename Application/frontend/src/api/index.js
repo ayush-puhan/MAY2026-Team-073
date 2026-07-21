@@ -43,3 +43,13 @@ export const announcementsApi = USE_MOCK ? announcementsMockApi : announcementsR
 import { calendarMockApi } from './mockbackendApis/calendarApis/calendar';
 import { calendarRealApi } from './backendApis/calendarApis/calendar';
 export const calendarApi = USE_MOCK ? calendarMockApi : calendarRealApi;
+
+// ── Events APIs ──
+import { eventsMockApi } from './mockbackendApis/eventsApis/events';
+import { eventsRealApi } from './backendApis/eventsApis/events';
+export const eventsApi = USE_MOCK ? eventsMockApi : eventsRealApi;
+
+// ── Rewards APIs ──
+import { rewardsMockApi } from './mockbackendApis/rewardsApis/rewards';
+import { rewardsRealApi } from './backendApis/rewardsApis/rewards';
+export const rewardsApi = USE_MOCK ? rewardsMockApi : rewardsRealApi;

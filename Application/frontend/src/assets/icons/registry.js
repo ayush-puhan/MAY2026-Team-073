@@ -101,6 +101,8 @@ export const dashboardIcons = {
   messages: 'mdi:message-outline',
   profile: 'mdi:account-outline',
   logout: 'mdi:logout',
+  eventStar: 'mdi:calendar-star',
+  menuOpen: 'mdi:menu-open',
 
   // Club role-specific
   clubFeed: 'mdi:newspaper-variant-outline',
@@ -152,6 +154,31 @@ export const calendarIcons = {
   addSession: 'mdi:calendar-plus',
   eventPublic: 'mdi:earth',
   eventPrivate: 'mdi:lock',
+};
+
+// ── Rewards ──
+export const rewardsIcons = {
+  earn: 'mdi:star-four-points-outline',
+  store: 'mdi:gift-outline',
+  history: 'mdi:history',
+  account: 'mdi:account',
+  shieldStar: 'mdi:shield-star',
+  starFourPoints: 'mdi:star-four-points',
+  trendingUp: 'mdi:trending-up',
+  fire: 'mdi:fire',
+  gift: 'mdi:gift',
+  star: 'mdi:star',
+  calendarToday: 'mdi:calendar-today',
+  calendarWeek: 'mdi:calendar-week',
+  calendarMonth: 'mdi:calendar-month',
+  trophyAward: 'mdi:trophy-award',
+  starPlus: 'mdi:star-plus',
+  giftOpen: 'mdi:gift-open',
+  starCircle: 'mdi:star-circle',
+  cartArrowUp: 'mdi:cart-arrow-up',
+  packageVariant: 'mdi:package-variant-closed',
+  checkCircle: 'mdi:check-circle',
+  check: 'mdi:check'
 };
 
 

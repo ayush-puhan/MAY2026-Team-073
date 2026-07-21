@@ -1,0 +1,119 @@
+﻿.widgetCard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--foreground);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.badge {
+  background: var(--primary);
+  color: white;
+  padding: 0.2rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.content {
+  padding: 1.5rem;
+  flex: 1;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--background);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.item:hover {
+  border-color: var(--primary);
+  transform: translateX(4px);
+}
+
+.pinned {
+  background: linear-gradient(135deg, color-mix(in oklab, var(--purple) 5%, transparent), transparent);
+  border-color: color-mix(in oklab, var(--purple) 30%, transparent);
+}
+
+.pinned .pinIcon {
+  color: var(--purple);
+}
+
+.urgent {
+  border-left: 3px solid var(--destructive);
+}
+
+.itemHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.itemMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.deptBadge {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--muted-foreground);
+  text-transform: uppercase;
+}
+
+.itemTime {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+}
+
+.itemTitle {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--foreground);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.empty {
+  color: var(--muted-foreground);
+  font-size: 0.95rem;
+  text-align: center;
+  padding: 2rem 0;
+}

@@ -3,6 +3,8 @@ import { useSession } from '../../../../context/SessionContext';
 import { calendarApi } from '../../../../api';
 import CalendarContextPanel from '../CalendarContextPanel/CalendarContextPanel';
 import CalendarWorkspace from '../CalendarWorkspace/CalendarWorkspace';
+import { ContextLayout } from '../../ui/ContextLayout/ContextLayout';
+import layoutStyles from '../../ui/ContextLayout/ContextLayout.module.css';
 import styles from './GlobalCalendar.module.css';
 
 export const GlobalCalendar = () => {
@@ -17,7 +19,7 @@ export const GlobalCalendar = () => {
     university_id: '',
     club_id: '',
     searchQuery: '',
-    calendarView: window.innerWidth <= 768 ? 'day' : 'week'
+    calendarView: window.innerWidth <= 768 ? 'agenda' : 'month'
   });
 
   // Fetch events when filters or user changes
@@ -39,8 +41,10 @@ export const GlobalCalendar = () => {
     fetchEvents();
   }, [user, filters.show_public, filters.university_id, filters.club_id]);
 
-  // Client-side search filtering (since search is fast enough to do locally on the fetched set)
+  // Client-side search filtering and registration filter
   const displayedEvents = events.filter(ev => {
+    if (!ev.isRegistered) return false; // Only show registered events
+    
     if (!filters.searchQuery) return true;
     const q = filters.searchQuery.toLowerCase();
     return (
@@ -51,23 +55,25 @@ export const GlobalCalendar = () => {
   });
 
   return (
-    <div className={styles.calendarModule}>
+    <ContextLayout>
       <CalendarContextPanel 
         filters={filters} 
         setFilters={setFilters} 
         user={user} 
       />
       
-      <div className={styles.workspace}>
-        <CalendarWorkspace 
-          events={displayedEvents} 
-          loading={loading}
-          user={user}
-          filters={filters}
-          setFilters={setFilters}
-        />
+      <div className={layoutStyles.workspaceArea}>
+        <div className={layoutStyles.workspaceContent} style={{ paddingTop: '0', display: 'flex', flexDirection: 'column', height: '100%' }}>
+          <CalendarWorkspace 
+            events={displayedEvents} 
+            loading={loading}
+            user={user}
+            filters={filters}
+            setFilters={setFilters}
+          />
+        </div>
       </div>
-    </div>
+    </ContextLayout>
   );
 };
 

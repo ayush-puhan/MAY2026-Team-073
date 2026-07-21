@@ -1,99 +1,40 @@
-﻿.container {
+﻿.homeContainer {
+  width: 100%;
+  height: 100%;
+  overflow-y: overlay;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
 }
 
-.welcomeTitle {
-  color: var(--foreground);
-  font-size: 1.5rem;
-  margin-bottom: 0.5rem;
+/* Linear-style Custom Scrollbar */
+.homeContainer::-webkit-scrollbar {
+  width: 8px;
+  background: transparent;
 }
 
-.welcomeDesc {
-  color: var(--muted-foreground);
+.homeContainer::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-.dashboardGrid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.5rem;
+.homeContainer::-webkit-scrollbar-thumb {
+  background: rgba(100, 100, 100, 0.2);
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
 }
 
-@media (min-width: 768px) {
-  .dashboardGrid {
-    grid-template-columns: 2fr 1fr;
-  }
+.homeContainer:hover::-webkit-scrollbar-thumb {
+  background: rgba(100, 100, 100, 0.4);
+  border: 2px solid transparent;
+  background-clip: padding-box;
 }
 
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
+.homeContainer::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 100, 100, 0.6);
 }
 
-.cardHeader {
-  padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid var(--border);
-  background: var(--surface-hover);
+.homeContainer::-webkit-scrollbar-button {
+  display: none;
 }
 
-.cardHeader h3 {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: var(--foreground);
-  margin: 0;
-}
-
-.cardContent {
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.eventItem {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid var(--border);
-}
-
-.eventItem:last-child {
-  border-bottom: none;
-  padding-bottom: 0;
-}
-
-.eventInfo {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.eventInfo strong {
-  color: var(--foreground);
-  font-size: 1rem;
-}
-
-.eventInfo span {
-  color: var(--muted-foreground);
-  font-size: 0.875rem;
-}
-
-.badge {
-  background: var(--primary-light);
-  color: var(--primary);
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 600;
-}
-
-.emptyText {
-  color: var(--muted-foreground);
-  font-size: 0.9375rem;
-  text-align: center;
-  padding: 2rem 0;
-}

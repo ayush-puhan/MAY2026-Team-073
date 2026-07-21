@@ -15,7 +15,13 @@ from .events import AttendanceRecord, Event, EventRegistration, ExternalParticip
 from .external_relations import ClubSponsor, Sponsor
 from .finance import Budget, Expense
 from .interests import ClubInterest, EventInterest, Interest, UserInterest
-from .rewards import RewardPointsLedger, RewardRedemption
+from .rewards import (
+    RewardPointsLedger, 
+    RewardRedemption,
+    RewardTask,
+    RewardTaskCompletion,
+    RewardStoreItem
+)
 from .support import EmergencyReport, SupportTicket, TicketResponse
 from .university import University, UniversityDomain
 
@@ -52,6 +58,9 @@ __all__ = [
     "EmergencyReport",
     "RewardPointsLedger",
     "RewardRedemption",
+    "RewardTask",
+    "RewardTaskCompletion",
+    "RewardStoreItem",
     "Sponsor",
     "ClubSponsor",
     "University",

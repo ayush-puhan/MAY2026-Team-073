@@ -1,0 +1,145 @@
+.carouselContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--foreground);
+  margin: 0;
+}
+
+.viewAll {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--primary);
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.viewAll:hover {
+  opacity: 0.8;
+}
+
+.scrollWrapper {
+  width: 100%;
+  overflow-x: hidden;
+  /* Add padding so that hover translate and shadow aren't clipped */
+  padding-block: 20px;
+  margin-block: -20px;
+  
+  mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+}
+
+.scrollTrack {
+  display: flex;
+  gap: 1.5rem;
+  width: max-content;
+  animation: marqueeScroll 30s linear infinite;
+}
+
+.scrollTrack:hover {
+  animation-play-state: paused;
+}
+
+@keyframes marqueeScroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(calc(-33.33% - 0.5rem)); /* Offset for gap: 1.5rem / 3 */ }
+}
+
+.slide {
+  width: 320px;
+  flex-shrink: 0;
+}
+
+.emptyState {
+  color: var(--muted-foreground);
+  font-size: 0.95rem;
+  padding: 1rem 0;
+}
+
+/* Info Modal */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  padding: 1.5rem;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+  animation: modalIn 0.2s ease-out;
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.95) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.modalHeader h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.modalHeader button {
+  background: none;
+  border: none;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  padding: 0.25rem;
+  transition: color 0.2s;
+}
+.modalHeader button:hover { color: var(--foreground); }
+
+.modalBody p {
+  margin: 0.5rem 0;
+  color: var(--foreground);
+  line-height: 1.5;
+}
+
+.registerBtn {
+  margin-top: 1.5rem;
+  width: 100%;
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.registerBtn:hover {
+  opacity: 0.9;
+}

@@ -1,0 +1,187 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 4rem;
+  color: var(--text-secondary);
+  font-size: 1.2rem;
+}
+
+.title {
+  margin: 0;
+  font-size: 2rem;
+  color: var(--text-primary);
+}
+
+.statsContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.statCard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 1.5rem;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.statIcon {
+  font-size: 3rem;
+  opacity: 0.8;
+}
+
+.statContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.statContent span {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.statContent h3 {
+  margin: 0;
+  font-size: 1.8rem;
+  color: var(--text-primary);
+}
+
+.tabsContainer {
+  display: flex;
+  gap: 1rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.5rem;
+}
+
+.tabBtn {
+  background: transparent;
+  border: none;
+  padding: 0.5rem 1rem;
+  color: var(--text-secondary);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.tabBtn:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+.activeTab {
+  background: rgba(255, 215, 0, 0.1);
+  color: var(--gold, #FFD700);
+}
+
+.contentArea {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+}
+
+.listItem {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.2rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.2s;
+}
+
+.listItem:last-child {
+  border-bottom: none;
+}
+
+.listItem:hover {
+  background: var(--surface-hover);
+}
+
+.itemIconWrapper {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.2);
+  flex-shrink: 0;
+}
+
+.earnedIcon {
+  color: var(--success);
+  font-size: 1.5rem;
+}
+
+.spentIcon {
+  color: #ff6b6b;
+  font-size: 1.5rem;
+}
+
+.itemInfo {
+  flex: 1;
+}
+
+.itemInfo h4 {
+  margin: 0 0 0.3rem 0;
+  font-size: 1.1rem;
+  color: var(--text-primary);
+}
+
+.itemInfo span {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.itemPointsEarned {
+  font-weight: 700;
+  color: var(--success);
+  font-size: 1.2rem;
+}
+
+.itemPointsSpent {
+  font-weight: 700;
+  color: #ff6b6b;
+  font-size: 1.2rem;
+}
+
+.emptyState {
+  padding: 3rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  .listItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  .itemPointsEarned, .itemPointsSpent {
+    align-self: flex-end;
+  }
+}

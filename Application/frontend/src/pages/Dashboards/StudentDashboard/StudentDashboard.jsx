@@ -1,88 +1,63 @@
-import { useEffect, useRef } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import React, { useEffect, useState, useRef } from 'react';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { DashboardLayout } from '../../../assets/components/dashboard/DashboardLayout/DashboardLayout';
 import { getNavForUser } from '../../../config/navigation';
 import { useSession } from '../../../context/SessionContext';
-import { useToast } from '../../../context/ToastContext';
 import { Helpdesk } from '../../../assets/components/student/Helpdesk/Helpdesk';
 import { AnnouncementCenter } from '../../../assets/components/announcements/AnnouncementCenter/AnnouncementCenter';
 import { GlobalCalendar } from '../../../assets/components/calendar/GlobalCalendar/GlobalCalendar';
+import { RewardsHub } from './RewardsHub';
+import { getRandomGreeting } from '../../../config/greetings';
+import { eventsApi } from '../../../api';
+import { VerifiedHome } from './VerifiedHome/VerifiedHome';
+import { GuestHome } from './GuestHome/GuestHome';
+import { EventsHub } from '../../../assets/components/events/EventsHub/EventsHub';
 import styles from './StudentDashboard.module.css';
 
 export const StudentDashboard = () => {
   const { user } = useSession();
-  const { showInfo } = useToast();
-  const hasToasted = useRef(false);
+  const location = useLocation();
+  const [publicEvents, setPublicEvents] = useState([]);
+  
+  const isVerified = user?.student_profile?.is_verified === 1 || user?.student_profile?.is_verified === true;
+  const hasOptedOut = user?.browse_public_only || user?.preferences?.browse_public_only;
   
   useEffect(() => {
-    if (user && !hasToasted.current) {
-      const isVerified = user.student_profile?.is_verified;
-      const hasOptedOut = user.browse_public_only || user.preferences?.browse_public_only;
-      
-      if (!isVerified && !hasOptedOut) {
-        hasToasted.current = true;
-        const timer = setTimeout(() => {
-          showInfo("Verify your university campus email to get full access to clubs and events.", 6000);
-        }, 2000);
-        return () => clearTimeout(timer);
+    const fetchEvents = async () => {
+      try {
+        const data = await eventsApi.getAllEvents();
+        const publicOnly = data.filter(e => e.is_public === true || e.is_public === 1 || e.is_public === "1");
+        const eventsToShow = publicOnly.length > 0 ? publicOnly : data;
+        setPublicEvents(eventsToShow.slice(0, 6));
+      } catch (err) {
+        console.error("Failed to load events", err);
       }
-    }
-  }, [user, showInfo]);
+    };
+    fetchEvents();
+  }, []);
+
+  const greetingQuote = useRef(getRandomGreeting());
 
   if (!user) return null;
 
   const sidebarLinks = getNavForUser(user);
-
-  const mockEvents = [
-    { id: 1, title: 'Inter-College Chess Championship', date: '2026-08-15', location: 'Main Hall', type: 'Open to All' },
-    { id: 2, title: 'Tech Startup Pitch Night', date: '2026-08-18', location: 'Auditorium', type: 'Open to All' },
-    { id: 3, title: 'Campus Photography Walk', date: '2026-08-20', location: 'Campus Grounds', type: 'Open to All' }
-  ];
+  const noPadding = location.pathname.includes('/events') || location.pathname.includes('/rewards') || location.pathname.includes('/calendar');
 
   return (
-    <DashboardLayout title="Student Dashboard" user={user} sidebarLinks={sidebarLinks}>
-      <div className={styles.container} style={{ width: '100%' }}>
+    <DashboardLayout title="Campus Home" user={user} sidebarLinks={sidebarLinks} noPadding={noPadding}>
+      <div className={styles.homeContainer}>
         <Routes>
           <Route path="/" element={
-            <>
-              <div className={styles.welcomeSection}>
-                <h2 className={styles.welcomeTitle}>Welcome back, {user.full_name?.split(' ')[0] || 'Student'}!</h2>
-                <p className={styles.welcomeDesc}>Here is a quick overview of what's happening around campus.</p>
-              </div>
-
-              <div className={styles.dashboardGrid}>
-                <div className={styles.card}>
-                  <div className={styles.cardHeader}>
-                    <h3>Upcoming Events (Open to All)</h3>
-                  </div>
-                  <div className={styles.cardContent}>
-                    {mockEvents.map(ev => (
-                      <div key={ev.id} className={styles.eventItem}>
-                        <div className={styles.eventInfo}>
-                          <strong>{ev.title}</strong>
-                          <span>{ev.date} • {ev.location}</span>
-                        </div>
-                        <span className={styles.badge}>{ev.type}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                
-                <div className={styles.card}>
-                  <div className={styles.cardHeader}>
-                    <h3>My Clubs</h3>
-                  </div>
-                  <div className={styles.cardContent}>
-                    <p className={styles.emptyText}>You haven't joined any clubs yet. Head over to Discover to find communities!</p>
-                  </div>
-                </div>
-              </div>
-            </>
+            isVerified 
+              ? <VerifiedHome user={user} quote={greetingQuote.current} events={publicEvents} />
+              : <GuestHome quote={greetingQuote.current} publicEvents={publicEvents} hasOptedOut={hasOptedOut} />
           } />
           
           <Route path="helpdesk/*" element={<Helpdesk />} />
           <Route path="announcements/*" element={<AnnouncementCenter />} />
           <Route path="calendar/*" element={<GlobalCalendar />} />
+          <Route path="events/*" element={<EventsHub />} />
+          <Route path="rewards/*" element={<RewardsHub />} />
           
           <Route path="*" element={<Navigate to="" replace />} />
         </Routes>
@@ -90,6 +65,3 @@ export const StudentDashboard = () => {
     </DashboardLayout>
   );
 };
-
-
-

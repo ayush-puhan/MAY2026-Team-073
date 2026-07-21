@@ -29,10 +29,10 @@ const CalendarWorkspace = ({ events, loading, user, filters, setFilters }) => {
       const mobile = window.innerWidth <= 768;
       if (mobile !== isMobile) {
         setIsMobile(mobile);
-        if (mobile && (view === Views.MONTH || view === Views.WEEK)) {
-          setFilters(prev => ({ ...prev, calendarView: Views.DAY }));
-        } else if (!mobile && view === Views.DAY) {
-          setFilters(prev => ({ ...prev, calendarView: Views.WEEK }));
+        if (mobile && (view === Views.MONTH || view === Views.WEEK || view === Views.DAY)) {
+          setFilters(prev => ({ ...prev, calendarView: Views.AGENDA }));
+        } else if (!mobile && view === Views.AGENDA) {
+          setFilters(prev => ({ ...prev, calendarView: Views.MONTH }));
         }
       }
     };
@@ -58,7 +58,7 @@ const CalendarWorkspace = ({ events, loading, user, filters, setFilters }) => {
   return (
     <div className={styles.workspaceContainer}>
       <div className={styles.calendarHeader}>
-        <h1>Global Calendar</h1>
+        <h1>Your Calendar</h1>
       </div>
 
       <div className={styles.calendarWrapper}>

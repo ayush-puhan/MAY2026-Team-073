@@ -10,7 +10,7 @@ const findBanner = (keyword) => {
   return match ? bannerModules[match] : '';
 };
 
-export const EventCard = ({ icon = 'mdi:calendar-blank-outline', color = 'var(--primary)', title, subtitle, rightElement, onClick, bannerKeyword }) => {
+export const EventCard = ({ icon = 'mdi:calendar-blank-outline', color = 'var(--primary)', title, subtitle, rightElement, university, onClick, bannerKeyword }) => {
   const bannerImg = useMemo(() => {
     if (bannerKeyword) {
       const specificBanner = findBanner(bannerKeyword);
@@ -33,6 +33,11 @@ export const EventCard = ({ icon = 'mdi:calendar-blank-outline', color = 'var(--
         }}
       >
         <div className={styles.bannerBg}></div>
+        {university && (
+          <div className={styles.universityTag}>
+            <Icon icon="mdi:school-outline" /> {university}
+          </div>
+        )}
         {rightElement && (
           <div className={styles.categoryPill}>
             {rightElement}

@@ -3,6 +3,7 @@ import { Icon } from '@iconify/react';
 import { ResponsiveContainer, LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 import { universityAdminApi } from '@api/universityAdminApis/universityAdmin';
 import styles from './UniversityAnalytics.module.css';
+import { uiIcons } from '../../../icons/registry';
 
 export const UniversityAnalytics = () => {
   const [analytics, setAnalytics] = useState(null);
@@ -22,7 +23,7 @@ export const UniversityAnalytics = () => {
   if (loading) {
     return (
       <div className={styles.loading}>
-        <Icon icon="mdi:loading" className="animate-spin" width="32" />
+        <Icon icon={uiIcons.loading} className="animate-spin" width="32" />
       </div>
     );
   }

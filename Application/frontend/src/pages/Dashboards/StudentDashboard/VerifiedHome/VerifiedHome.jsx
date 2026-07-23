@@ -7,10 +7,11 @@ import { EventRegistrationModal } from '../../../../assets/components/ui/EventRe
 import { eventsApi } from '../../../../api';
 import { useToast } from '../../../../context/ToastContext';
 import styles from './VerifiedHome.module.css';
+import { calendarIcons, dashboardIcons, rewardsIcons, uiIcons } from '../../../../assets/icons/registry';
 
 export const VerifiedHome = ({ user, events = [], quote }) => {
   const navigate = useNavigate();
-  const { addToast } = useToast();
+  const { showSuccess, showError } = useToast();
   const [infoEvent, setInfoEvent] = useState(null);
   const [registerEvent, setRegisterEvent] = useState(null);
   const fullName = user?.full_name || 'Student';
@@ -44,11 +45,10 @@ export const VerifiedHome = ({ user, events = [], quote }) => {
   const handleRegister = async (formData) => {
     try {
       await eventsApi.registerForEvent(registerEvent.id, user.id, false, formData);
-      addToast({ title: 'Registration Successful', message: 'You have been registered for ' + registerEvent?.title, type: 'success' });
+      showSuccess('You have been registered for ' + registerEvent?.title);
       setRegisterEvent(null);
-      setInfoEvent(null);
     } catch (err) {
-      addToast({ title: 'Error', message: 'Failed to register', type: 'error' });
+      showError(err.message || 'Failed to register');
     }
   };
 
@@ -74,7 +74,7 @@ export const VerifiedHome = ({ user, events = [], quote }) => {
           {/* Today */}
           <div className={styles.infoCard}>
             <div className={styles.infoHeader}>
-              <Icon icon="mdi:calendar-today" className={styles.infoIcon} style={{ color: 'var(--primary)' }} />
+              <Icon icon={calendarIcons.calendarToday} className={styles.infoIcon} style={{ color: 'var(--primary)' }} />
               <span className={styles.infoLabel} style={{ color: 'var(--primary)' }}>UPCOMING</span>
             </div>
             <ul className={styles.infoList}>
@@ -94,7 +94,7 @@ export const VerifiedHome = ({ user, events = [], quote }) => {
           {/* Notifications */}
           <div className={styles.infoCard}>
             <div className={styles.infoHeader}>
-              <Icon icon="mdi:bell-outline" className={styles.infoIcon} style={{ color: 'var(--gold)' }} />
+              <Icon icon={dashboardIcons.bellOutline} className={styles.infoIcon} style={{ color: 'var(--gold)' }} />
               <span className={styles.infoLabel} style={{ color: 'var(--gold)' }}>NOTIFICATIONS</span>
             </div>
             <ul className={styles.infoList}>
@@ -110,7 +110,7 @@ export const VerifiedHome = ({ user, events = [], quote }) => {
           {/* Trending */}
           <div className={styles.infoCard}>
             <div className={styles.infoHeader}>
-              <Icon icon="mdi:trending-up" className={styles.infoIcon} style={{ color: 'var(--soft-purple)' }} />
+              <Icon icon={rewardsIcons.trendingUp} className={styles.infoIcon} style={{ color: 'var(--soft-purple)' }} />
               <span className={styles.infoLabel} style={{ color: 'var(--soft-purple)' }}>TRENDING</span>
             </div>
             <ul className={styles.infoList}>
@@ -177,7 +177,7 @@ export const VerifiedHome = ({ user, events = [], quote }) => {
         <div className={styles.sectionHeader} style={{ marginTop: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h2>Upcoming Events</h2>
           <button className={styles.viewAllBtn} onClick={() => navigate('/student-dashboard/events')} style={{ background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600 }}>
-            View All <Icon icon="mdi:arrow-right" />
+            View All <Icon icon={uiIcons.arrowRight} />
           </button>
         </div>
 
@@ -185,7 +185,7 @@ export const VerifiedHome = ({ user, events = [], quote }) => {
           {events.slice(0, 3).map((ev, i) => (
             <EventCard 
               key={ev.id || i}
-              icon="mdi:calendar-blank-outline"
+              icon={dashboardIcons.calendarBlankOutline}
               title={ev.title}
               subtitle={`${ev.capacity ? ev.capacity + ' seats • ' : ''}${ev.venue || 'TBA'}`}
               university={ev.club?.university?.name || ev.university || "IIT Delhi"}

@@ -111,7 +111,7 @@ export const UserManagement = () => {
           <p className={styles.subtitle}>View and manage platform users, roles, and account statuses.</p>
         </div>
         <Button onClick={() => setIsAddUserOpen(true)} variant="primary">
-          <Icon icon="mdi:plus" /> Add User
+          <Icon icon={uiIcons.plus} /> Add User
         </Button>
       </div>
 

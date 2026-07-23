@@ -49,7 +49,18 @@ import { eventsMockApi } from './mockbackendApis/eventsApis/events';
 import { eventsRealApi } from './backendApis/eventsApis/events';
 export const eventsApi = USE_MOCK ? eventsMockApi : eventsRealApi;
 
+// ── Clubs APIs ──
+import { clubsApi as clubsMockApi } from './mockbackendApis/clubsApis/clubs';
+import { clubsApi as clubsRealApi } from './backendApis/clubsApis/clubs';
+export const clubsApi = USE_MOCK ? clubsMockApi : clubsRealApi;
+
 // ── Rewards APIs ──
 import { rewardsMockApi } from './mockbackendApis/rewardsApis/rewards';
 import { rewardsRealApi } from './backendApis/rewardsApis/rewards';
 export const rewardsApi = USE_MOCK ? rewardsMockApi : rewardsRealApi;
+
+// "?"? Emergency APIs "?"?
+import { emergencyApi as emergencyMockApi } from './mockbackendApis/emergencyApis/emergency';
+import { emergencyApi as emergencyRealApi } from './backendApis/emergencyApis/emergency';
+export const emergencyApi = USE_MOCK ? emergencyMockApi : emergencyRealApi;
+

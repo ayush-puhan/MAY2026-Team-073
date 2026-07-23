@@ -35,9 +35,11 @@ class Document(Base):
     owner_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     club_id = Column(Integer, ForeignKey("clubs.id", ondelete="SET NULL"), nullable=True)
     event_id = Column(Integer, ForeignKey("events.id", ondelete="SET NULL"), nullable=True)
+    committee_id = Column(Integer, ForeignKey("committees.id", ondelete="SET NULL"), nullable=True)
     doc_type = Column(SAEnum(DocumentType), nullable=False)
     file_url = Column(Text, nullable=False)
     title = Column(String(255), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
     owner = relationship("User", back_populates="documents", foreign_keys=[owner_id])
+    committee = relationship("Committee", foreign_keys=[committee_id])

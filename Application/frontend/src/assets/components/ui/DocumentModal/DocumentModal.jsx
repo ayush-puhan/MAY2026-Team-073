@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import styles from './DocumentModal.module.css';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Icon } from '@iconify/react';
+import { uiIcons } from '../../../icons/registry';
 
 const DOCS = {
   privacy: {
@@ -81,7 +82,7 @@ export const DocumentModal = ({ isOpen, onClose, documentId }) => {
             <div className={styles.header}>
               <h2>{doc.title}</h2>
               <button className={styles.closeBtn} onClick={onClose}>
-                <Icon icon="mdi:close" />
+                <Icon icon={uiIcons.close} />
               </button>
             </div>
             <div className={styles.content}>

@@ -26,13 +26,25 @@ const EventDetailsDrawer = ({ event, onClose, user }) => {
           )}
 
           <div className={styles.eventClubInfo}>
-            {event.clubLogo ? (
-              <img src={event.clubLogo} alt={event.clubName} className={styles.clubLogo} />
-            ) : (
-              <div className={styles.clubLogo} style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                <Icon icon={uiIcons.folderOpen} width="24" color="var(--muted-foreground)" />
-              </div>
-            )}
+            <div className={styles.clubLogo} style={{display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden'}}>
+              {event.clubLogo ? (
+                <img 
+                  src={event.clubLogo} 
+                  alt={event.clubName} 
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    e.target.nextSibling.style.display = 'block';
+                  }} 
+                />
+              ) : null}
+              <Icon 
+                icon={uiIcons.folderOpen} 
+                width="24" 
+                color="var(--muted-foreground)" 
+                style={{ display: event.clubLogo ? 'none' : 'block' }}
+              />
+            </div>
             <div>
               <div className={styles.clubName}>{event.clubName || 'University Event'}</div>
               <span className={`${styles.statusBadge} ${styles[event.status] || ''}`}>

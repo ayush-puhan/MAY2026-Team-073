@@ -1,4 +1,4 @@
-import { dashboardIcons } from '../assets/icons/registry';
+﻿import { dashboardIcons } from '../assets/icons/registry';
 import { checkIsVerified } from '../utils/verification';
 
 // "?"? Club Role Hierarchy (index = rank, higher = more permissions) "?"?
@@ -46,7 +46,8 @@ export const UNIVERSITY_ADMIN_NAV = [
   { name: 'Events',           path: '/university-admin-dashboard/events', icon: dashboardIcons.eventMgmt },
   { name: 'Club Approvals',   path: '/university-admin-dashboard/approvals', icon: dashboardIcons.clubApprovals },
   { name: 'Student Reports',  path: '/university-admin-dashboard/reports', icon: dashboardIcons.studentReports },
-  { name: 'Support Tickets',  path: '/university-admin-dashboard/support', icon: dashboardIcons.rolesMgmt },
+  
+  { name: 'Emergency Reports', path: '/university-admin-dashboard/emergencies', icon: dashboardIcons.studentReports },
   ...getGlobalBottomNav('/university-admin-dashboard')
 ];
 
@@ -85,3 +86,5 @@ export const getNavForUser = (user) => {
       return isVerified ? STUDENT_NAV : UNVERIFIED_NAV;
   }
 };
+
+

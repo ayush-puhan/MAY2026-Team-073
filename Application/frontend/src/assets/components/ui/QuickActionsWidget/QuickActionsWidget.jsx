@@ -1,13 +1,14 @@
 ﻿import React from 'react';
 import { Icon } from '@iconify/react';
 import styles from './QuickActionsWidget.module.css';
+import { uiIcons } from '../../../icons/registry';
 
 export const QuickActionsWidget = ({ actions = [] }) => {
   return (
     <div className={styles.widgetCard}>
       <div className={styles.header}>
         <h3 className={styles.title}>
-          <Icon icon="mdi:flash-outline" width="20" />
+          <Icon icon={uiIcons.flashOutline} width="20" />
           Quick Actions
         </h3>
       </div>

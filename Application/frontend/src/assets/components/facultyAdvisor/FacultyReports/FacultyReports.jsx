@@ -8,6 +8,7 @@ import { facultyAdvisorApi } from '@api/facultyAdvisorApis/facultyAdvisor';
 import { useSession } from '../../../../context/SessionContext';
 import { useToast } from '../../../../context/ToastContext';
 import styles from './FacultyReports.module.css';
+import { uiIcons, dashboardIcons } from '../../../icons/registry';
 
 export const FacultyReports = () => {
   const { user } = useSession();
@@ -53,7 +54,7 @@ export const FacultyReports = () => {
   if (loading) {
     return (
       <div className={styles.loading}>
-        <Icon icon="mdi:loading" className="animate-spin" width="32" />
+        <Icon icon={uiIcons.loading} className="animate-spin" width="32" />
       </div>
     );
   }
@@ -85,7 +86,7 @@ export const FacultyReports = () => {
           },
         ]}
         data={filtered}
-        emptyIcon="mdi:cash-multiple"
+        emptyIcon={dashboardIcons.cashMultiple}
         emptyTitle={`No ${activeTab} expenses`}
       />
     </div>

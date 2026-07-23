@@ -5,25 +5,50 @@ import { Button } from '../Button/Button';
 import { Input } from '../Input/Input';
 import { Dropdown } from '../Dropdown/Dropdown';
 import { uiIcons, dashboardIcons, authIcons } from '../../../icons/registry';
+import { useToast } from '../../../../context/ToastContext';
+import { useSession } from '../../../../context/SessionContext';
 import styles from './EventRegistrationModal.module.css';
 
 export const EventRegistrationModal = ({ isOpen, onClose, event, onRegister, isExternal = false }) => {
   if (!isOpen || !event) return null;
 
+  const { showError } = useToast();
+  const { user } = useSession();
+
   const [formData, setFormData] = useState({
-    full_name: '',
-    email: '',
-    affiliation: '',
-    participant_type: 'OTHER_UNIVERSITY_STUDENT'
+    full_name: user?.full_name || '',
+    email: user?.email || '',
+    affiliation: user?.university?.name || '',
+    participant_type: 'other_university_student'
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onRegister(formData);
+    if (isSubmitting) return;
+
+    if (!formData.full_name || !formData.email) {
+      showError('Please fill in required fields');
+      return;
+    }
+    
+    if (isExternal && !formData.participant_type) {
+      showError('Please select a participant type');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      await onRegister(formData);
+    } catch (err) {
+      // error handled by parent
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const modalContent = (
@@ -42,10 +67,15 @@ export const EventRegistrationModal = ({ isOpen, onClose, event, onRegister, isE
           </button>
         </div>
 
-        <form className={styles.form} onSubmit={handleSubmit}>
-          {isExternal ? (
-            <>
-            <div className={styles.formGroup}>
+        <form className={styles.form} onSubmit={handleSubmit} noValidate>
+          {!isExternal && (
+            <div className={styles.confirmationMessage}>
+              <p>
+                You are registering as a verified university student. We've pre-filled your details, but you may update them for this specific registration if needed.
+              </p>
+            </div>
+          )}
+          <div className={styles.formGroup}>
               <label>Full Name *</label>
               <Input 
                 name="full_name"
@@ -68,44 +98,41 @@ export const EventRegistrationModal = ({ isOpen, onClose, event, onRegister, isE
             />
           </div>
 
-          <div className={styles.formGroup}>
-            <label>Affiliation (Optional)</label>
-            <Input 
-              name="affiliation"
-              placeholder="e.g. Computer Science Dept, Google Inc."
-              value={formData.affiliation}
-              onChange={handleChange}
-            />
-          </div>
+          {isExternal && (
+            <>
+              <div className={styles.formGroup}>
+                <label>Affiliation (Optional)</label>
+                <input
+                  type="text"
+                  name="affiliation"
+                  value={formData.affiliation}
+                  onChange={handleChange}
+                  placeholder="e.g. Computer Science Dept, Google Inc."
+                  disabled={isSubmitting}
+                />
+              </div>
 
-          <div className={styles.formGroup}>
-            <label>Participant Type *</label>
-            <Dropdown
-              name="participant_type"
-              value={formData.participant_type}
-              onChange={handleChange}
-              options={[
-                { value: 'OTHER_UNIVERSITY_STUDENT', label: 'Other University Student' },
-                { value: 'GUEST_SPEAKER', label: 'Guest Speaker' },
-                { value: 'ALUMNI', label: 'Alumni' },
-                { value: 'INDUSTRY_PROFESSIONAL', label: 'Industry Professional' },
-                { value: 'COMPETITION_PARTICIPANT', label: 'Competition Participant' },
-                { value: 'GENERAL_PUBLIC', label: 'General Public' }
-              ]}
-            />
-          </div>
+              <div className={styles.formGroup}>
+                <label>Participant Type *</label>
+                <Dropdown
+                  name="participant_type"
+                  value={formData.participant_type}
+                  onChange={handleChange}
+                  disabled={isSubmitting}
+                  options={[
+                    { value: 'other_university_student', label: 'Other University Student' },
+                    { value: 'guest_speaker', label: 'Guest Speaker' },
+                    { value: 'competition_participant', label: 'Competition Participant' }
+                  ]}
+                />
+              </div>
             </>
-          ) : (
-            <div className={styles.confirmationMessage}>
-              <p>You are about to register for <strong>{event.title}</strong> as a verified university student.</p>
-              <p>Your institutional details will be automatically attached to your registration.</p>
-            </div>
           )}
 
           <div className={styles.footer}>
-            <Button variant="outline" type="button" onClick={onClose}>Cancel</Button>
-            <Button variant="primary" type="submit">
-              <Icon icon={authIcons.check} /> Confirm Registration
+            <Button variant="outline" type="button" onClick={onClose} disabled={isSubmitting}>Cancel</Button>
+            <Button variant="primary" type="submit" disabled={isSubmitting} isLoading={isSubmitting}>
+              <Icon icon={authIcons.check} /> {isSubmitting ? 'Registering...' : 'Confirm Registration'}
             </Button>
           </div>
         </form>

@@ -1,6 +1,7 @@
 ﻿import React from 'react';
 import { Icon } from '@iconify/react';
 import styles from './TodaysOverview.module.css';
+import { calendarIcons } from '../../../icons/registry';
 
 export const TodaysOverview = () => {
   const agenda = [
@@ -13,7 +14,7 @@ export const TodaysOverview = () => {
     <div className={styles.widgetCard}>
       <div className={styles.header}>
         <h3 className={styles.title}>
-          <Icon icon="mdi:calendar-today" width="20" />
+          <Icon icon={calendarIcons.calendarToday} width="20" />
           Today's Overview
         </h3>
       </div>

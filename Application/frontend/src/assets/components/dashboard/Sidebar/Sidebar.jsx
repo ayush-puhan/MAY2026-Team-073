@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { Icon } from '@iconify/react';
 import styles from './Sidebar.module.css';
@@ -6,10 +6,12 @@ import { ProfileDropdown } from '../../ui/ProfileDropdown/ProfileDropdown';
 import { ProfileSettingsModal } from '../../ui/ProfileSettingsModal/ProfileSettingsModal';
 import { useSession } from '../../../../context/SessionContext';
 import { useSidebarContext } from '../../../../context/SidebarContext';
+import { useToast } from '../../../../context/ToastContext';
 
 export const Sidebar = ({ links = [] }) => {
   const { user } = useSession();
   const { isSidebarOpen } = useSidebarContext();
+  const { showInfo } = useToast();
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
   useEffect(() => {
@@ -36,7 +38,14 @@ export const Sidebar = ({ links = [] }) => {
             className={({ isActive }) =>
               `${styles.navItem} ${isActive && link.path !== '#' ? styles.active : ''}`
             }
-            onClick={(e) => link.path === '#' && e.preventDefault()}
+            onClick={(e) => {
+              if (link.path === '#') {
+                e.preventDefault();
+              } else if (link.path.endsWith('/ai')) {
+                e.preventDefault();
+                showInfo('AI Assistant coming soon!');
+              }
+            }}
             data-tooltip={link.name}
           >
             <Icon icon={link.icon} className={styles.navIcon} />

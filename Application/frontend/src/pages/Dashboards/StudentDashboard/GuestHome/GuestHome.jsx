@@ -8,10 +8,11 @@ import { EventInfoModal } from '../../../../assets/components/ui/EventInfoModal/
 import { EventCard } from '../../../../assets/components/ui/EventCard/EventCard';
 import { eventsApi } from '../../../../api';
 import styles from './GuestHome.module.css';
+import { uiIcons, calendarIcons, dashboardIcons, rewardsIcons } from '../../../../assets/icons/registry';
 
 export const GuestHome = ({ publicEvents = [], quote, hasOptedOut = false }) => {
   const { user } = useSession();
-  const { addToast } = useToast();
+  const { showSuccess, showError } = useToast();
   const navigate = useNavigate();
   const [showBanner, setShowBanner] = useState(false);
   const [infoEvent, setInfoEvent] = useState(null);
@@ -37,11 +38,10 @@ export const GuestHome = ({ publicEvents = [], quote, hasOptedOut = false }) => 
   const handleRegister = async (formData) => {
     try {
       await eventsApi.registerForEvent(registerEvent.id, user?.id, true, formData);
-      addToast({ title: 'Registration Successful', message: 'You have been registered for ' + registerEvent?.title, type: 'success' });
+      showSuccess('You have been registered for ' + registerEvent?.title);
       setRegisterEvent(null);
-      setInfoEvent(null);
     } catch (err) {
-      addToast({ title: 'Error', message: 'Failed to register', type: 'error' });
+      showError(err.message || 'Failed to register');
     }
   };
 
@@ -75,14 +75,14 @@ export const GuestHome = ({ publicEvents = [], quote, hasOptedOut = false }) => 
         {/* Verification Banner */}
         {showBanner && (
           <div className={styles.banner}>
-            <Icon icon="mdi:shield-alert-outline" className={styles.bannerIcon} />
+            <Icon icon={uiIcons.shieldAlertOutline} className={styles.bannerIcon} />
             <div className={styles.bannerText}>
               <strong>Verify Your Account</strong>
               <span>Verify your university email to join clubs, register for events, and unlock the full experience.</span>
             </div>
             <button className={styles.bannerBtn}>Verify Now</button>
             <button className={styles.bannerClose} onClick={dismissBanner}>
-              <Icon icon="mdi:close" />
+              <Icon icon={uiIcons.close} />
             </button>
           </div>
         )}
@@ -99,7 +99,7 @@ export const GuestHome = ({ publicEvents = [], quote, hasOptedOut = false }) => 
         <div className={styles.infoRow}>
           <div className={styles.infoCard}>
             <div className={styles.infoHeader}>
-              <Icon icon="mdi:calendar-today" className={styles.infoIcon} style={{ color: 'var(--primary)' }} />
+              <Icon icon={calendarIcons.calendarToday} className={styles.infoIcon} style={{ color: 'var(--primary)' }} />
               <span className={styles.infoLabel} style={{ color: 'var(--primary)' }}>PUBLIC EVENTS</span>
             </div>
             <ul className={styles.infoList}>
@@ -116,7 +116,7 @@ export const GuestHome = ({ publicEvents = [], quote, hasOptedOut = false }) => 
 
           <div className={styles.infoCard}>
             <div className={styles.infoHeader}>
-              <Icon icon="mdi:bullhorn-outline" className={styles.infoIcon} style={{ color: 'var(--gold)' }} />
+              <Icon icon={dashboardIcons.bullhornOutline} className={styles.infoIcon} style={{ color: 'var(--gold)' }} />
               <span className={styles.infoLabel} style={{ color: 'var(--gold)' }}>ANNOUNCEMENTS</span>
             </div>
             <ul className={styles.infoList}>
@@ -128,7 +128,7 @@ export const GuestHome = ({ publicEvents = [], quote, hasOptedOut = false }) => 
 
           <div className={styles.infoCard}>
             <div className={styles.infoHeader}>
-              <Icon icon="mdi:trending-up" className={styles.infoIcon} style={{ color: 'var(--soft-purple)' }} />
+              <Icon icon={rewardsIcons.trendingUp} className={styles.infoIcon} style={{ color: 'var(--soft-purple)' }} />
               <span className={styles.infoLabel} style={{ color: 'var(--soft-purple)' }}>WHAT'S HAPPENING</span>
             </div>
             <ul className={styles.infoList}>
@@ -143,7 +143,7 @@ export const GuestHome = ({ publicEvents = [], quote, hasOptedOut = false }) => 
         <div className={styles.sectionHeader}>
           <h2>Upcoming Events</h2>
           <button className={styles.viewAllBtn} onClick={() => navigate('events')}>
-            View All <Icon icon="mdi:arrow-right" />
+            View All <Icon icon={uiIcons.arrowRight} />
           </button>
         </div>
 
@@ -151,7 +151,7 @@ export const GuestHome = ({ publicEvents = [], quote, hasOptedOut = false }) => 
           {previewEvents.map((ev, i) => (
             <EventCard 
               key={ev.id || i}
-              icon="mdi:calendar-blank-outline"
+              icon={dashboardIcons.calendarBlankOutline}
               title={ev.title}
               subtitle={`${ev.capacity ? ev.capacity + ' seats • ' : ''}${ev.venue || 'TBA'}`}
               university={ev.club?.university?.name || ev.university || "IIT Delhi"}
@@ -164,7 +164,7 @@ export const GuestHome = ({ publicEvents = [], quote, hasOptedOut = false }) => 
 
         {publicEvents.length === 0 && (
           <div className={styles.emptyState}>
-            <Icon icon="mdi:calendar-blank-outline" />
+            <Icon icon={dashboardIcons.calendarBlankOutline} />
             <p>No public events available right now. Check back soon!</p>
           </div>
         )}

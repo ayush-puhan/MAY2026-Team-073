@@ -22,7 +22,7 @@ const CalendarContextPanel = ({ filters, setFilters, user }) => {
 
   const handleSync = async () => {
     if (!isGoogleAuth) {
-      showInfo("Feature coming soon!");
+      showInfo("Please link your Google account in Settings to use this feature.");
       return;
     }
 

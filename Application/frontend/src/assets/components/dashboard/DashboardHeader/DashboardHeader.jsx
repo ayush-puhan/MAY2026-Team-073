@@ -6,6 +6,7 @@ import { Icon } from '@iconify/react';
 import { useSidebarContext } from '../../../../context/SidebarContext';
 import { useSession } from '../../../../context/SessionContext';
 import { notificationApi } from '@api/notificationApis/notification';
+import { dashboardIcons } from '../../../icons/registry';
 
 export const DashboardHeader = () => {
   const [isNotifOpen, setIsNotifOpen] = useState(false);
@@ -29,7 +30,17 @@ export const DashboardHeader = () => {
     fetchNotifs();
     // Poll every minute
     const interval = setInterval(fetchNotifs, 60000);
-    return () => clearInterval(interval);
+    
+    const handleRefresh = () => {
+      // Small delay to ensure backend has completed the write
+      setTimeout(fetchNotifs, 500);
+    };
+    
+    window.addEventListener('refreshNotifications', handleRefresh);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('refreshNotifications', handleRefresh);
+    };
   }, [user?.id]);
 
   const handleMarkAllRead = async () => {
@@ -53,7 +64,7 @@ export const DashboardHeader = () => {
 
       <div className={styles.actions}>
         <button id="notification-bell-btn" className={`${styles.bellBtn} ${isNotifOpen ? styles.active : ''}`} onClick={() => setIsNotifOpen(!isNotifOpen)}>
-          <Icon icon="mdi:bell-outline" />
+          <Icon icon={dashboardIcons.notifications} />
           {hasUnread && <div className={styles.bellBadge} />}
         </button>
         <ThemeToggle />

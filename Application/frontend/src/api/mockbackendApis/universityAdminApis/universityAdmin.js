@@ -17,12 +17,27 @@ const notify = (userId, title, body) =>
 
 export const universityAdminApi = {
   getStats: async () => {
-    const [clubs, memberships, events, requests] = await Promise.all([
+    const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+    const uniId = currentUser.role !== 'system_admin' ? currentUser.university_id : null;
+    
+    let [clubs, memberships, events, requests, users] = await Promise.all([
       api.get('/clubs'),
       api.get('/club_memberships?status=approved'),
       api.get('/events'),
       api.get('/club_creation_requests?status=submitted'),
+      api.get('/users')
     ]);
+
+    if (uniId) {
+      clubs = clubs.filter((c) => String(c.university_id) === String(uniId));
+      const clubIds = clubs.map((c) => String(c.id));
+      memberships = memberships.filter((m) => clubIds.includes(String(m.club_id)));
+      events = events.filter((e) => clubIds.includes(String(e.club_id)));
+      requests = requests.filter((r) => {
+        const u = users.find((user) => String(user.id) === String(r.requested_by));
+        return u && String(u.university_id) === String(uniId);
+      });
+    }
 
     return {
       totalClubs: clubs.filter((c) => c.status === 'active').length,
@@ -33,8 +48,19 @@ export const universityAdminApi = {
   },
 
   getClubCreationRequests: async (status) => {
-    const requests = await api.get(status ? `/club_creation_requests?status=${status}` : '/club_creation_requests');
+    const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+    const uniId = currentUser.role !== 'system_admin' ? currentUser.university_id : null;
+
+    let requests = await api.get(status ? `/club_creation_requests?status=${status}` : '/club_creation_requests');
     const users = await api.get('/users');
+
+    if (uniId) {
+      requests = requests.filter((r) => {
+        const u = users.find((user) => String(user.id) === String(r.requested_by));
+        return u && String(u.university_id) === String(uniId);
+      });
+    }
+
     return requests
       .map((r) => ({
         ...r,
@@ -58,6 +84,7 @@ export const universityAdminApi = {
         logo_url: null,
         status: 'active',
         faculty_advisor_id: toId(faculty_advisor_id),
+        university_id: currentUser.university_id || 1,
         member_count_cache: 0,
         created_at: istNow(),
         updated_at: null,
@@ -100,7 +127,13 @@ export const universityAdminApi = {
   },
 
   getPendingClubActivations: async () => {
-    const clubs = await api.get('/clubs?status=pending');
+    const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+    const uniId = currentUser.role !== 'system_admin' ? currentUser.university_id : null;
+
+    let clubs = await api.get('/clubs?status=pending');
+    if (uniId) {
+      clubs = clubs.filter((c) => String(c.university_id) === String(uniId));
+    }
     return clubs.filter((c) => !c.faculty_advisor_id);
   },
 
@@ -124,14 +157,39 @@ export const universityAdminApi = {
   },
 
   getFacultyAdvisors: async () => {
-    const users = await api.get('/users?role=faculty_advisor');
+    const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+    const uniId = currentUser.role !== 'system_admin' ? currentUser.university_id : null;
+
+    let users = await api.get('/users?role=faculty_advisor');
+    if (uniId) {
+      users = users.filter((u) => String(u.university_id) === String(uniId));
+    }
     return users.map((u) => ({ value: toId(u.id), label: u.full_name }));
   },
 
-  getAllClubs: async () => api.get('/clubs'),
+  getAllClubs: async () => {
+    const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+    const uniId = currentUser.role !== 'system_admin' ? currentUser.university_id : null;
+
+    let clubs = await api.get('/clubs');
+    if (uniId) {
+      clubs = clubs.filter((c) => String(c.university_id) === String(uniId));
+    }
+    return clubs;
+  },
 
   getAllEvents: async () => {
-    const [events, clubs] = await Promise.all([api.get('/events'), api.get('/clubs')]);
+    const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+    const uniId = currentUser.role !== 'system_admin' ? currentUser.university_id : null;
+
+    let [events, clubs] = await Promise.all([api.get('/events'), api.get('/clubs')]);
+
+    if (uniId) {
+      clubs = clubs.filter((c) => String(c.university_id) === String(uniId));
+      const clubIds = clubs.map((c) => String(c.id));
+      events = events.filter((e) => clubIds.includes(String(e.club_id)));
+    }
+
     return events.map((e) => ({
       ...e,
       club_name: clubs.find((c) => toId(c.id) === toId(e.club_id))?.name || 'Unknown',
@@ -139,10 +197,19 @@ export const universityAdminApi = {
   },
 
   getAnalytics: async () => {
-    const [clubs, memberships] = await Promise.all([
+    const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+    const uniId = currentUser.role !== 'system_admin' ? currentUser.university_id : null;
+
+    let [clubs, memberships] = await Promise.all([
       api.get('/clubs'),
       api.get('/club_memberships?status=approved'),
     ]);
+
+    if (uniId) {
+      clubs = clubs.filter((c) => String(c.university_id) === String(uniId));
+      const clubIds = clubs.map((c) => String(c.id));
+      memberships = memberships.filter((m) => clubIds.includes(String(m.club_id)));
+    }
 
     const categoryMap = {};
     clubs.forEach((c) => {
@@ -173,10 +240,17 @@ export const universityAdminApi = {
   },
 
   getAnnouncements: async () => {
-    const announcements = await api.get('/announcements');
-    return announcements
-      .filter((a) => a.club_id === null || a.club_id === undefined)
-      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+    const uniId = currentUser.role !== 'system_admin' ? currentUser.university_id : null;
+
+    let announcements = await api.get('/announcements');
+    announcements = announcements.filter((a) => a.club_id === null || a.club_id === undefined);
+    
+    // Global announcements (if any logic depends on university_id, we'd filter here, but they don't have university_id)
+    // If university_admin posts them, we might need a university_id on announcements. 
+    // Assuming for now announcements are global or don't need filtering.
+
+    return announcements.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
   },
 
   postAnnouncement: async ({ posted_by, title, body, target_audience }) => {

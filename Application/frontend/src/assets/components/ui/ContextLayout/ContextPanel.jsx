@@ -23,13 +23,15 @@ export const ContextPanelSection = ({ title, children }) => (
   </div>
 );
 
-export const ContextPanelLink = ({ to, icon, label, exact = false }) => (
+export const ContextPanelLink = ({ to, icon, label, exact = false, badge = null, onClick = null }) => (
   <NavLink 
     to={to} 
     end={exact}
     className={({ isActive }) => `${styles.panelLink} ${isActive ? styles.active : ''}`}
+    onClick={onClick}
   >
     {icon && <span className={styles.linkIcon}><Icon icon={icon} /></span>}
     <span className={styles.linkLabel}>{label}</span>
+    {badge != null && <span className={styles.linkBadge}>{badge}</span>}
   </NavLink>
 );

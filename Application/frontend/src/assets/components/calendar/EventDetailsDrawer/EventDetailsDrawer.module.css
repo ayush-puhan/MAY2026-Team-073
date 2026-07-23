@@ -123,6 +123,11 @@
   color: var(--destructive);
 }
 
+.statusBadge.completed {
+  background-color: rgba(59, 130, 246, 0.1);
+  color: var(--primary);
+}
+
 .conflictWarning {
   background-color: rgba(239, 68, 68, 0.1);
   color: var(--destructive);

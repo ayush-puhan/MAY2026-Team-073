@@ -1,10 +1,12 @@
-﻿import React from 'react';
+import React from 'react';
 import { Icon } from '@iconify/react';
+import { dashboardIcons } from '../../../icons/registry';
 import styles from './RecentActivity.module.css';
+import { uiIcons } from '../../../icons/registry';
 
 export const RecentActivity = () => {
   const activities = [
-    { id: 1, type: 'announcement', text: 'Computer Science Club posted an announcement', time: '10m ago', icon: 'mdi:bullhorn-outline', color: 'var(--orange)' },
+    { id: 1, type: 'announcement', text: 'Computer Science Club posted an announcement', time: '10m ago', icon: dashboardIcons.announcements, color: 'var(--orange)' },
     { id: 2, type: 'registration', text: 'You registered for Campus Clean-up', time: '2h ago', icon: 'mdi:ticket-confirmation-outline', color: 'var(--green)' },
     { id: 3, type: 'certificate', text: 'Web3 Workshop certificate released', time: '1d ago', icon: 'mdi:certificate-outline', color: 'var(--purple)' },
     { id: 4, type: 'event', text: 'New event added: Inter-College Chess', time: '2d ago', icon: 'mdi:calendar-plus', color: 'var(--blue)' },
@@ -14,7 +16,7 @@ export const RecentActivity = () => {
     <div className={styles.widgetCard}>
       <div className={styles.header}>
         <h3 className={styles.title}>
-          <Icon icon="mdi:pulse" width="22" />
+          <Icon icon={uiIcons.pulse} width="22" />
           Recent Activity
         </h3>
       </div>

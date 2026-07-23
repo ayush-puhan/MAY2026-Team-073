@@ -11,9 +11,9 @@ from .audit import AuditLog
 from .auth import AuthSession, User
 from .clubs import Announcement, Club, ClubCreationRequest, ClubMembership, Committee, CommitteeMembership
 from .communication import Document, Notification
-from .events import AttendanceRecord, Event, EventRegistration, ExternalParticipant, VolunteerAssignment
+from .events import AttendanceRecord, Event, EventRegistration, EventSession, VolunteerAssignment, ExternalParticipant
 from .external_relations import ClubSponsor, Sponsor
-from .finance import Budget, Expense
+from .finance import Budget, Expense, Revenue
 from .interests import ClubInterest, EventInterest, Interest, UserInterest
 from .rewards import (
     RewardPointsLedger, 
@@ -46,11 +46,13 @@ __all__ = [
     "Announcement",
     "Event",
     "EventRegistration",
+    "EventSession",
     "AttendanceRecord",
     "VolunteerAssignment",
     "ExternalParticipant",
     "Budget",
     "Expense",
+    "Revenue",
     "Notification",
     "Document",
     "SupportTicket",

@@ -5,6 +5,7 @@ import { DataTable } from '../../ui/DataTable/DataTable';
 import { StatusBadge } from '../../ui/StatusBadge/StatusBadge';
 import { universityAdminApi } from '@api/universityAdminApis/universityAdmin';
 import styles from './AdminOverviewHome.module.css';
+import { uiIcons, dashboardIcons } from '../../../icons/registry';
 
 export const AdminOverviewHome = () => {
   const [stats, setStats] = useState(null);
@@ -30,7 +31,7 @@ export const AdminOverviewHome = () => {
   if (loading) {
     return (
       <div className={styles.loading}>
-        <Icon icon="mdi:loading" className="animate-spin" width="32" />
+        <Icon icon={uiIcons.loading} className="animate-spin" width="32" />
       </div>
     );
   }
@@ -43,10 +44,10 @@ export const AdminOverviewHome = () => {
       </div>
 
       <div className={styles.statsGrid}>
-        <StatCard title="Active Clubs" value={stats.totalClubs} icon="mdi:account-group-outline" color="var(--primary)" />
-        <StatCard title="Total Memberships" value={stats.totalMemberships} icon="mdi:account-multiple-outline" color="var(--sky)" />
-        <StatCard title="Active Events" value={stats.activeEvents} icon="mdi:calendar-blank-outline" color="var(--innovation)" />
-        <StatCard title="Pending Club Approvals" value={stats.pendingApprovals} icon="mdi:check-decagram-outline" color="var(--campus-orange)" />
+        <StatCard title="Active Clubs" value={stats.totalClubs} icon={dashboardIcons.accountGroupOutline} color="var(--primary)" />
+        <StatCard title="Total Memberships" value={stats.totalMemberships} icon={dashboardIcons.accountMultipleOutline} color="var(--sky)" />
+        <StatCard title="Active Events" value={stats.activeEvents} icon={dashboardIcons.calendarBlankOutline} color="var(--innovation)" />
+        <StatCard title="Pending Club Approvals" value={stats.pendingApprovals} icon={dashboardIcons.checkDecagramOutline} color="var(--campus-orange)" />
       </div>
 
       <div className={styles.section}>
@@ -59,7 +60,7 @@ export const AdminOverviewHome = () => {
             { header: 'Status', cell: (row) => <StatusBadge status={row.status} /> },
           ]}
           data={pendingRequests}
-          emptyIcon="mdi:check-decagram-outline"
+          emptyIcon={dashboardIcons.checkDecagramOutline}
           emptyTitle="No pending club proposals"
         />
       </div>

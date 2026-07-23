@@ -7,7 +7,7 @@
   border: 1px solid color-mix(in oklab, var(--border) 50%, transparent);
   border-radius: var(--radius);
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4); /* Stronger shadow to lift it */
-  z-index: 50;
+  z-index: 2000;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -50,7 +50,7 @@
 .list {
   display: flex;
   flex-direction: column;
-  max-height: 400px;
+  max-height: 180px;
   overflow-y: auto;
 }
 

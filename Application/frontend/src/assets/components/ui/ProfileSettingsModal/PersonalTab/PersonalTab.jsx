@@ -6,6 +6,7 @@ import { Button } from '../../Button/Button';
 import { Dropdown } from '../../Dropdown/Dropdown';
 import { Input } from '../../Input/Input';
 import styles from '../ProfileSettingsModal.module.css';
+import { rewardsIcons, uiIcons } from '../../../../icons/registry';
 
 export const PersonalTab = ({ 
   formData, 
@@ -37,7 +38,7 @@ export const PersonalTab = ({
           {formData.profile_photo_url ? (
             <img src={formData.profile_photo_url} alt="Avatar Preview" className={styles.avatarImg} />
           ) : (
-            <Icon icon="mdi:account" className={styles.avatarIcon} />
+            <Icon icon={rewardsIcons.account} className={styles.avatarIcon} />
           )}
         </div>
         <div className={styles.avatarInfo}>
@@ -45,7 +46,7 @@ export const PersonalTab = ({
           <div className={styles.uploadWrapper}>
             <input type="file" accept="image/png, image/jpeg" onChange={handleImageUpload} className={styles.fileInput} id="avatar-upload" />
             <label htmlFor="avatar-upload" className={styles.uploadBtn}>
-              <Icon icon="mdi:cloud-upload" /> Upload Image
+              <Icon icon={uiIcons.cloudUpload} /> Upload Image
             </label>
             <Button variant="outline" type="button" className={styles.removeBtn} onClick={() => setFormData(prev => ({ ...prev, profile_photo_url: '' }))}>Remove</Button>
           </div>

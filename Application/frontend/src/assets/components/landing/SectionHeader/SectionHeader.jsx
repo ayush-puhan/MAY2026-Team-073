@@ -3,6 +3,7 @@ import styles from './SectionHeader.module.css';
 import { Link } from 'react-router-dom';
 import { Icon } from '@iconify/react';
 import { motion } from 'framer-motion';
+import { uiIcons } from '../../../icons/registry';
 
 export const SectionHeader = ({ label, title, titleAccent, subtitle, actionText, actionLink }) => (
   <motion.div 
@@ -19,7 +20,7 @@ export const SectionHeader = ({ label, title, titleAccent, subtitle, actionText,
     {actionText && actionLink && (
       <div className={styles.headerAction}>
         <Link to={actionLink} className={styles.actionBtn}>
-          {actionText} <Icon icon="mdi:arrow-right" />
+          {actionText} <Icon icon={uiIcons.arrowRight} />
         </Link>
       </div>
     )}

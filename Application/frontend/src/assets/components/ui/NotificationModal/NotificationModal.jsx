@@ -2,6 +2,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Icon } from '@iconify/react';
 import styles from './NotificationModal.module.css';
+import { uiIcons } from '../../../icons/registry';
 
 export const NotificationModal = ({ isOpen, onClose, hasUnread, notifications = [], onMarkAllRead }) => {
   const modalRef = useRef(null);
@@ -49,7 +50,7 @@ export const NotificationModal = ({ isOpen, onClose, hasUnread, notifications = 
               {notifications.map(notif => (
                 <div key={notif.id} className={`${styles.item} ${!notif.is_read ? styles.unread : ''}`}>
                   <div className={styles.iconWrapper}>
-                    <Icon icon="mdi:bell" />
+                    <Icon icon={uiIcons.bell} />
                   </div>
                   <div className={styles.content}>
                     <div className={styles.titleRow}>

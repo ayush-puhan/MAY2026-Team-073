@@ -5,6 +5,7 @@ import { StatusBadge } from '../../ui/StatusBadge/StatusBadge';
 import { SearchInput } from '../../ui/SearchInput/SearchInput';
 import { universityAdminApi } from '@api/universityAdminApis/universityAdmin';
 import styles from './EventOversight.module.css';
+import { uiIcons, dashboardIcons } from '../../../icons/registry';
 
 export const EventOversight = () => {
   const [events, setEvents] = useState([]);
@@ -35,7 +36,7 @@ export const EventOversight = () => {
   if (loading) {
     return (
       <div className={styles.loading}>
-        <Icon icon="mdi:loading" className="animate-spin" width="32" />
+        <Icon icon={uiIcons.loading} className="animate-spin" width="32" />
       </div>
     );
   }
@@ -54,7 +55,7 @@ export const EventOversight = () => {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1rem', marginTop: '1.5rem' }}>
         {filtered.length === 0 ? (
           <div className={styles.emptyState} style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '3rem', color: 'var(--muted-foreground)' }}>
-            <Icon icon="mdi:calendar-blank-outline" width="48" style={{ marginBottom: '1rem', opacity: 0.5 }} />
+            <Icon icon={dashboardIcons.calendarBlankOutline} width="48" style={{ marginBottom: '1rem', opacity: 0.5 }} />
             <h3>No events found</h3>
           </div>
         ) : (
@@ -64,7 +65,7 @@ export const EventOversight = () => {
               title={ev.title}
               subtitle={`${ev.club_name} • ${ev.venue} • ${new Date(ev.start_at).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })}`}
               bannerKeyword={ev.bannerKeyword}
-              icon="mdi:calendar-star"
+              icon={dashboardIcons.calendarStar}
               color="var(--innovation)"
               rightElement={
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', alignItems: 'flex-end' }}>

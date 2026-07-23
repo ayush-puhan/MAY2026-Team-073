@@ -12,6 +12,7 @@ import { eventsApi } from '../../../api';
 import { VerifiedHome } from './VerifiedHome/VerifiedHome';
 import { GuestHome } from './GuestHome/GuestHome';
 import { EventsHub } from '../../../assets/components/events/EventsHub/EventsHub';
+import { ClubsHub } from '../../../assets/components/clubs/ClubsHub/ClubsHub';
 import styles from './StudentDashboard.module.css';
 
 export const StudentDashboard = () => {
@@ -26,22 +27,32 @@ export const StudentDashboard = () => {
     const fetchEvents = async () => {
       try {
         const data = await eventsApi.getAllEvents();
-        const publicOnly = data.filter(e => e.is_public === true || e.is_public === 1 || e.is_public === "1");
-        const eventsToShow = publicOnly.length > 0 ? publicOnly : data;
+        let eventsToShow;
+        if (!isVerified) {
+          // Guest users: only show public events that allow external participants
+          const guestVisible = data.filter(e => 
+            (e.is_public === true || e.is_public === 1 || e.is_public === "1") &&
+            (e.requires_external_participants === true || e.requires_external_participants === 1 || e.requires_external_participants === "1")
+          );
+          eventsToShow = guestVisible;
+        } else {
+          const publicOnly = data.filter(e => e.is_public === true || e.is_public === 1 || e.is_public === "1");
+          eventsToShow = publicOnly.length > 0 ? publicOnly : data;
+        }
         setPublicEvents(eventsToShow.slice(0, 6));
       } catch (err) {
         console.error("Failed to load events", err);
       }
     };
     fetchEvents();
-  }, []);
+  }, [isVerified]);
 
   const greetingQuote = useRef(getRandomGreeting());
 
   if (!user) return null;
 
   const sidebarLinks = getNavForUser(user);
-  const noPadding = location.pathname.includes('/events') || location.pathname.includes('/rewards') || location.pathname.includes('/calendar');
+  const noPadding = location.pathname.includes('/events') || location.pathname.includes('/rewards') || location.pathname.includes('/calendar') || location.pathname.includes('/clubs');
 
   return (
     <DashboardLayout title="Campus Home" user={user} sidebarLinks={sidebarLinks} noPadding={noPadding}>
@@ -57,6 +68,7 @@ export const StudentDashboard = () => {
           <Route path="announcements/*" element={<AnnouncementCenter />} />
           <Route path="calendar/*" element={<GlobalCalendar />} />
           <Route path="events/*" element={<EventsHub />} />
+          <Route path="clubs/*" element={<ClubsHub />} />
           <Route path="rewards/*" element={<RewardsHub />} />
           
           <Route path="*" element={<Navigate to="" replace />} />

@@ -20,6 +20,8 @@ class Budget(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     club_id = Column(Integer, ForeignKey("clubs.id", ondelete="CASCADE"), nullable=False)
+    committee_id = Column(Integer, ForeignKey("committees.id", ondelete="CASCADE"), nullable=True)
+    parent_budget_id = Column(Integer, ForeignKey("budgets.id", ondelete="CASCADE"), nullable=True)
     title = Column(String(255), nullable=False)
     period_start = Column(DateTime, nullable=False)
     period_end = Column(DateTime, nullable=False)
@@ -29,6 +31,8 @@ class Budget(Base):
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
     club = relationship("Club", back_populates="budgets")
+    committee = relationship("Committee", backref="budgets")
+    parent_budget = relationship("Budget", remote_side=[id], backref="sub_budgets")
     creator = relationship("User", foreign_keys=[created_by])
     expenses = relationship("Expense", back_populates="budget", cascade="all, delete-orphan")
 

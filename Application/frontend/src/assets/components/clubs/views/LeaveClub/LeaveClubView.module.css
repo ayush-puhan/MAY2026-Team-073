@@ -1,0 +1,73 @@
+.container {
+  padding: 0;
+  width: 100%;
+}
+
+.header {
+  margin-bottom: 2rem;
+}
+
+.header h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 0.25rem;
+}
+
+.header p {
+  color: var(--muted-foreground);
+  font-size: 0.95rem;
+}
+
+.content {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+}
+
+.warningBox {
+  display: flex;
+  gap: 1.5rem;
+  background-color: rgba(239, 68, 68, 0.05);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.warningIcon {
+  font-size: 2.5rem;
+  color: #ef4444;
+  flex-shrink: 0;
+}
+
+.warningText h3 {
+  color: #ef4444;
+  margin: 0 0 0.5rem 0;
+  font-size: 1.2rem;
+}
+
+.warningText p {
+  margin: 0 0 1rem 0;
+  line-height: 1.6;
+  color: var(--text);
+}
+
+.warningText p:last-child {
+  margin-bottom: 0;
+}
+
+.confirmSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.confirmSection label {
+  font-size: 1rem;
+  color: var(--text);
+}
+

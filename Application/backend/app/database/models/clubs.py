@@ -14,6 +14,7 @@ from ..enums import (
     ClubRequestStatus,
     ClubStatus,
     MembershipStatus,
+    CommitteeRole,
 )
 from ..mixins import SoftDeleteMixin, TimestampMixin
 
@@ -60,6 +61,7 @@ class ClubCreationRequest(Base):
     requested_by = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     status = Column(SAEnum(ClubRequestStatus), default=ClubRequestStatus.SUBMITTED, nullable=False)
     reviewed_by = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    faculty_advisor_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
     review_comments = Column(Text, nullable=True)
     resulting_club_id = Column(Integer, ForeignKey("clubs.id", ondelete="SET NULL"), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
@@ -67,6 +69,7 @@ class ClubCreationRequest(Base):
 
     requester = relationship("User", foreign_keys=[requested_by])
     reviewer = relationship("User", foreign_keys=[reviewed_by])
+    faculty_advisor = relationship("User", foreign_keys=[faculty_advisor_id])
     resulting_club = relationship("Club", foreign_keys=[resulting_club_id])
 
 
@@ -124,6 +127,7 @@ class CommitteeMembership(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     committee_id = Column(Integer, ForeignKey("committees.id", ondelete="CASCADE"), nullable=False)
     membership_id = Column(Integer, ForeignKey("club_memberships.id", ondelete="CASCADE"), nullable=False)
+    role = Column(SAEnum(CommitteeRole), default=CommitteeRole.MEMBER, nullable=False)
     joined_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
     committee = relationship("Committee", back_populates="member_links")

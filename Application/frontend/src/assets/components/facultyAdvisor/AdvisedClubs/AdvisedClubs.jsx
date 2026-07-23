@@ -7,6 +7,7 @@ import { facultyAdvisorApi } from '@api/facultyAdvisorApis/facultyAdvisor';
 import { useSession } from '../../../../context/SessionContext';
 import { ClubDetailModal } from './ClubDetailModal/ClubDetailModal';
 import styles from './AdvisedClubs.module.css';
+import { uiIcons, dashboardIcons } from '../../../icons/registry';
 
 export const AdvisedClubs = () => {
   const { user } = useSession();
@@ -36,7 +37,7 @@ export const AdvisedClubs = () => {
   if (loading) {
     return (
       <div className={styles.loading}>
-        <Icon icon="mdi:loading" className="animate-spin" width="32" />
+        <Icon icon={uiIcons.loading} className="animate-spin" width="32" />
       </div>
     );
   }
@@ -64,7 +65,7 @@ export const AdvisedClubs = () => {
         ]}
         data={filtered}
         onRowClick={(row) => setSelectedClubId(row.id)}
-        emptyIcon="mdi:account-group-outline"
+        emptyIcon={dashboardIcons.accountGroupOutline}
         emptyTitle="No advised clubs"
         emptyDesc="Clubs assigned to you as faculty advisor will appear here."
       />

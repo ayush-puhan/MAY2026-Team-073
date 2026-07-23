@@ -6,17 +6,17 @@ export const rewardsMockApi = {
   },
   getTaskCompletions: async (userId) => {
     const completions = await api.get('/reward_task_completions');
-    return completions.filter(c => c.user_id === userId);
+    return completions.filter(c => String(c.user_id) === String(userId));
   },
   completeTask: async (userId, taskId) => {
     // Check if task exists and is active
     const tasks = await api.get('/reward_tasks');
-    const task = tasks.find(t => t.id === Number(taskId) || t.id === String(taskId));
+    const task = tasks.find(t => String(t.id) === String(taskId));
     if (!task) throw new Error('Task not found');
 
     // Enforce max completions
     const completions = await rewardsMockApi.getTaskCompletions(userId);
-    const taskCompletions = completions.filter(c => c.task_id === task.id).length;
+    const taskCompletions = completions.filter(c => String(c.task_id) === String(task.id)).length;
     if (taskCompletions >= (task.max_completions || 1)) {
       throw new Error('Task completion limit reached');
     }
@@ -26,7 +26,7 @@ export const rewardsMockApi = {
     
     if (taskIdStr === '4') { // Profile Completion
       const users = await api.get('/users');
-      const currentUser = users.find(u => u.id === String(userId) || u.id === Number(userId));
+      const currentUser = users.find(u => String(u.id) === String(userId));
       if (!currentUser) throw new Error('User not found');
       
       const missingFields = [];
@@ -40,21 +40,21 @@ export const rewardsMockApi = {
     }
     else if (taskIdStr === '2') { // Attend 3 Club Events
       const regs = await api.get('/event_registrations');
-      const userRegs = regs.filter(r => r.user_id === String(userId) || r.user_id === Number(userId));
+      const userRegs = regs.filter(r => String(r.user_id) === String(userId));
       if (userRegs.length < 3) {
         throw new Error(`You have only attended ${userRegs.length} out of 3 required events.`);
       }
     }
     else if (taskIdStr === '6') { // RSVP to a Workshop
       const regs = await api.get('/event_registrations');
-      const userRegs = regs.filter(r => r.user_id === String(userId) || r.user_id === Number(userId));
+      const userRegs = regs.filter(r => String(r.user_id) === String(userId));
       if (userRegs.length === 0) {
         throw new Error('You have not RSVP\'d to any events yet.');
       }
     }
     else if (taskIdStr === '7') { // Join a New Club
       const memberships = await api.get('/club_memberships');
-      const userClubs = memberships.filter(m => m.user_id === String(userId) || m.user_id === Number(userId));
+      const userClubs = memberships.filter(m => String(m.user_id) === String(userId));
       if (userClubs.length === 0) {
         throw new Error('You are not a member of any clubs yet. Join one first!');
       }
@@ -83,25 +83,25 @@ export const rewardsMockApi = {
   },
   getUserPoints: async (userId) => {
     const ledger = await api.get('/reward_points_ledger');
-    const userLedger = ledger.filter(l => l.user_id === userId);
+    const userLedger = ledger.filter(l => String(l.user_id) === String(userId));
     const earned = userLedger.reduce((sum, r) => sum + r.points, 0);
 
     const redemptions = await api.get('/reward_redemptions');
-    const userRedemptions = redemptions.filter(r => r.user_id === userId);
+    const userRedemptions = redemptions.filter(r => String(r.user_id) === String(userId));
     const spent = userRedemptions.reduce((sum, r) => sum + r.points_spent, 0);
 
     return earned - spent;
   },
   getPointsHistory: async (userId) => {
     const ledger = await api.get('/reward_points_ledger');
-    return ledger.filter(l => l.user_id === userId);
+    return ledger.filter(l => String(l.user_id) === String(userId));
   },
   getStoreItems: async () => {
     return await api.get('/reward_store_items');
   },
   redeemItem: async (userId, itemId) => {
     const items = await api.get('/reward_store_items');
-    const item = items.find(i => i.id === Number(itemId) || i.id === String(itemId));
+    const item = items.find(i => String(i.id) === String(itemId));
     if (!item) throw new Error('Item not found');
 
     // Enforce max_per_user
@@ -129,6 +129,6 @@ export const rewardsMockApi = {
   },
   getRedemptionHistory: async (userId) => {
     const redemptions = await api.get('/reward_redemptions');
-    return redemptions.filter(r => r.user_id === userId);
+    return redemptions.filter(r => String(r.user_id) === String(userId));
   }
 };

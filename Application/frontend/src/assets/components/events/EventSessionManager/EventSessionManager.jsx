@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { Button } from '../../ui/Button/Button';
+import { Input } from '../../ui/Input/Input';
 import { Icon } from '@iconify/react';
 import { uiIcons, calendarIcons } from '../../../icons/registry';
 import styles from './EventSessionManager.module.css';
@@ -16,17 +18,19 @@ import styles from './EventSessionManager.module.css';
  */
 export const EventSessionManager = ({ sessions = [], setSessions, eventStart, eventEnd }) => {
 
-  const addSession = () => {
-    const newSession = {
+  const [editingSession, setEditingSession] = useState(null);
+
+  const openNewSessionModal = () => {
+    setEditingSession({
       id: Date.now(), // temporary ID for frontend keying
       title: '',
       description: '',
       venue: '',
       start_at: '',
       end_at: '',
-      session_order: sessions.length + 1
-    };
-    setSessions([...sessions, newSession]);
+      session_order: sessions.length + 1,
+      isNew: true
+    });
   };
 
   const removeSession = (id) => {
@@ -48,15 +52,22 @@ export const EventSessionManager = ({ sessions = [], setSessions, eventStart, ev
     setSessions(newSessions.map((s, i) => ({ ...s, session_order: i + 1 })));
   };
 
-  const handleSessionChange = (id, field, value) => {
-    setSessions(sessions.map(s => s.id === id ? { ...s, [field]: value } : s));
+  const handleSaveSession = (e) => {
+    e.preventDefault();
+    if (editingSession.isNew) {
+      const { isNew, ...sessionData } = editingSession;
+      setSessions([...sessions, sessionData]);
+    } else {
+      setSessions(sessions.map(s => s.id === editingSession.id ? editingSession : s));
+    }
+    setEditingSession(null);
   };
 
   return (
     <div className={styles.managerContainer}>
       <div className={styles.header}>
         <h3>Event Sessions</h3>
-        <button type="button" className={styles.addBtn} onClick={addSession}>
+        <button type="button" className={styles.addBtn} onClick={openNewSessionModal}>
           <Icon icon={calendarIcons.addSession} width="18" />
           Add Session
         </button>
@@ -71,7 +82,10 @@ export const EventSessionManager = ({ sessions = [], setSessions, eventStart, ev
           sessions.map((session, index) => (
             <div key={session.id} className={styles.sessionCard}>
               <div className={styles.sessionHeader}>
-                <span className={styles.sessionOrder}>Session {session.session_order}</span>
+                <div className={styles.sessionTitleGroup}>
+                  <span className={styles.sessionOrder}>Session {session.session_order}</span>
+                  <span className={styles.sessionTitle}>{session.title}</span>
+                </div>
                 <div className={styles.actions}>
                   <button 
                     type="button"
@@ -80,7 +94,7 @@ export const EventSessionManager = ({ sessions = [], setSessions, eventStart, ev
                     disabled={index === 0}
                     title="Move Up"
                   >
-                    <Icon icon="mdi:arrow-up" width="18" />
+                    <Icon icon={uiIcons.arrowUp} width="18" />
                   </button>
                   <button 
                     type="button"
@@ -89,7 +103,15 @@ export const EventSessionManager = ({ sessions = [], setSessions, eventStart, ev
                     disabled={index === sessions.length - 1}
                     title="Move Down"
                   >
-                    <Icon icon="mdi:arrow-down" width="18" />
+                    <Icon icon={uiIcons.arrowDown} width="18" />
+                  </button>
+                  <button 
+                    type="button"
+                    className={styles.iconBtn} 
+                    onClick={() => setEditingSession(session)}
+                    title="Edit Session"
+                  >
+                    <Icon icon="mdi:pencil" width="18" />
                   </button>
                   <button 
                     type="button"
@@ -97,70 +119,97 @@ export const EventSessionManager = ({ sessions = [], setSessions, eventStart, ev
                     onClick={() => removeSession(session.id)}
                     title="Delete Session"
                   >
-                    <Icon icon="mdi:delete-outline" width="18" />
+                    <Icon icon={uiIcons.deleteOutline} width="18" />
                   </button>
                 </div>
               </div>
-
-              <div className={styles.formGrid}>
-                <div className={`${styles.formGroup} ${styles.fullWidth}`}>
-                  <label>Session Title *</label>
-                  <input 
-                    type="text" 
-                    value={session.title} 
-                    onChange={e => handleSessionChange(session.id, 'title', e.target.value)} 
-                    placeholder="e.g. Opening Keynote"
-                    required
-                  />
+              <div className={styles.sessionSummary}>
+                <div className={styles.summaryRow}>
+                  <Icon icon="mdi:calendar-clock" />
+                  <span>{new Date(session.start_at).toLocaleString()} - {new Date(session.end_at).toLocaleString()}</span>
                 </div>
-                
-                <div className={styles.formGroup}>
-                  <label>Start Date & Time *</label>
-                  <input 
-                    type="datetime-local" 
-                    value={session.start_at} 
-                    onChange={e => handleSessionChange(session.id, 'start_at', e.target.value)} 
-                    min={eventStart}
-                    max={session.end_at || eventEnd}
-                    required
-                  />
-                </div>
-
-                <div className={styles.formGroup}>
-                  <label>End Date & Time *</label>
-                  <input 
-                    type="datetime-local" 
-                    value={session.end_at} 
-                    onChange={e => handleSessionChange(session.id, 'end_at', e.target.value)} 
-                    min={session.start_at || eventStart}
-                    max={eventEnd}
-                    required
-                  />
-                </div>
-
-                <div className={`${styles.formGroup} ${styles.fullWidth}`}>
-                  <label>Venue / Location</label>
-                  <input 
-                    type="text" 
-                    value={session.venue} 
-                    onChange={e => handleSessionChange(session.id, 'venue', e.target.value)} 
-                    placeholder="e.g. Main Auditorium (Leave blank to use parent event venue)"
-                  />
-                </div>
-
-                <div className={`${styles.formGroup} ${styles.fullWidth}`}>
-                  <label>Description</label>
-                  <textarea 
-                    value={session.description} 
-                    onChange={e => handleSessionChange(session.id, 'description', e.target.value)} 
-                    placeholder="Details about this specific session..."
-                  />
-                </div>
+                {session.venue && (
+                  <div className={styles.summaryRow}>
+                    <Icon icon="mdi:map-marker" />
+                    <span>{session.venue}</span>
+                  </div>
+                )}
               </div>
             </div>
           ))
         )}
       </div>
+
+      {editingSession && (
+        <div className={styles.modalOverlay} onClick={() => setEditingSession(null)}>
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.nestedFormDiv}>
+              <div className={styles.modalHeader}>
+                <h3>{editingSession.isNew ? 'Add Session' : 'Edit Session'}</h3>
+                <button type="button" className={styles.closeBtn} onClick={() => setEditingSession(null)}>
+                  <Icon icon={uiIcons.close} />
+                </button>
+              </div>
+
+              <div className={styles.modalBody}>
+                <Input
+                  label="Session Title *"
+                  type="text" 
+                  value={editingSession.title} 
+                  onChange={e => setEditingSession({...editingSession, title: e.target.value})} 
+                  placeholder="e.g. Opening Keynote"
+                  required
+                />
+                
+                <div className={styles.formGrid}>
+                  <Input
+                    label="Start Date & Time *"
+                    type="datetime-local" 
+                    value={editingSession.start_at} 
+                    onChange={e => setEditingSession({...editingSession, start_at: e.target.value})} 
+                    min={eventStart}
+                    max={editingSession.end_at || eventEnd}
+                    required
+                  />
+                  <Input
+                    label="End Date & Time *"
+                    type="datetime-local" 
+                    value={editingSession.end_at} 
+                    onChange={e => setEditingSession({...editingSession, end_at: e.target.value})} 
+                    min={editingSession.start_at || eventStart}
+                    max={eventEnd}
+                    required
+                  />
+                </div>
+
+                <Input
+                  label="Venue / Location"
+                  type="text" 
+                  value={editingSession.venue} 
+                  onChange={e => setEditingSession({...editingSession, venue: e.target.value})} 
+                  placeholder="e.g. Main Auditorium (Leave blank to use parent event venue)"
+                />
+
+                <Input
+                  label="Description"
+                  as="textarea"
+                  rows="3"
+                  value={editingSession.description} 
+                  onChange={e => setEditingSession({...editingSession, description: e.target.value})} 
+                  placeholder="Details about this specific session..."
+                />
+              </div>
+
+              <div className={styles.modalActions}>
+                <Button variant="outline" onClick={() => setEditingSession(null)}>Cancel</Button>
+                <Button variant="primary" onClick={handleSaveSession}>
+                  {editingSession.isNew ? 'Add Session' : 'Save Session'}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

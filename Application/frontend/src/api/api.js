@@ -20,9 +20,12 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000',
+  baseURL: import.meta.env.VITE_API_URL || '/api',
   headers: {
     'Content-Type': 'application/json',
+    'Cache-Control': 'no-cache, no-store, must-revalidate',
+    'Pragma': 'no-cache',
+    'Expires': '0'
   },
   timeout: 10000, // 10 second timeout
 });
@@ -35,6 +38,36 @@ apiClient.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    
+    // Auto-parse strictly numeric strings to integers (e.g. "11" -> 11).
+    // Safely preserves alphanumeric UUIDs (e.g. "fJd1pbNAF5o" -> "fJd1pbNAF5o").
+    if (config.data && typeof config.data === 'object') {
+      const convertNumericStrings = (obj) => {
+        if (Array.isArray(obj)) return obj.map(convertNumericStrings);
+        if (obj instanceof String) return obj.toString();
+        
+        if (obj !== null && typeof obj === 'object') {
+          const newObj = {};
+          for (const key in obj) {
+            const val = obj[key];
+            const isIdField = key.endsWith('_id') || key === 'id' || key === 'posted_by' || key === 'assigned_by' || key === 'recorded_by';
+            
+            let parsedVal = val;
+            if (val instanceof String) parsedVal = val.toString();
+            
+            if (isIdField && typeof parsedVal === 'string' && /^\d+$/.test(parsedVal)) {
+              newObj[key] = parseInt(parsedVal, 10);
+            } else {
+              newObj[key] = convertNumericStrings(parsedVal);
+            }
+          }
+          return newObj;
+        }
+        return obj;
+      };
+      config.data = convertNumericStrings(config.data);
+    }
+
     return config;
   },
   (error) => Promise.reject(error)
@@ -80,28 +113,28 @@ apiClient.interceptors.response.use(
  *   await api.del('/clubs/1');
  */
 export const api = {
-  get: async (endpoint) => {
-    const response = await apiClient.get(endpoint);
+  get: async (endpoint, config) => {
+    const response = await apiClient.get(endpoint, config);
     return response.data;
   },
 
-  post: async (endpoint, data) => {
-    const response = await apiClient.post(endpoint, data);
+  post: async (endpoint, data, config) => {
+    const response = await apiClient.post(endpoint, data, config);
     return response.data;
   },
 
-  put: async (endpoint, data) => {
-    const response = await apiClient.put(endpoint, data);
+  put: async (endpoint, data, config) => {
+    const response = await apiClient.put(endpoint, data, config);
     return response.data;
   },
 
-  patch: async (endpoint, data) => {
-    const response = await apiClient.patch(endpoint, data);
+  patch: async (endpoint, data, config) => {
+    const response = await apiClient.patch(endpoint, data, config);
     return response.data;
   },
 
-  del: async (endpoint) => {
-    const response = await apiClient.delete(endpoint);
+  del: async (endpoint, config) => {
+    const response = await apiClient.delete(endpoint, config);
     return response.data;
   },
 };

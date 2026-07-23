@@ -9,6 +9,7 @@ import { Icon } from '@iconify/react';
 import { motion } from 'framer-motion';
 import { checkIsVerified } from '../../../../utils/verification';
 import { notificationApi } from '@api/notificationApis/notification';
+import { uiIcons } from '../../../icons/registry';
 
 export const LoginForm = () => {
   const [email, setEmail] = useState('');
@@ -131,7 +132,7 @@ export const LoginForm = () => {
         </div>
 
         <motion.button type="submit" className={styles.submitBtn} disabled={isLoading} whileTap={{ scale: 0.98 }}>
-          {isLoading ? <Icon icon="mdi:loading" className={styles.spinner} /> : <Icon icon="mdi:arrow-right" />}
+          {isLoading ? <Icon icon={uiIcons.loading} className={styles.spinner} /> : <Icon icon={uiIcons.arrowRight} />}
           {isLoading ? 'Signing in...' : 'Sign in'}
         </motion.button>
 

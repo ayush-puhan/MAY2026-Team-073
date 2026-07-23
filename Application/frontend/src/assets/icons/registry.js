@@ -27,6 +27,59 @@ export const uiIcons = {
   search: 'mdi:magnify',
   menu: 'mdi:menu',
   folderOpen: 'mdi:folder-open-outline',
+  plus: 'mdi:plus',
+  bank: 'mdi:bank',
+  pin: 'mdi:pin',
+  shieldCheck: 'mdi:shield-check',
+  accountSearch: 'mdi:account-search',
+  plusCircleOutline: 'mdi:plus-circle-outline',
+  alertCircleOutline: 'mdi:alert-circle-outline',
+  clockOutline: 'mdi:clock-outline',
+  dotsHorizontal: 'mdi:dots-horizontal',
+  certificateOutline: 'mdi:certificate-outline',
+  chartBar: 'mdi:chart-bar',
+  chartDonut: 'mdi:chart-donut',
+  clipboardTextClock: 'mdi:clipboard-text-clock',
+  bankOutline: 'mdi:bank-outline',
+  cashMinus: 'mdi:cash-minus',
+  cashCheck: 'mdi:cash-check',
+  timelineTextOutline: 'mdi:timeline-text-outline',
+  calendarBlank: 'mdi:calendar-blank',
+  handshakeOutline: 'mdi:handshake-outline',
+  accountRemoveOutline: 'mdi:account-remove-outline',
+  accountSearchOutline: 'mdi:account-search-outline',
+  deleteOutline: 'mdi:delete-outline',
+  crownOutline: 'mdi:crown-outline',
+  clipboardTextOutline: 'mdi:clipboard-text-outline',
+  checkCircleOutline: 'mdi:check-circle-outline',
+  accountArrowRight: 'mdi:account-arrow-right',
+  play: 'mdi:play',
+  clipboardTextPlay: 'mdi:clipboard-text-play',
+  checkAll: 'mdi:check-all',
+  closeCircleOutline: 'mdi:close-circle-outline',
+  arrowUp: 'mdi:arrow-up',
+  arrowDown: 'mdi:arrow-down',
+  calendarCheck: 'mdi:calendar-check',
+  calendarSearch: 'mdi:calendar-search',
+  schoolOutline: 'mdi:school-outline',
+  calendarText: 'mdi:calendar-text',
+  calendarAlert: 'mdi:calendar-alert',
+  arrowRightCircleOutline: 'mdi:arrow-right-circle-outline',
+  mapMarker: 'mdi:map-marker',
+  openInNew: 'mdi:open-in-new',
+  clockAlertOutline: 'mdi:clock-alert-outline',
+  mapMarkerOutline: 'mdi:map-marker-outline',
+  bookmarkOutline: 'mdi:bookmark-outline',
+  calendarClock: 'mdi:calendar-clock',
+  checkDecagram: 'mdi:check-decagram',
+  bell: 'mdi:bell',
+  cloudUpload: 'mdi:cloud-upload',
+  closeCircle: 'mdi:close-circle',
+  eyeOutline: 'mdi:eye-outline',
+  incognito: 'mdi:incognito',
+  flashOutline: 'mdi:flash-outline',
+  pulse: 'mdi:pulse',
+  shieldAlertOutline: 'mdi:shield-alert-outline',
 };
 
 // ── Auth ──
@@ -181,4 +234,16 @@ export const rewardsIcons = {
   check: 'mdi:check'
 };
 
+
+
+// "?"? Emergency "?"?
+export const emergencyIcons = {
+  alert: 'mdi:alert',
+  medical: 'mdi:medical-bag',
+  wheelchair: 'mdi:wheelchair-accessibility',
+  shield: 'mdi:shield-alert',
+  other: 'mdi:alert-circle',
+  fire: 'mdi:fire',
+  ambulance: 'mdi:ambulance'
+};
 

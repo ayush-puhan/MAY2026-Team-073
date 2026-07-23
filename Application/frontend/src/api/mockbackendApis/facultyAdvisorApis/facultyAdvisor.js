@@ -42,10 +42,11 @@ export const facultyAdvisorApi = {
   getAdvisedClubs: async (userId) => api.get(`/clubs?faculty_advisor_id=${toId(userId)}`),
 
   getClubDetail: async (clubId) => {
-    const [club, memberships, committees] = await Promise.all([
+    const [club, memberships, committees, budgets] = await Promise.all([
       api.get(`/clubs/${toId(clubId)}`),
       api.get(`/club_memberships?club_id=${toId(clubId)}&status=approved`),
       api.get(`/committees?club_id=${toId(clubId)}`),
+      api.get(`/budgets?club_id=${toId(clubId)}`)
     ]);
 
     const users = await api.get('/users');
@@ -54,7 +55,9 @@ export const facultyAdvisorApi = {
       user_name: users.find((u) => toId(u.id) === toId(m.user_id))?.full_name || 'Unknown',
     }));
 
-    return { ...club, members: membersWithNames, committees };
+    const mainBudget = budgets.find(b => !b.committee_id && !b.parent_budget_id) || null;
+
+    return { ...club, members: membersWithNames, committees, mainBudget };
   },
 
   getEvents: async (userId, status) => {
@@ -168,5 +171,47 @@ export const facultyAdvisorApi = {
     });
     
     return created;
+  },
+
+  setClubBudget: async (clubId, amount, facultyId) => {
+    // 1. check if a main budget exists
+    const budgets = await api.get(`/budgets?club_id=${toId(clubId)}`);
+    const mainBudget = budgets.find(b => !b.committee_id && !b.parent_budget_id);
+    
+    if (mainBudget) {
+      // update
+      const updated = await api.patch(`/budgets/${mainBudget.id}`, {
+        allocated_amount: parseFloat(amount),
+        updated_at: istNow()
+      });
+      await logAudit({
+        userId: toId(facultyId),
+        action: 'UPDATE',
+        entityType: 'Budget',
+        entityId: mainBudget.id,
+        details: `Faculty Advisor updated club budget to ${amount}`,
+      });
+      return updated;
+    } else {
+      // create
+      const created = await api.post('/budgets', {
+        club_id: toId(clubId),
+        title: 'Main Club Budget',
+        allocated_amount: parseFloat(amount),
+        status: 'approved',
+        created_by: toId(facultyId),
+        created_at: istNow(),
+        period_start: istNow(),
+        period_end: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString()
+      });
+      await logAudit({
+        userId: toId(facultyId),
+        action: 'CREATE',
+        entityType: 'Budget',
+        entityId: created.id,
+        details: `Faculty Advisor created club budget: ${amount}`,
+      });
+      return created;
+    }
   }
 };

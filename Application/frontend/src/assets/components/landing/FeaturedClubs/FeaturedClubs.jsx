@@ -53,8 +53,12 @@ export const FeaturedClubs = () => {
           {doubled.map((club, i) => (
             <ClubCard 
               key={i} 
-              club={club} 
-              onJoin={user ? authApi.getDashboardRoute(user.role) : '/register'}
+              icon={club.icon}
+              title={club.name}
+              subtitle={`${club.members} members • ${club.awards} awards`}
+              rightElement={club.category}
+              bannerKeyword={club.bannerKeyword}
+              onClick={() => window.location.href = user ? authApi.getDashboardRoute(user.role) : '/register'}
             />
           ))}
         </div>

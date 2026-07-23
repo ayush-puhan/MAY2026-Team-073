@@ -12,6 +12,7 @@ export const RewardsEarn = () => {
   const { user } = useSession();
   const [tasks, setTasks] = useState([]);
   const [completions, setCompletions] = useState([]);
+  const [streak, setStreak] = useState(1);
   const [points, setPoints] = useState(0);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -28,6 +29,11 @@ export const RewardsEarn = () => {
       setTasks(visibleTasks);
       setCompletions(userCompletions);
       setPoints(userPoints);
+
+      // Calculate simple mock streak
+      const today = new Date().toISOString().split('T')[0];
+      const hasToday = userCompletions.some(c => c.completed_at.startsWith(today));
+      setStreak(hasToday ? 2 : 1);
     } catch (err) {
       console.error('Failed to load rewards data', err);
     } finally {
@@ -120,7 +126,7 @@ export const RewardsEarn = () => {
               <Icon icon={rewardsIcons.fire} className={styles.fireIcon} />
               <div>
                 <h4>Daily Streak</h4>
-                <p>1 Day</p>
+                <p>{streak} Day{streak > 1 ? 's' : ''}</p>
               </div>
             </div>
             <div className={styles.streakBonus}>
@@ -130,7 +136,7 @@ export const RewardsEarn = () => {
           </div>
           <div className={styles.stamps}>
             {[1,2,3,4,5,6,7].map(day => (
-              <div key={day} className={`${styles.stamp} ${day === 1 ? styles.stampActive : ''}`}>
+              <div key={day} className={`${styles.stamp} ${day <= streak ? styles.stampActive : ''}`}>
                 {day === 7 ? <Icon icon={rewardsIcons.gift} /> : <Icon icon={rewardsIcons.star} />}
               </div>
             ))}

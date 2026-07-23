@@ -77,23 +77,23 @@
 .heroBanner h1 {
   font-size: 2.5rem;
   font-weight: 900;
-  color: white;
+  color: var(--hero-title);
   margin: 0 0 0.75rem 0;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   position: relative;
   z-index: 2;
-  text-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  text-shadow: var(--hero-title-shadow);
 }
 
 .heroBanner p {
-  color: rgba(255,255,255,0.9);
+  color: var(--hero-text);
   font-size: 1.1rem;
   margin: 0;
   max-width: 600px;
   position: relative;
   z-index: 2;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  text-shadow: var(--hero-text-shadow);
 }
 
 @media (max-width: 768px) {

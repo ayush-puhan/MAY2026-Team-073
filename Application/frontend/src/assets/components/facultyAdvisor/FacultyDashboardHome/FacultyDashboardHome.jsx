@@ -6,6 +6,7 @@ import { StatusBadge } from '../../ui/StatusBadge/StatusBadge';
 import { facultyAdvisorApi } from '@api/facultyAdvisorApis/facultyAdvisor';
 import { useSession } from '../../../../context/SessionContext';
 import styles from './FacultyDashboardHome.module.css';
+import { uiIcons, dashboardIcons } from '../../../icons/registry';
 
 export const FacultyDashboardHome = () => {
   const { user } = useSession();
@@ -35,7 +36,7 @@ export const FacultyDashboardHome = () => {
   if (loading) {
     return (
       <div className={styles.loading}>
-        <Icon icon="mdi:loading" className="animate-spin" width="32" />
+        <Icon icon={uiIcons.loading} className="animate-spin" width="32" />
       </div>
     );
   }
@@ -48,10 +49,10 @@ export const FacultyDashboardHome = () => {
       </div>
 
       <div className={styles.statsGrid}>
-        <StatCard title="Advised Clubs" value={stats.advisedClubs} icon="mdi:account-group-outline" color="var(--primary)" />
-        <StatCard title="Total Members" value={stats.totalMembers} icon="mdi:account-multiple-outline" color="var(--sky)" />
-        <StatCard title="Pending Event Approvals" value={stats.pendingEvents} icon="mdi:calendar-check-outline" color="var(--campus-orange)" />
-        <StatCard title="Pending Expense Approvals" value={stats.pendingExpenses} icon="mdi:cash-multiple" color="var(--achievement)" />
+        <StatCard title="Advised Clubs" value={stats.advisedClubs} icon={dashboardIcons.accountGroupOutline} color="var(--primary)" />
+        <StatCard title="Total Members" value={stats.totalMembers} icon={dashboardIcons.accountMultipleOutline} color="var(--sky)" />
+        <StatCard title="Pending Event Approvals" value={stats.pendingEvents} icon={dashboardIcons.calendarCheckOutline} color="var(--campus-orange)" />
+        <StatCard title="Pending Expense Approvals" value={stats.pendingExpenses} icon={dashboardIcons.cashMultiple} color="var(--achievement)" />
       </div>
 
       <div className={styles.section}>
@@ -67,7 +68,7 @@ export const FacultyDashboardHome = () => {
                 key={ev.id}
                 title={ev.title}
                 subtitle={`${ev.club_name} • ${new Date(ev.start_at).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })}`}
-                icon="mdi:calendar-alert"
+                icon={uiIcons.calendarAlert}
                 color="var(--campus-orange)"
                 bannerKeyword={ev.bannerKeyword}
                 onClick={() => navigate('/faculty-advisor-dashboard/events')}

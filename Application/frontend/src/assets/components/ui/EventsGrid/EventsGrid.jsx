@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Icon } from '@iconify/react';
-import { dashboardIcons } from '../../../icons/registry';
+import { dashboardIcons, uiIcons } from '../../../icons/registry';
 import styles from './EventsGrid.module.css';
 
 const bannerModules = import.meta.glob('../../../../images/events/*.png', { eager: true, import: 'default' });
@@ -30,16 +30,16 @@ export const EventsGrid = ({ events = [] }) => {
       <div className={styles.modalOverlay} onClick={onClose}>
         <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
           <div className={styles.modalBanner} style={{ backgroundImage: url($) }}>
-            <button className={styles.closeBtn} onClick={onClose}><Icon icon="mdi:close" /></button>
+            <button className={styles.closeBtn} onClick={onClose}><Icon icon={uiIcons.close} /></button>
           </div>
           <div className={styles.modalBody}>
             <div className={styles.modalHeaderInfo}>
               <span className={styles.categoryPill}>{event.category || 'General'}</span>
               <h2>{event.title}</h2>
               <div className={styles.modalMeta}>
-                <span><Icon icon="mdi:calendar-clock" /> {event.date ? new Date(event.date).toLocaleString() : 'TBA'}</span>
-                <span><Icon icon="mdi:map-marker-outline" /> {event.location || 'TBA'}</span>
-                <span><Icon icon="mdi:account-group-outline" /> 120/150 Seats</span>
+                <span><Icon icon={uiIcons.calendarClock} /> {event.date ? new Date(event.date).toLocaleString() : 'TBA'}</span>
+                <span><Icon icon={uiIcons.mapMarkerOutline} /> {event.location || 'TBA'}</span>
+                <span><Icon icon={dashboardIcons.accountGroupOutline} /> 120/150 Seats</span>
               </div>
             </div>
             
@@ -47,7 +47,7 @@ export const EventsGrid = ({ events = [] }) => {
             
             <div className={styles.modalActions}>
               <button className={styles.registerBtn} onClick={() => alert('Processing registration...')}>
-                <Icon icon="mdi:check-decagram" width="20" /> Complete Registration
+                <Icon icon={uiIcons.checkDecagram} width="20" /> Complete Registration
               </button>
             </div>
           </div>
@@ -71,8 +71,8 @@ export const EventsGrid = ({ events = [] }) => {
               <span className={styles.tag}>Featured</span>
               <h2>{featuredEvent.title}</h2>
               <div className={styles.metaRow}>
-                <span><Icon icon="mdi:clock-outline" /> {featuredEvent.date ? new Date(featuredEvent.date).toLocaleDateString() : 'TBA'}</span>
-                <span><Icon icon="mdi:map-marker-outline" /> {featuredEvent.location || 'TBA'}</span>
+                <span><Icon icon={uiIcons.clockOutline} /> {featuredEvent.date ? new Date(featuredEvent.date).toLocaleDateString() : 'TBA'}</span>
+                <span><Icon icon={uiIcons.mapMarkerOutline} /> {featuredEvent.location || 'TBA'}</span>
               </div>
             </div>
           </div>

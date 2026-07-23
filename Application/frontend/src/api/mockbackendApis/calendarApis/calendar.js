@@ -19,14 +19,14 @@ const canUserSeeEvent = (event, user, userMemberships) => {
 
   // Same university logic
   const club = event.club; // Assuming club is joined
-  if (club && club.university_id === user.university_id) {
+  if (club && String(club.university_id) === String(user.university_id)) {
     if (event.is_public) {
       return true; // University-wide public event
     }
   }
 
   // Private club event -> check membership
-  const isMember = userMemberships.some(m => m.club_id === event.club_id && m.status === 'approved');
+  const isMember = userMemberships.some(m => String(m.club_id) === String(event.club_id) && m.status === 'approved');
   if (isMember) {
     return true;
   }
@@ -43,6 +43,10 @@ export const calendarMockApi = {
       // 1. Fetch user to know role and university
       let { data: users } = await axios.get(`${MOCK_URL}/users?id=${userId}`);
       if (!users.length) {
+        let fallback = await axios.get(`${MOCK_URL}/users?user_id=${userId}`);
+        users = fallback.data;
+      }
+      if (!users.length) {
         console.warn(`User ${userId} not found in mock DB. Falling back to default user.`);
         const { data: allUsers } = await axios.get(`${MOCK_URL}/users`);
         users = allUsers;
@@ -53,21 +57,38 @@ export const calendarMockApi = {
       // 2. Fetch user's club memberships
       const { data: memberships } = await axios.get(`${MOCK_URL}/club_memberships?user_id=${userId}`);
       
-      // 3. Fetch user's registrations (to compute hasConflict and isRegistered)
+      // 3. Fetch user's registrations AND external participations
       const { data: registrations } = await axios.get(`${MOCK_URL}/event_registrations?user_id=${userId}`);
-      const registeredEventIds = new Set(registrations.map(r => r.event_id));
+      let externalRegs = [];
+      try {
+        const { data: externals } = await axios.get(`${MOCK_URL}/external_participants?user_id=${userId}`);
+        externalRegs = externals || [];
+      } catch (e) {
+        // external_participants table may not exist
+      }
+      // Combine both into a single set — normalize all IDs to String
+      const registeredEventIds = new Set([
+        ...registrations.map(r => String(r.event_id)),
+        ...externalRegs.map(r => String(r.event_id))
+      ]);
 
-      // 4. Fetch all events and their clubs (using JSON Server's _expand)
-      const { data: events } = await axios.get(`${MOCK_URL}/events?_expand=club`);
+      // 4. Fetch all events and clubs separately (avoid _expand which fails on type mismatch)
+      const { data: events } = await axios.get(`${MOCK_URL}/events`);
+      const { data: clubs } = await axios.get(`${MOCK_URL}/clubs`);
+
+      // Manually join club data onto events
+      const eventsWithClubs = events.map(ev => ({
+        ...ev,
+        club: clubs.find(c => String(c.id) === String(ev.club_id)) || null
+      }));
 
       // 5. Filter events based on strict access control logic
-      let visibleEvents = events.filter(ev => {
+      let visibleEvents = eventsWithClubs.filter(ev => {
+        // Always show if user is registered (even if they left the club later, etc.)
+        if (registeredEventIds.has(String(ev.id))) return true;
+        
         // Must check if user can see it
         const canSee = canUserSeeEvent(ev, user, memberships);
-        
-        // Always show if user is registered (even if they left the club later, etc.)
-        if (registeredEventIds.has(ev.id)) return true;
-        
         return canSee;
       });
 
@@ -75,19 +96,19 @@ export const calendarMockApi = {
       if (filters.show_public !== undefined && !filters.show_public) {
         // If show_public is false, exclude events from OTHER universities
         visibleEvents = visibleEvents.filter(ev => {
-          return (ev.club && ev.club.university_id === user.university_id) || user.role === 'system_admin';
+          return (ev.club && String(ev.club.university_id) === String(user.university_id)) || user.role === 'system_admin';
         });
       }
       
       if (filters.university_id) {
-        visibleEvents = visibleEvents.filter(ev => ev.club && ev.club.university_id === parseInt(filters.university_id));
+        visibleEvents = visibleEvents.filter(ev => ev.club && String(ev.club.university_id) === String(filters.university_id));
       }
 
       if (filters.club_id) {
-        visibleEvents = visibleEvents.filter(ev => ev.club_id === parseInt(filters.club_id));
+        visibleEvents = visibleEvents.filter(ev => String(ev.club_id) === String(filters.club_id));
       }
 
-      const visibleEventIds = new Set(visibleEvents.map(e => parseInt(e.id)));
+      const visibleEventIds = new Set(visibleEvents.map(e => String(e.id)));
 
       // 7. Fetch all event sessions
       const { data: sessions } = await axios.get(`${MOCK_URL}/event_sessions`);
@@ -97,16 +118,18 @@ export const calendarMockApi = {
       const userRegisteredSessions = [];
 
       sessions.forEach(session => {
-        if (!visibleEventIds.has(parseInt(session.event_id))) return;
+        if (!visibleEventIds.has(String(session.event_id))) return;
 
-        const parentEvent = visibleEvents.find(e => parseInt(e.id) === parseInt(session.event_id));
-        const isRegistered = registeredEventIds.has(parseInt(parentEvent.id));
+        const parentEvent = visibleEvents.find(e => String(e.id) === String(session.event_id));
+        if (!parentEvent) return;
+        
+        const isRegistered = registeredEventIds.has(String(parentEvent.id));
 
         const sessionObj = {
           id: `session-${session.id}`,
-          sessionId: parseInt(session.id),
+          sessionId: session.id,
           sessionTitle: session.title,
-          eventId: parseInt(parentEvent.id),
+          eventId: parentEvent.id,
           eventTitle: parentEvent.title,
           clubId: parentEvent.club_id,
           clubName: parentEvent.club?.name,

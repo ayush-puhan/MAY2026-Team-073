@@ -3,6 +3,7 @@ import { Icon } from '@iconify/react';
 import { useNavigate } from 'react-router-dom';
 import { useSession } from '../../../../context/SessionContext';
 import styles from './ProfileDropdown.module.css';
+import { rewardsIcons, uiIcons, authIcons, dashboardIcons } from '../../../icons/registry';
 
 export const ProfileDropdown = ({ user, openProfileModal, minimal = false }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -46,7 +47,7 @@ export const ProfileDropdown = ({ user, openProfileModal, minimal = false }) => 
             {user?.avatar ? (
               <img src={user.avatar} alt="Profile" className={styles.avatarImg} />
             ) : (
-              <Icon icon="mdi:account" style={{ fontSize: '1.2rem' }} />
+              <Icon icon={rewardsIcons.account} style={{ fontSize: '1.2rem' }} />
             )}
           </div>
           {!minimal && (
@@ -55,7 +56,7 @@ export const ProfileDropdown = ({ user, openProfileModal, minimal = false }) => 
                 <span className={styles.userName}>{user?.full_name || user?.name || 'User'}</span>
                 <span className={styles.userRole}>{formatRole(user?.role)}</span>
               </div>
-              <Icon icon="mdi:chevron-down" />
+              <Icon icon={uiIcons.chevronDown} />
             </>
           )}
         </button>
@@ -69,12 +70,12 @@ export const ProfileDropdown = ({ user, openProfileModal, minimal = false }) => 
             </div>
             
             <button className={styles.menuItem} onClick={() => { setIsOpen(false); openProfileModal(); }}>
-              <Icon icon="mdi:account-outline" className={styles.menuIcon} />
+              <Icon icon={authIcons.accountOutline} className={styles.menuIcon} />
               Profile Settings
             </button>
             <div className={styles.divider}></div>
             <button className={`${styles.menuItem} ${styles.logoutBtn}`} onClick={handleLogout}>
-              <Icon icon="mdi:logout" className={styles.menuIcon} />
+              <Icon icon={dashboardIcons.logout} className={styles.menuIcon} />
               Log out
             </button>
           </div>

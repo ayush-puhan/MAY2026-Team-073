@@ -3,7 +3,7 @@ import { Icon } from '@iconify/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createPortal } from 'react-dom';
 import { TaskCard } from '../TaskCard/TaskCard';
-import { rewardsIcons } from '../../../icons/registry';
+import { rewardsIcons, uiIcons } from '../../../icons/registry';
 import styles from './ViewAllTasksModal.module.css';
 
 export const ViewAllTasksModal = ({ isOpen, onClose, tasks, completions, onCompleteTask }) => {
@@ -50,7 +50,7 @@ export const ViewAllTasksModal = ({ isOpen, onClose, tasks, completions, onCompl
           <div className={styles.header}>
             <h2>All Available Tasks</h2>
             <button className={styles.closeBtn} onClick={onClose}>
-              <Icon icon="mdi:close" width="24" height="24" />
+              <Icon icon={uiIcons.close} width="24" height="24" />
             </button>
           </div>
           

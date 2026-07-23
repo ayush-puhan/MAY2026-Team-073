@@ -103,13 +103,15 @@ export const AnnouncementCenter = () => {
 
   useEffect(() => { load(); }, []);
 
-  const handlePublish = async ({ title, body, club_id }) => {
+  const handlePublish = async ({ title, body, club_id, target_role, target_committee }) => {
     try {
       let audience = 'all_members';
       if (isSysAdmin) {
         audience = 'system_wide';
       } else if (!club_id || club_id === 'university') {
         audience = 'university_wide';
+      } else if (target_role !== 'ALL' || target_committee !== 'ALL') {
+        audience = 'targeted';
       }
 
       const payload = {
@@ -119,6 +121,11 @@ export const AnnouncementCenter = () => {
         body,
         target_audience: audience
       };
+      
+      if (audience === 'targeted') {
+        payload.target_role = target_role;
+        payload.target_committee = target_committee;
+      }
       
       if (club_id && club_id !== 'university') {
         payload.club_id = club_id;
@@ -192,7 +199,8 @@ export const AnnouncementCenter = () => {
         <AnnouncementComposerModal
           onClose={() => setIsComposerOpen(false)}
           onSubmit={handlePublish}
-          options={allowedPostTargets}
+          clubOptions={allowedPostTargets.map(t => ({ value: t.id, label: t.name }))}
+          user={user}
         />
       )}
 

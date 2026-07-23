@@ -83,6 +83,17 @@ export const authApi = {
     return created;
   },
 
+  checkAvailability: async (email, roll_number) => {
+    const existing = await api.get(`/users?email=${encodeURIComponent(email)}`);
+    if (existing && existing.length > 0) throw new Error('An account with this email already exists');
+    
+    if (roll_number) {
+      const existingRoll = await api.get(`/users?roll_number=${encodeURIComponent(roll_number)}`);
+      if (existingRoll && existingRoll.length > 0) throw new Error('An account with this roll number already exists');
+    }
+    return true;
+  },
+
   verifyEmail: async (email, otp) => {
     if (otp !== '123456') throw new Error('Invalid OTP. Please enter 123456 for testing.');
     const users = await api.get(`/users?email=${encodeURIComponent(email)}`);
@@ -189,6 +200,7 @@ export const authApi = {
   getPrograms: async () => await api.get('/programs'),
   getInterests: async () => await api.get('/interests'),
   getValidDomains: async () => await api.get('/university_domains'),
+  getFacultyAdvisors: async () => await api.get('/users?role=faculty_advisor'),
 
   logout: () => {
     localStorage.removeItem('token');

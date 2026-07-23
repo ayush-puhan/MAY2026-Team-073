@@ -55,6 +55,7 @@ class Event(Base, TimestampMixin):
     )
     interest_links = relationship("EventInterest", back_populates="event", cascade="all, delete-orphan")
     event_sessions = relationship("EventSession", back_populates="event", cascade="all, delete-orphan")
+    sponsor_links = relationship("ClubSponsor", back_populates="event", cascade="all, delete-orphan")
 
 
 class EventSession(Base):
@@ -115,11 +116,13 @@ class VolunteerAssignment(Base):
     task_description = Column(Text, nullable=False)
     status = Column(SAEnum(VolunteerTaskStatus), default=VolunteerTaskStatus.ASSIGNED, nullable=False)
     due_at = Column(DateTime, nullable=True)
+    committee_id = Column(Integer, ForeignKey("committees.id", ondelete="SET NULL"), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
     event = relationship("Event", back_populates="volunteer_assignments")
     assignee_membership = relationship("ClubMembership", back_populates="volunteer_assignments")
     assigner = relationship("User", foreign_keys=[assigned_by])
+    committee = relationship("Committee", foreign_keys=[committee_id])
 
 
 class ExternalParticipant(Base):

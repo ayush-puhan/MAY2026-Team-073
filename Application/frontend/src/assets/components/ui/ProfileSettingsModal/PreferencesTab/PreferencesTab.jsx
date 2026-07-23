@@ -5,6 +5,7 @@ import { useToast } from '../../../../../context/ToastContext';
 import { Button } from '../../Button/Button';
 import { Dropdown } from '../../Dropdown/Dropdown';
 import styles from '../ProfileSettingsModal.module.css';
+import { uiIcons, authIcons } from '../../../../icons/registry';
 
 export const PreferencesTab = ({
   formData,
@@ -61,7 +62,7 @@ export const PreferencesTab = ({
                 size="sm"
                 className={`${styles.addInterestBtn} ${formData.interests.length >= 6 ? styles.addInterestBtnDisabled : ''}`} 
                 onClick={handleOpenInterestSearch}
-                icon="mdi:plus"
+                icon={uiIcons.plus}
               >
                 Add Interest
               </Button>
@@ -90,7 +91,7 @@ export const PreferencesTab = ({
                <div key={id} className={styles.chip}>
                   {interest.name}
                   <button type="button" className={styles.removeChipBtn} onClick={() => handleRemoveInterest(id)}>
-                    <Icon icon="mdi:close-circle" />
+                    <Icon icon={uiIcons.closeCircle} />
                   </button>
                 </div>
               ) : null;
@@ -106,7 +107,7 @@ export const PreferencesTab = ({
         
         <div className={styles.toggleField}>
           <div className={styles.toggleLabel}>
-            <Icon icon="mdi:eye-outline" className={styles.toggleIcon} />
+            <Icon icon={uiIcons.eyeOutline} className={styles.toggleIcon} />
             <div>
               <strong>Color Blind Mode</strong>
               <p className={styles.hint}>Enhances contrast and changes colors for better visibility.</p>
@@ -123,7 +124,7 @@ export const PreferencesTab = ({
 
         <div className={styles.toggleField} style={{ marginTop: '1.5rem' }}>
           <div className={styles.toggleLabel}>
-            <Icon icon="mdi:email-outline" className={styles.toggleIcon} />
+            <Icon icon={authIcons.emailOutline} className={styles.toggleIcon} />
             <div>
               <strong>Email Notifications</strong>
               <p className={styles.hint}>Receive important updates and reminders via email.</p>
@@ -141,7 +142,7 @@ export const PreferencesTab = ({
         {!isAdminOrFaculty && !isVerified && (
           <div className={styles.toggleField} style={{ marginTop: '1.5rem' }}>
             <div className={styles.toggleLabel}>
-              <Icon icon="mdi:incognito" className={styles.toggleIcon} />
+              <Icon icon={uiIcons.incognito} className={styles.toggleIcon} />
               <div>
                 <strong>Browse Public Events Only</strong>
                 <p className={styles.hint}>Disable campus email verification reminders.</p>

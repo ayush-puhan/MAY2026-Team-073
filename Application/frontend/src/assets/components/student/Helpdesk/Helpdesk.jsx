@@ -4,7 +4,8 @@ import { logAudit, istNow } from '../../../../api/mockbackendApis/auditHelper';
 import { useSession } from '../../../../context/SessionContext';
 import { useToast } from '../../../../context/ToastContext';
 import { Icon } from '@iconify/react';
-import { uiIcons } from '../../../icons/registry';
+import { uiIcons, emergencyIcons } from '../../../icons/registry';
+import { emergencyApi } from '../../../../api';
 import { Button } from '../../ui/Button/Button';
 import { Dropdown } from '../../ui/Dropdown/Dropdown';
 import { Input } from '../../ui/Input/Input';
@@ -49,17 +50,24 @@ export const Helpdesk = () => {
     assigned_club_id: ''
   });
   const [submitting, setSubmitting] = useState(false);
+  const [activeTab, setActiveTab] = useState('tickets');
+  const [emergencies, setEmergencies] = useState([]);
+  const [isEmergencyModalOpen, setIsEmergencyModalOpen] = useState(false);
+  const [emergencyForm, setEmergencyForm] = useState({ category: 'medical', description: '', event_id: '' });
+
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [ticketsData, clubsData, memberships] = await Promise.all([
+        const [ticketsData, clubsData, memberships, emergencyData] = await Promise.all([
           api.get(`/support_tickets`),
           api.get('/clubs'),
-          api.get(`/club_memberships?user_id=${user.id}`)
+          api.get(`/club_memberships?user_id=${user.id}`),
+          emergencyApi.getEmergencyReports({ reported_by: user.id })
         ]);
         const userTickets = ticketsData.filter(t => String(t.raised_by) === String(user.id));
         setTickets(userTickets);
+        setEmergencies(emergencyData);
         
         const userClubIds = memberships.map(m => String(m.club_id));
         const userClubs = clubsData.filter(c => userClubIds.includes(String(c.id)));
@@ -110,6 +118,29 @@ export const Helpdesk = () => {
     }
   };
 
+  
+  const handleEmergencySubmit = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+    try {
+      const data = {
+        reported_by: user.id,
+        category: emergencyForm.category,
+        description: emergencyForm.description,
+        event_id: emergencyForm.event_id || null
+      };
+      const res = await emergencyApi.submitEmergencyReport(data);
+      setEmergencies(prev => [res, ...prev]);
+      setIsEmergencyModalOpen(false);
+      setEmergencyForm({ category: 'medical', description: '', event_id: '' });
+      showInfo("Emergency report submitted successfully.");
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const handleRowClick = async (ticket) => {
     setSelectedTicket(ticket);
     try {
@@ -155,7 +186,7 @@ export const Helpdesk = () => {
           <h2 className={styles.title}>Support Helpdesk</h2>
           <p className={styles.subtitle}>Submit and track your support tickets.</p>
         </div>
-        <Button className={styles.createBtn} onClick={handleOpenModal} icon="mdi:plus">
+        <Button className={styles.createBtn} onClick={handleOpenModal} icon={uiIcons.plus}>
           New Ticket
         </Button>
       </div>

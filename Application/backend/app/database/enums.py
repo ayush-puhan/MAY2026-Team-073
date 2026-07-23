@@ -14,13 +14,18 @@ class UserRole(str, enum.Enum):
 class ClubMemberRole(str, enum.Enum):
     APPLICANT = "applicant"
     MEMBER = "member"
-    COMMITTEE_MEMBER = "committee_member"
     VOLUNTEER_COORDINATOR = "volunteer_coordinator"
     EVENT_COORDINATOR = "event_coordinator"
     SECRETARY = "secretary"
     TREASURER = "treasurer"
     VICE_PRESIDENT = "vice_president"
     PRESIDENT = "president"
+
+
+class CommitteeRole(str, enum.Enum):
+    HEAD = "head"
+    CO_HEAD = "co_head"
+    MEMBER = "member"
 
 
 class MembershipStatus(str, enum.Enum):
@@ -39,16 +44,19 @@ class ClubStatus(str, enum.Enum):
 
 class ClubRequestStatus(str, enum.Enum):
     SUBMITTED = "submitted"
+    FACULTY_RECOMMENDED = "faculty_recommended"
     UNDER_REVIEW = "under_review"
     APPROVED = "approved"
     REJECTED = "rejected"
 
 
 class EventStatus(str, enum.Enum):
+    PENDING_APPROVAL = "pending_approval"
     SCHEDULED = "scheduled"
     ONGOING = "ongoing"
     COMPLETED = "completed"
     CANCELLED = "cancelled"
+    REJECTED = "rejected"
 
 
 class RegistrationStatus(str, enum.Enum):
@@ -60,6 +68,7 @@ class RegistrationStatus(str, enum.Enum):
 class VolunteerTaskStatus(str, enum.Enum):
     ASSIGNED = "assigned"
     IN_PROGRESS = "in_progress"
+    PENDING_REVIEW = "pending_review"
     COMPLETED = "completed"
     MISSED = "missed"
 
@@ -98,6 +107,11 @@ class DocumentType(str, enum.Enum):
     RECEIPT = "receipt"
     REPORT = "report"
     GENERAL = "general"
+    MEETING_MINUTES = "meeting_minutes"
+    PRESENTATION = "presentation"
+    RULEBOOK = "rulebook"
+    FILE = "file"
+    DRIVE_LINK = "drive_link"
 
 
 class NotificationType(str, enum.Enum):
@@ -109,6 +123,13 @@ class NotificationType(str, enum.Enum):
     CERTIFICATE_READY = "certificate_ready"
     EMERGENCY_ALERT = "emergency_alert"
     ANNOUNCEMENT = "announcement"
+    CLUB_UPDATE = "club_update"
+    CLUB_PROPOSAL_SUBMITTED = "club_proposal_submitted"
+    CLUB_PROPOSAL_RECOMMENDED = "club_proposal_recommended"
+    CLUB_PROPOSAL_REJECTED = "club_proposal_rejected"
+    CLUB_PROPOSAL_APPROVED = "club_proposal_approved"
+    DEADLINE_WARNING = "deadline_warning"
+    EVENT_STARTING = "event_starting"
 
 
 class NotificationChannel(str, enum.Enum):

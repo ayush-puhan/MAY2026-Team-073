@@ -3,6 +3,7 @@ import styles from './Button.module.css';
 import { Icon } from '@iconify/react';
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
+import { uiIcons } from '../../../icons/registry';
 
 export const Button = ({ 
   children, 
@@ -29,7 +30,7 @@ export const Button = ({
       {...props}
     >
       {isLoading ? (
-        <Icon icon="mdi:loading" className={styles.spinner} />
+        <Icon icon={uiIcons.loading} className={styles.spinner} />
       ) : icon ? (
         <Icon icon={icon} className={styles.icon} />
       ) : null}

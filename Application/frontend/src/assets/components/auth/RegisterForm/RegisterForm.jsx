@@ -8,6 +8,7 @@ import { Icon } from '@iconify/react';
 import { motion } from 'framer-motion';
 import clsx from 'clsx';
 import { DocumentModal } from '../../ui/DocumentModal/DocumentModal';
+import { uiIcons, authIcons } from '../../../icons/registry';
 
 export const RegisterForm = () => {
   const [step, setStep] = useState('register'); // 'register' | 'otp'
@@ -59,13 +60,16 @@ export const RegisterForm = () => {
       return;
     }
     
-    // Simulate sending OTP without saving user to database yet
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      await authApi.checkAvailability(formData.email);
       showSuccess('OTP Sent! Please verify your email.');
       setStep('otp'); // Move to verification step
-    }, 800);
+    } catch (err) {
+      showError(err.message || 'Email is already in use.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleVerifyOTP = async (e) => {
@@ -116,7 +120,7 @@ export const RegisterForm = () => {
           </div>
           
           <motion.button type="submit" className={styles.submitBtn} disabled={isLoading} whileTap={{ scale: 0.98 }}>
-            {isLoading ? <Icon icon="mdi:loading" className={styles.spinner} /> : <Icon icon="mdi:shield-check" />}
+            {isLoading ? <Icon icon={uiIcons.loading} className={styles.spinner} /> : <Icon icon={uiIcons.shieldCheck} />}
             {isLoading ? 'Verifying...' : 'Verify Email'}
           </motion.button>
         </form>
@@ -188,7 +192,7 @@ export const RegisterForm = () => {
         </label>
 
         <motion.button type="submit" className={styles.submitBtn} disabled={isLoading} whileTap={{ scale: 0.98 }}>
-          {isLoading ? <Icon icon="mdi:loading" className={styles.spinner} /> : <Icon icon="mdi:star-four-points" />}
+          {isLoading ? <Icon icon={uiIcons.loading} className={styles.spinner} /> : <Icon icon={uiIcons.starFourPoints} />}
           {isLoading ? 'Creating...' : 'Create profile'}
         </motion.button>
 
@@ -202,9 +206,9 @@ export const RegisterForm = () => {
       </form>
 
       <div className={styles.benefits}>
-        <div className={styles.benefit}><Icon icon="mdi:check" className={styles.checkIcon} /> Instant access to all your campus clubs</div>
-        <div className={styles.benefit}><Icon icon="mdi:check" className={styles.checkIcon} /> RSVP to exclusive campus events every month</div>
-        <div className={styles.benefit}><Icon icon="mdi:check" className={styles.checkIcon} /> Free student certificates & badges</div>
+        <div className={styles.benefit}><Icon icon={authIcons.check} className={styles.checkIcon} /> Instant access to all your campus clubs</div>
+        <div className={styles.benefit}><Icon icon={authIcons.check} className={styles.checkIcon} /> RSVP to exclusive campus events every month</div>
+        <div className={styles.benefit}><Icon icon={authIcons.check} className={styles.checkIcon} /> Free student certificates & badges</div>
       </div>
 
       <p className={styles.footer}>Already have an account? <Link to="/login" className={styles.footerLink}>Sign in</Link></p>

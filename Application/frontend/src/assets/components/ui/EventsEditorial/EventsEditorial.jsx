@@ -3,11 +3,12 @@ import { Icon } from '@iconify/react';
 import { EventRegistrationModal } from '../EventRegistrationModal/EventRegistrationModal';
 import { useToast } from '../../../../context/ToastContext';
 import styles from './EventsEditorial.module.css';
+import { rewardsIcons, uiIcons } from '../../../icons/registry';
 
 export const EventsEditorial = ({ events }) => {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [registerEvent, setRegisterEvent] = useState(null);
-  const { addToast } = useToast();
+  const { showSuccess } = useToast();
 
   if (!events || events.length === 0) return null;
 
@@ -26,7 +27,7 @@ export const EventsEditorial = ({ events }) => {
   };
 
   const handleRegisterConfirm = (formData) => {
-    addToast({ title: 'Registration Successful', message: `You have been registered for ${registerEvent.title}.`, type: 'success' });
+    showSuccess(`You have been registered for ${registerEvent.title}.`);
     setRegisterEvent(null);
   };
 
@@ -53,8 +54,8 @@ export const EventsEditorial = ({ events }) => {
             <div className={styles.featuredOverlay}></div>
             
             <div className={styles.featuredTopBar}>
-              <span className={styles.tagTrend}><Icon icon="mdi:trending-up" /> Trending</span>
-              <button className={styles.bookmarkBtn}><Icon icon="mdi:bookmark-outline" /></button>
+              <span className={styles.tagTrend}><Icon icon={rewardsIcons.trendingUp} /> Trending</span>
+              <button className={styles.bookmarkBtn}><Icon icon={uiIcons.bookmarkOutline} /></button>
             </div>
 
             <div className={styles.featuredContent}>
@@ -73,7 +74,7 @@ export const EventsEditorial = ({ events }) => {
                   className={styles.joinBtn}
                   onClick={(e) => { e.stopPropagation(); setRegisterEvent(featuredEvent); }}
                 >
-                  Join Event <Icon icon="mdi:chevron-right" />
+                  Join Event <Icon icon={uiIcons.chevronRight} />
                 </button>
               </div>
             </div>
@@ -97,7 +98,7 @@ export const EventsEditorial = ({ events }) => {
                     <p className={styles.secVenue}>{ev.venue}</p>
                     <h4 className={styles.secTitle}>{ev.title}</h4>
                   </div>
-                  <Icon icon="mdi:chevron-right" className={styles.secArrow} />
+                  <Icon icon={uiIcons.chevronRight} className={styles.secArrow} />
                 </div>
               );
             })}

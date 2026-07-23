@@ -1,6 +1,7 @@
 import React from 'react';
 import { Icon } from '@iconify/react';
 import styles from './SecondaryHeader.module.css';
+import { uiIcons } from '../../../icons/registry';
 
 export const SecondaryHeader = ({ tabs = [], activeTab, onTabChange, searchQuery, onSearchChange, searchPlaceholder = "Search..." }) => {
   return (
@@ -18,7 +19,7 @@ export const SecondaryHeader = ({ tabs = [], activeTab, onTabChange, searchQuery
         ))}
       </div>
       <div className={styles.searchWrapper}>
-        <Icon icon="mdi:magnify" className={styles.searchIcon} />
+        <Icon icon={uiIcons.magnify} className={styles.searchIcon} />
         <input 
           type="text" 
           placeholder={searchPlaceholder} 

@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Icon } from '@iconify/react';
 import { Button } from '../../../ui/Button/Button';
 import styles from './EventDecisionModal.module.css';
+import { uiIcons } from '../../../../icons/registry';
 
 export const EventDecisionModal = ({ event, onClose, onDecide }) => {
   const [comments, setComments] = useState('');
@@ -30,7 +31,7 @@ export const EventDecisionModal = ({ event, onClose, onDecide }) => {
           onClick={(e) => e.stopPropagation()}
         >
           <button className={styles.closeBtn} onClick={onClose}>
-            <Icon icon="mdi:close" />
+            <Icon icon={uiIcons.close} />
           </button>
 
           <h3 className={styles.title}>{event.title}</h3>

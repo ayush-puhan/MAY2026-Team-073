@@ -1,4 +1,4 @@
-﻿/* Import animations */
+/* Import animations */
 @import '../animations/animations.css';
 
 /* Import Google Fonts */
@@ -42,7 +42,14 @@
   /* Brand extras */
   --gold: oklch(0.78 0.14 82);
   --gold-foreground: oklch(0.22 0.05 30);
-    --surface: oklch(0.995 0.008 85);
+  
+  /* Hero Banner specifics */
+  --hero-title: white;
+  --hero-text: rgba(255, 255, 255, 0.9);
+  --hero-title-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  --hero-text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+
+  --surface: oklch(0.995 0.008 85);
   --orange: oklch(0.72 0.17 45);
   --orange-rgb: 255, 120, 40;
   --blue: oklch(0.72 0.12 230);
@@ -92,6 +99,49 @@
   --badge-info-text: #3b82f6;
   --badge-critical-bg: #991b1b15;
   --badge-critical-text: #991b1b;
+
+  /* ── Typography Scale ── */
+  --fs-2xs: 0.625rem;    /* 10px */
+  --fs-xs: 0.75rem;      /* 12px */
+  --fs-sm: 0.875rem;     /* 14px */
+  --fs-base: 1rem;       /* 16px */
+  --fs-md: 1.125rem;     /* 18px */
+  --fs-lg: 1.25rem;      /* 20px */
+  --fs-xl: 1.5rem;       /* 24px */
+  --fs-2xl: 1.875rem;    /* 30px */
+  --fs-3xl: 2.25rem;     /* 36px */
+  --fs-4xl: 3rem;        /* 48px */
+
+  /* ── Spacing Scale ── */
+  --space-2xs: 0.25rem;  /* 4px */
+  --space-xs: 0.5rem;    /* 8px */
+  --space-sm: 0.75rem;   /* 12px */
+  --space-md: 1rem;      /* 16px */
+  --space-lg: 1.5rem;    /* 24px */
+  --space-xl: 2rem;      /* 32px */
+  --space-2xl: 3rem;     /* 48px */
+  --space-3xl: 4rem;     /* 64px */
+
+  /* ── Layout Constraints ── */
+  --content-max-width: 1200px;
+  --sidebar-width: 280px;
+  --header-height: 64px;
+
+  /* ── Shadows ── */
+  --shadow-sm: 0 1px 2px 0 oklch(0 0 0 / 5%);
+  --shadow-md: 0 4px 6px -1px oklch(0 0 0 / 8%), 0 2px 4px -2px oklch(0 0 0 / 5%);
+  --shadow-lg: 0 10px 15px -3px oklch(0 0 0 / 8%), 0 4px 6px -4px oklch(0 0 0 / 5%);
+  --shadow-xl: 0 20px 25px -5px oklch(0 0 0 / 10%), 0 8px 10px -6px oklch(0 0 0 / 5%);
+
+  /* ── Transitions ── */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 350ms ease;
+
+  /* ── Glassmorphism ── */
+  --glass-bg: oklch(1 0 0 / 60%);
+  --glass-border: oklch(1 0 0 / 20%);
+  --glass-blur: blur(12px);
 }
 
 [data-theme="dark"] {
@@ -155,6 +205,16 @@
   --badge-info-text: #60a5fa;
   --badge-critical-bg: #991b1b25;
   --badge-critical-text: #f87171;
+
+  /* ── Dark Shadows ── */
+  --shadow-sm: 0 1px 2px 0 oklch(0 0 0 / 15%);
+  --shadow-md: 0 4px 6px -1px oklch(0 0 0 / 20%), 0 2px 4px -2px oklch(0 0 0 / 15%);
+  --shadow-lg: 0 10px 15px -3px oklch(0 0 0 / 25%), 0 4px 6px -4px oklch(0 0 0 / 15%);
+  --shadow-xl: 0 20px 25px -5px oklch(0 0 0 / 30%), 0 8px 10px -6px oklch(0 0 0 / 15%);
+
+  /* ── Dark Glassmorphism ── */
+  --glass-bg: oklch(0.2 0.02 30 / 60%);
+  --glass-border: oklch(1 0 0 / 10%);
 }
 
 /* Global Reset */

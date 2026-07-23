@@ -72,7 +72,7 @@ export const AddUserModal = ({ onClose, onAdd }) => {
             {successData ? (
               <div className={modalStyles.successState}>
                 <div className={modalStyles.successIcon}>
-                  <Icon icon="mdi:check-circle" width="48" />
+                  <Icon icon={uiIcons.checkCircle} width="48" />
                 </div>
                 <h4>User Created Successfully!</h4>
                 <p>The user has been added to the platform.</p>
@@ -142,7 +142,7 @@ export const AddUserModal = ({ onClose, onAdd }) => {
                 </div>
 
                 <div className={modalStyles.infoBox}>
-                  <Icon icon="mdi:information-outline" width="20" />
+                  <Icon icon={uiIcons.informationOutline} width="20" />
                   <p>A secure password will be automatically generated and emailed to the user.</p>
                 </div>
 

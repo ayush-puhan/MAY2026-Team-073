@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Icon } from '@iconify/react';
-import { dashboardIcons } from '../../../icons/registry';
+import { dashboardIcons, uiIcons } from '../../../icons/registry';
 import { EventCard } from '../EventCard/EventCard';
 import styles from './EventsCarousel.module.css';
 
@@ -36,7 +36,7 @@ export const EventsCarousel = ({ title, events = [], viewAllLink, emptyMessage =
         <h3 className={styles.title}>{title}</h3>
         {viewAllLink && (
           <Link to={viewAllLink} className={styles.viewAll}>
-            View All <Icon icon="mdi:arrow-right" />
+            View All <Icon icon={uiIcons.arrowRight} />
           </Link>
         )}
       </div>
@@ -60,7 +60,7 @@ export const EventsCarousel = ({ title, events = [], viewAllLink, emptyMessage =
           <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
             <div className={styles.modalHeader}>
               <h2>{selectedEvent.title}</h2>
-              <button onClick={() => setSelectedEvent(null)}><Icon icon="mdi:close" width="24" /></button>
+              <button onClick={() => setSelectedEvent(null)}><Icon icon={uiIcons.close} width="24" /></button>
             </div>
             <div className={styles.modalBody}>
               <p><strong>Date:</strong> {selectedEvent.date ? new Date(selectedEvent.date).toLocaleString() : 'TBA'}</p>

@@ -1,4 +1,4 @@
-﻿import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Icon } from '@iconify/react';
 import styles from './Dropdown.module.css';
@@ -31,7 +31,9 @@ export const Dropdown = ({ name, value, onChange, options = [], placeholder = 'S
 
   const handleSelect = (optValue) => {
     if (onChange) {
-      onChange({ target: { name, value: optValue, type: 'select-one' } });
+      const mockEvent = new String(optValue);
+      mockEvent.target = { name, value: optValue, type: 'select-one' };
+      onChange(mockEvent);
     }
     setIsOpen(false);
   };

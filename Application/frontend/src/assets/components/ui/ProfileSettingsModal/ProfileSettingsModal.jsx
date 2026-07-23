@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Icon } from '@iconify/react';
 import { authApi } from '@api/authApis/auth';
+import { notificationApi } from '../../../../api';
 import { validateDOB } from '../../../../api/validation';
 import { useSession } from '../../../../context/SessionContext';
 import { useToast } from '../../../../context/ToastContext';
@@ -279,6 +280,25 @@ export const ProfileSettingsModal = ({ isOpen, onClose, user }) => {
         updateUser(updatedUser);
         
         if (oldEmailNotifications !== newEmailNotifications) {
+          // Fire the backend email API to inform the user of the preference change
+          try {
+            if (newEmailNotifications) {
+              await notificationApi.sendEmail(user.id, 'MEMBERSHIP_UPDATE', {
+                subject: 'Email Notifications Activated',
+                body: 'You have enabled email notifications on ClubConnect. You will now receive email alerts for event registrations, club updates, and more.',
+                email: updatedUser.email
+              });
+            } else {
+              await notificationApi.sendEmail(user.id, 'MEMBERSHIP_UPDATE', {
+                subject: 'Email Notifications Deactivated',
+                body: 'You have disabled email notifications on ClubConnect. You will no longer receive email alerts.',
+                email: updatedUser.email
+              });
+            }
+          } catch (emailErr) {
+            console.error('Failed to send email preference notification', emailErr);
+          }
+
           if (newEmailNotifications) {
             showSuccess("Profile updated! You will now receive email alerts.");
           } else {
@@ -335,7 +355,7 @@ export const ProfileSettingsModal = ({ isOpen, onClose, user }) => {
                 <div className={styles.header}>
                   <h3>Profile Settings</h3>
                   <button className={styles.closeBtn} onClick={onClose}>
-                    <Icon icon="mdi:close" />
+                    <Icon icon={uiIcons.close} />
                   </button>
                 </div>
 

@@ -8,6 +8,7 @@ import { useSession } from '../../../../context/SessionContext';
 import { useToast } from '../../../../context/ToastContext';
 import { ApprovalDecisionModal } from './ApprovalDecisionModal/ApprovalDecisionModal';
 import styles from './ClubApprovalQueue.module.css';
+import { uiIcons, dashboardIcons } from '../../../icons/registry';
 
 export const ClubApprovalQueue = () => {
   const { user } = useSession();
@@ -15,7 +16,7 @@ export const ClubApprovalQueue = () => {
   const [requests, setRequests] = useState([]);
   const [pendingActivations, setPendingActivations] = useState([]);
   const [facultyOptions, setFacultyOptions] = useState([]);
-  const [activeTab, setActiveTab] = useState('submitted');
+  const [activeTab, setActiveTab] = useState('under_review');
   const [loading, setLoading] = useState(true);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [selectedActivationClub, setSelectedActivationClub] = useState(null);
@@ -35,9 +36,13 @@ export const ClubApprovalQueue = () => {
 
   useEffect(() => { load(); }, []);
 
-  const filtered = requests.filter((r) => r.status === activeTab);
+  const filtered = activeTab === 'under_review' 
+    ? requests.filter((r) => r.status === 'under_review' || r.status === 'faculty_recommended')
+    : requests.filter((r) => r.status === activeTab);
+
   const tabs = [
-    { id: 'submitted', label: 'Pending', count: requests.filter((r) => r.status === 'submitted').length },
+    { id: 'submitted', label: 'New Requests', count: requests.filter((r) => r.status === 'submitted').length },
+    { id: 'under_review', label: 'Under Review', count: requests.filter((r) => r.status === 'under_review' || r.status === 'faculty_recommended').length },
     { id: 'approved', label: 'Approved', count: requests.filter((r) => r.status === 'approved').length },
     { id: 'rejected', label: 'Rejected', count: requests.filter((r) => r.status === 'rejected').length },
   ];
@@ -72,7 +77,7 @@ export const ClubApprovalQueue = () => {
   if (loading) {
     return (
       <div className={styles.loading}>
-        <Icon icon="mdi:loading" className="animate-spin" width="32" />
+        <Icon icon={uiIcons.loading} className="animate-spin" width="32" />
       </div>
     );
   }
@@ -109,12 +114,12 @@ export const ClubApprovalQueue = () => {
             { header: 'Category', accessor: 'proposed_category' },
             { header: 'Requested By', accessor: 'requested_by_name' },
             { header: 'Status', cell: (row) => <StatusBadge status={row.status} /> },
-            { header: '', cell: (row) => row.status === 'submitted' ? <RowChevron /> : null },
+            { header: '', cell: (row) => (row.status === 'submitted' || row.status === 'under_review' || row.status === 'faculty_recommended') ? <RowChevron /> : null },
           ]}
           data={filtered}
           onRowClick={(row) => setSelectedRequest(row)}
-          isRowClickable={(row) => row.status === 'submitted'}
-          emptyIcon="mdi:check-decagram-outline"
+          isRowClickable={(row) => row.status === 'submitted' || row.status === 'under_review' || row.status === 'faculty_recommended'}
+          emptyIcon={dashboardIcons.checkDecagramOutline}
           emptyTitle={`No ${activeTab} proposals`}
           emptyDesc={`There are currently no ${activeTab} club creation requests.`}
         />

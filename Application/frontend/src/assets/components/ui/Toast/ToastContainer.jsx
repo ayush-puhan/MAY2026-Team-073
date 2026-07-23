@@ -4,6 +4,7 @@ import styles from './ToastContainer.module.css';
 import { Icon } from '@iconify/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import clsx from 'clsx';
+import { uiIcons } from '../../../icons/registry';
 
 const getIconForType = (type) => {
   switch (type) {
@@ -36,7 +37,7 @@ export const ToastContainer = ({ toasts, removeToast }) => {
             />
             <span className={styles.message}>{toast.message}</span>
             <button className={styles.closeBtn} onClick={() => removeToast(toast.id)}>
-              <Icon icon="mdi:close" />
+              <Icon icon={uiIcons.close} />
             </button>
           </motion.div>
         ))}

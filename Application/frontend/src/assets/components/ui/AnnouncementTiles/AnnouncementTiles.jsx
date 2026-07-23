@@ -1,6 +1,7 @@
 ﻿import React from 'react';
 import { Icon } from '@iconify/react';
 import styles from './AnnouncementTiles.module.css';
+import { uiIcons } from '../../../icons/registry';
 
 export const AnnouncementTiles = ({ announcements = [] }) => {
   if (!announcements || announcements.length === 0) return null;
@@ -19,9 +20,9 @@ export const AnnouncementTiles = ({ announcements = [] }) => {
               <div className={styles.tileHeader}>
                 <div className={styles.tags}>
                   <span className={styles.deptTag}>{ann.department || 'General'}</span>
-                  {ann.urgent && <span className={styles.urgentTag}><Icon icon="mdi:alert" /> Urgent</span>}
+                  {ann.urgent && <span className={styles.urgentTag}><Icon icon={uiIcons.alert} /> Urgent</span>}
                 </div>
-                {ann.pinned && <Icon icon="mdi:pin" className={styles.pinIcon} />}
+                {ann.pinned && <Icon icon={uiIcons.pin} className={styles.pinIcon} />}
               </div>
               
               <div className={styles.tileContent}>
@@ -31,7 +32,7 @@ export const AnnouncementTiles = ({ announcements = [] }) => {
 
               <div className={styles.tileFooter}>
                 <span className={styles.tileTime}>{ann.time || 'Recently'}</span>
-                <button className={styles.readMoreBtn}><Icon icon="mdi:arrow-right" /></button>
+                <button className={styles.readMoreBtn}><Icon icon={uiIcons.arrowRight} /></button>
               </div>
             </div>
           );

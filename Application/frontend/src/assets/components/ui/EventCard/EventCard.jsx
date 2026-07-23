@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import styles from './EventCard.module.css';
 import { Icon } from '@iconify/react';
+import { uiIcons } from '../../../icons/registry';
 
 const bannerModules = import.meta.glob('../../../images/events/*.png', { eager: true, import: 'default' });
 const banners = Object.values(bannerModules);
@@ -10,8 +11,9 @@ const findBanner = (keyword) => {
   return match ? bannerModules[match] : '';
 };
 
-export const EventCard = ({ icon = 'mdi:calendar-blank-outline', color = 'var(--primary)', title, subtitle, rightElement, university, onClick, bannerKeyword }) => {
+export const EventCard = ({ icon = 'mdi:calendar-blank-outline', color = 'var(--primary)', title, subtitle, rightElement, university, onClick, bannerKeyword, bannerUrl }) => {
   const bannerImg = useMemo(() => {
+    if (bannerUrl) return bannerUrl;
     if (bannerKeyword) {
       const specificBanner = findBanner(bannerKeyword);
       if (specificBanner) return specificBanner;
@@ -19,7 +21,7 @@ export const EventCard = ({ icon = 'mdi:calendar-blank-outline', color = 'var(--
     if (banners.length === 0) return '';
     const titleSum = (title || '').split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
     return banners[titleSum % banners.length];
-  }, [title, bannerKeyword]);
+  }, [title, bannerKeyword, bannerUrl]);
 
   return (
     <div className={styles.card} onClick={onClick} style={{ cursor: onClick ? 'pointer' : 'default' }}>
@@ -35,7 +37,7 @@ export const EventCard = ({ icon = 'mdi:calendar-blank-outline', color = 'var(--
         <div className={styles.bannerBg}></div>
         {university && (
           <div className={styles.universityTag}>
-            <Icon icon="mdi:school-outline" /> {university}
+            <Icon icon={uiIcons.schoolOutline} /> {university}
           </div>
         )}
         {rightElement && (

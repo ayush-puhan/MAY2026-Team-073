@@ -5,6 +5,7 @@ import { Icon } from '@iconify/react';
 import { Button } from '../../../ui/Button/Button';
 import { Dropdown } from '../../../ui/Dropdown/Dropdown';
 import styles from './ApprovalDecisionModal.module.css';
+import { uiIcons } from '../../../../icons/registry';
 
 // mode: 'request' (approve/reject a club creation request) | 'activation' (assign advisor to an already-approved club)
 export const ApprovalDecisionModal = ({ mode = 'request', title, subtitle, facultyOptions, onClose, onDecide }) => {
@@ -34,7 +35,7 @@ export const ApprovalDecisionModal = ({ mode = 'request', title, subtitle, facul
           onClick={(e) => e.stopPropagation()}
         >
           <button className={styles.closeBtn} onClick={onClose}>
-            <Icon icon="mdi:close" />
+            <Icon icon={uiIcons.close} />
           </button>
 
           <h3 className={styles.title}>{title}</h3>

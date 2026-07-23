@@ -8,6 +8,7 @@ import { useSession } from '../../../../context/SessionContext';
 import { useToast } from '../../../../context/ToastContext';
 import { EventDecisionModal } from './EventDecisionModal/EventDecisionModal';
 import styles from './EventApprovals.module.css';
+import { uiIcons, dashboardIcons } from '../../../icons/registry';
 
 export const EventApprovals = () => {
   const { user } = useSession();
@@ -47,7 +48,7 @@ export const EventApprovals = () => {
   if (loading) {
     return (
       <div className={styles.loading}>
-        <Icon icon="mdi:loading" className="animate-spin" width="32" />
+        <Icon icon={uiIcons.loading} className="animate-spin" width="32" />
       </div>
     );
   }
@@ -64,7 +65,7 @@ export const EventApprovals = () => {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1rem', marginTop: '1.5rem' }}>
         {filtered.length === 0 ? (
           <div className={styles.emptyState} style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '3rem', color: 'var(--muted-foreground)' }}>
-            <Icon icon="mdi:calendar-check-outline" width="48" style={{ marginBottom: '1rem', opacity: 0.5 }} />
+            <Icon icon={dashboardIcons.calendarCheckOutline} width="48" style={{ marginBottom: '1rem', opacity: 0.5 }} />
             <h3>No {activeTab} events</h3>
           </div>
         ) : (
@@ -73,7 +74,7 @@ export const EventApprovals = () => {
               key={ev.id}
               title={ev.title}
               subtitle={`${ev.club_name} • ${new Date(ev.start_at).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })}`}
-              icon="mdi:calendar-text"
+              icon={uiIcons.calendarText}
               bannerKeyword={ev.bannerKeyword}
               color={activeTab === 'pending' ? 'var(--campus-orange)' : activeTab === 'approved' ? 'var(--success)' : 'var(--destructive)'}
               onClick={() => ev.approval_status === 'pending' && setSelectedEvent(ev)}
@@ -81,7 +82,7 @@ export const EventApprovals = () => {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', alignItems: 'flex-end' }}>
                   <StatusBadge status={ev.approval_status} />
                   {ev.approval_status === 'pending' && (
-                    <Icon icon="mdi:chevron-right" style={{ color: 'var(--muted-foreground)' }} />
+                    <Icon icon={uiIcons.chevronRight} style={{ color: 'var(--muted-foreground)' }} />
                   )}
                 </div>
               }

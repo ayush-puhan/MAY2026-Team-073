@@ -1,6 +1,6 @@
 import React from 'react';
 import { Icon } from '@iconify/react';
-import { dashboardIcons } from '../../../icons/registry';
+import { dashboardIcons, uiIcons } from '../../../icons/registry';
 import styles from './DiscoverClubs.module.css';
 
 const bannerModules = import.meta.glob('../../../images/clubs/*.png', { eager: true, import: 'default' });
@@ -26,7 +26,7 @@ export const DiscoverClubs = () => {
           <Icon icon={dashboardIcons.discover} width="20" />
           Discover Clubs
         </h3>
-        <button className={styles.viewAll}>Explore <Icon icon="mdi:arrow-right" /></button>
+        <button className={styles.viewAll}>Explore <Icon icon={uiIcons.arrowRight} /></button>
       </div>
       <div className={styles.content}>
         <div className={styles.clubList}>
@@ -38,7 +38,7 @@ export const DiscoverClubs = () => {
                 <div className={styles.clubMeta}>
                   <span>{club.category}</span>
                   <span>â€¢</span>
-                  <span><Icon icon="mdi:account-group-outline" /> {club.members}</span>
+                  <span><Icon icon={dashboardIcons.accountGroupOutline} /> {club.members}</span>
                 </div>
               </div>
               <button className={styles.joinBtn}>Join</button>

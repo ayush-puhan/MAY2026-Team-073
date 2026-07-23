@@ -22,17 +22,18 @@ class Sponsor(Base):
 
     club_links = relationship("ClubSponsor", back_populates="sponsor", cascade="all, delete-orphan")
 
-
 class ClubSponsor(Base):
-    """M:N association table between clubs and sponsors."""
+    """M:N association table between clubs/events and sponsors."""
 
     __tablename__ = "club_sponsors"
-    __table_args__ = (UniqueConstraint("club_id", "sponsor_id", name="uq_club_sponsor"),)
+    __table_args__ = (UniqueConstraint("club_id", "event_id", "sponsor_id", name="uq_sponsorship"),)
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    club_id = Column(Integer, ForeignKey("clubs.id", ondelete="CASCADE"), nullable=False)
+    club_id = Column(Integer, ForeignKey("clubs.id", ondelete="CASCADE"), nullable=True)
+    event_id = Column(Integer, ForeignKey("events.id", ondelete="CASCADE"), nullable=True)
     sponsor_id = Column(Integer, ForeignKey("sponsors.id", ondelete="CASCADE"), nullable=False)
     sponsorship_details = Column(Text, nullable=True)
 
     club = relationship("Club", back_populates="sponsor_links")
+    event = relationship("Event", back_populates="sponsor_links")
     sponsor = relationship("Sponsor", back_populates="club_links")

@@ -92,7 +92,7 @@ export const PlatformSettings = () => {
           style={{ width: '300px' }}
         />
         <Button onClick={handleAddClick} variant="primary">
-          <Icon icon="mdi:plus" /> Add University
+          <Icon icon={uiIcons.plus} /> Add University
         </Button>
       </div>
 

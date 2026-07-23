@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+﻿import { Routes, Route, Navigate } from 'react-router-dom';
 import { DashboardLayout } from '../../../assets/components/dashboard/DashboardLayout/DashboardLayout';
 import { getNavForUser } from '../../../config/navigation';
 import { useSession } from '../../../context/SessionContext';
@@ -11,7 +11,9 @@ import { AdminOverviewHome } from '../../../assets/components/universityAdmin/Ad
 import { ClubApprovalQueue } from '../../../assets/components/universityAdmin/ClubApprovalQueue/ClubApprovalQueue';
 import { EventOversight } from '../../../assets/components/universityAdmin/EventOversight/EventOversight';
 import { UniversityAnalytics } from '../../../assets/components/universityAdmin/UniversityAnalytics/UniversityAnalytics';
+
 import { GlobalCalendar } from '../../../assets/components/calendar/GlobalCalendar/GlobalCalendar';
+import { EmergencyDashboard } from '../../../assets/components/universityAdmin/EmergencyDashboard/EmergencyDashboard';
 
 export const UniversityAdminDashboard = () => {
   const { user } = useSession();
@@ -29,8 +31,10 @@ export const UniversityAdminDashboard = () => {
           <Route path="support/*" element={<SupportManagement />} />
           <Route path="approvals/*" element={<ClubApprovalQueue />} />
           <Route path="reports/*" element={<UniversityAnalytics />} />
-          <Route path="events/*" element={<EventOversight />} />
+          
           <Route path="announcements/*" element={<AnnouncementCenter />} />
+          
+          <Route path="emergencies/*" element={<EmergencyDashboard />} />
           <Route path="calendar/*" element={<GlobalCalendar />} />
           
           <Route path="*" element={<Navigate to="" replace />} />
@@ -39,4 +43,8 @@ export const UniversityAdminDashboard = () => {
     </DashboardLayout>
   );
 };
+
+
+
+
 

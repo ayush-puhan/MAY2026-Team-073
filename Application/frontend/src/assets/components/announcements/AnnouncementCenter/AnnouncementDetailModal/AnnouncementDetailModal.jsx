@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { Icon } from '@iconify/react';
 import styles from './AnnouncementDetailModal.module.css';
+import { uiIcons, landingIcons } from '../../../../icons/registry';
 
 const clubBannersModules = import.meta.glob('../../../../images/clubs/*.png', { eager: true, import: 'default' });
 const clubBanners = Object.values(clubBannersModules);
@@ -45,13 +46,13 @@ export const AnnouncementDetailModal = ({ announcement, onClose }) => {
           >
             <div className={styles.bannerOverlay}></div>
             <button className={styles.closeBtn} onClick={onClose}>
-              <Icon icon="mdi:close" />
+              <Icon icon={uiIcons.close} />
             </button>
           </div>
         ) : (
           <div className={styles.headerNoBanner}>
             <button className={styles.closeBtnDark} onClick={onClose}>
-              <Icon icon="mdi:close" />
+              <Icon icon={uiIcons.close} />
             </button>
           </div>
         )}
@@ -61,9 +62,9 @@ export const AnnouncementDetailModal = ({ announcement, onClose }) => {
             <div className={styles.tags}>
               <span className={styles.clubTag}>
                 {(announcement.club_name === 'University-Wide' || announcement.club_name === 'System-Wide') ? (
-                  <Icon icon="mdi:bank" className={styles.tagIcon} />
+                  <Icon icon={uiIcons.bank} className={styles.tagIcon} />
                 ) : (
-                  <Icon icon="mdi:account-group" className={styles.tagIcon} />
+                  <Icon icon={landingIcons.accountGroup} className={styles.tagIcon} />
                 )}
                 {announcement.club_name}
               </span>

@@ -31,6 +31,7 @@ export const logAudit = async ({
   entityType,
   entityId = null,
   details = '',
+  ...rest
 }) => {
   try {
     const parsedUserId = /^\d+$/.test(String(userId)) ? parseInt(userId, 10) : userId;
@@ -43,6 +44,7 @@ export const logAudit = async ({
       details,
       created_at: istNow(),
       updated_at: istNow(),
+      ...rest
     });
   } catch (err) {
     console.warn('Audit log failed:', err);

@@ -6,12 +6,46 @@ import { useSession } from '../../../../context/SessionContext';
 import { EventCard } from '../../ui/EventCard/EventCard';
 import { EventInfoModal } from '../../ui/EventInfoModal/EventInfoModal';
 import { EventRegistrationModal } from '../../ui/EventRegistrationModal/EventRegistrationModal';
+import { EventScheduleInfoModal } from '../../ui/EventScheduleInfoModal/EventScheduleInfoModal';
 import { useToast } from '../../../../context/ToastContext';
+import { landingIcons, calendarIcons, uiIcons } from '../../../icons/registry';
 import { ContextLayout } from '../../ui/ContextLayout/ContextLayout';
 import { ContextPanel, ContextPanelSection, ContextPanelLink } from '../../ui/ContextLayout/ContextPanel';
 import { SecondaryHeader } from '../../ui/SecondaryHeader/SecondaryHeader';
 import layoutStyles from '../../ui/ContextLayout/ContextLayout.module.css';
 import styles from './EventsHub.module.css';
+
+const statusColors = {
+  approved: { bg: 'rgba(16, 185, 129, 0.15)', color: '#10b981' },
+  in_review: { bg: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b' },
+  pending: { bg: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b' },
+  scheduled: { bg: 'rgba(59, 130, 246, 0.15)', color: '#3b82f6' },
+  cancelled: { bg: 'rgba(239, 68, 68, 0.15)', color: '#ef4444' },
+  completed: { bg: 'rgba(107, 114, 128, 0.15)', color: '#6b7280' },
+  draft: { bg: 'rgba(107, 114, 128, 0.15)', color: '#9ca3af' }
+};
+
+const getEventStatusBadge = (status) => {
+  if (!status) return null;
+  const key = status.toLowerCase().replace(/\s+/g, '_');
+  const style = statusColors[key] || { bg: 'rgba(107, 114, 128, 0.15)', color: '#9ca3af' };
+  const label = key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  return (
+    <span style={{
+      background: style.bg,
+      color: style.color,
+      padding: '0.2rem 0.6rem',
+      borderRadius: '6px',
+      fontSize: '0.7rem',
+      fontWeight: 700,
+      letterSpacing: '0.04em',
+      textTransform: 'uppercase',
+      whiteSpace: 'nowrap'
+    }}>
+      {label}
+    </span>
+  );
+};
 
 const DiscoverHeader = ({ title, subtitle, searchQuery, setSearchQuery, activeTab, onTabChange }) => {
   const tabs = [
@@ -64,6 +98,63 @@ const filterEventsByTab = (events, tab) => {
   });
 };
 
+const MyEventsView = ({ onRegister, searchQuery, setSearchQuery, isVerified, myEvents }) => {
+  const [activeTab, setActiveTab] = useState('all');
+
+  const searchFiltered = myEvents.filter(ev => {
+    const q = searchQuery.toLowerCase();
+    return (
+      ev.title?.toLowerCase().includes(q) || 
+      ev.venue?.toLowerCase().includes(q) ||
+      ev.description?.toLowerCase().includes(q) ||
+      ev.interests?.some(i => i.name.toLowerCase().includes(q)) ||
+      ev.category?.toLowerCase().includes(q) ||
+      ev.banner?.toLowerCase().includes(q)
+    );
+  });
+  
+  const finalEvents = filterEventsByTab(searchFiltered, activeTab);
+
+  return (
+    <div className={layoutStyles.workspaceArea}>
+      <div className={layoutStyles.workspaceContent} style={{ paddingTop: '0' }}>
+        <DiscoverHeader 
+          title="MY EVENTS" 
+          subtitle="Events you have registered for." 
+          searchQuery={searchQuery} 
+          setSearchQuery={setSearchQuery} 
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+        />
+        
+        <h2 className={styles.sectionTitle} style={{ marginBottom: '1.5rem' }}>Registered Events</h2>
+        
+        <div className={styles.grid}>
+          {finalEvents.length > 0 ? (
+            finalEvents.map(ev => (
+              <EventCard 
+                key={ev.id}
+                title={ev.title}
+                subtitle={`${ev.capacity ? ev.capacity + ' seats • ' : ''}${ev.venue || 'TBA'}`}
+                university={ev.club?.university?.name || ev.university || "IIT Delhi"}
+                rightElement={getEventStatusBadge(ev.status)}
+                bannerKeyword={ev.banner || ev.category?.toLowerCase()}
+                bannerUrl={ev.banner_url}
+                onClick={() => onRegister(ev)}
+              />
+            ))
+          ) : (
+            <div className={styles.emptyState}>
+              <Icon icon={uiIcons.calendarCheck} />
+              <p>You haven't registered for any events yet.</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const EventsList = ({ events, title, subtitle, onRegister, searchQuery, setSearchQuery }) => {
   const [activeTab, setActiveTab] = useState('all');
   
@@ -103,8 +194,9 @@ const EventsList = ({ events, title, subtitle, onRegister, searchQuery, setSearc
                 title={ev.title}
                 subtitle={`${ev.capacity ? ev.capacity + ' seats • ' : ''}${ev.venue || 'TBA'}`}
                 university={ev.club?.university?.name || ev.university || "IIT Delhi"}
-                rightElement={ev.status}
+                rightElement={getEventStatusBadge(ev.status)}
                 bannerKeyword={ev.banner || ev.category?.toLowerCase()}
+                bannerUrl={ev.banner_url}
                 onClick={() => onRegister(ev)}
               />
             ))
@@ -167,8 +259,9 @@ const AllEventsView = ({ events, onRegister, searchQuery, setSearchQuery }) => {
                     title={ev.title}
                     subtitle={`${ev.capacity ? ev.capacity + ' seats • ' : ''}${ev.venue || 'TBA'}`}
                     university={ev.club?.university?.name || ev.university || "IIT Delhi"}
-                    rightElement={ev.status}
+                    rightElement={getEventStatusBadge(ev.status)}
                     bannerKeyword={ev.banner || ev.category?.toLowerCase()}
+                    bannerUrl={ev.banner_url}
                     onClick={() => onRegister(ev)}
                   />
                 ))
@@ -190,8 +283,9 @@ const AllEventsView = ({ events, onRegister, searchQuery, setSearchQuery }) => {
                     title={ev.title}
                     subtitle={`${ev.capacity ? ev.capacity + ' seats • ' : ''}${ev.venue || 'TBA'}`}
                     university={ev.club?.university?.name || ev.university || "IIT Delhi"}
-                    rightElement={ev.status}
+                    rightElement={getEventStatusBadge(ev.status)}
                     bannerKeyword={ev.banner || ev.category?.toLowerCase()}
+                    bannerUrl={ev.banner_url}
                     onClick={() => onRegister(ev)}
                   />
                 ))
@@ -212,12 +306,21 @@ export const EventsHub = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [events, setEvents] = useState([]);
+  const [myEvents, setMyEvents] = useState([]);
   const [infoEvent, setInfoEvent] = useState(null);
   const [registerEvent, setRegisterEvent] = useState(null);
+  const [scheduleEvent, setScheduleEvent] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
 
   const isVerified = user?.student_profile?.is_verified === 1 || user?.student_profile?.is_verified === true;
   const isPublicEvent = (ev) => ev.is_public === true || ev.is_public === 1 || ev.is_public === "1";
+
+  useEffect(() => {
+    // Auto-close modals on any navigation (e.g. clicking sidebar links)
+    setInfoEvent(null);
+    setRegisterEvent(null);
+    setScheduleEvent(null);
+  }, [location.key]);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -236,12 +339,32 @@ export const EventsHub = () => {
     fetchEvents();
   }, [isVerified]);
 
+  useEffect(() => {
+    if (user?.id) {
+      const isExternal = !isVerified;
+      eventsApi.getUserEvents(user.id, isExternal).then(setMyEvents).catch(console.error);
+    }
+  }, [user?.id, isVerified]);
+
+  const handleInfoEventOpen = (ev) => {
+    setInfoEvent({ ...ev, isRegistered: myEvents.some(m => String(m.id) === String(ev.id)) });
+  };
+
   const handleRegister = async (formData) => {
     try {
       await eventsApi.registerForEvent(registerEvent.id, user.id, !isVerified, formData);
       addToast({ title: 'Success', message: `Registered for ${registerEvent?.title}`, type: 'success' });
+      
+      // Update local state immediately
+      setMyEvents(prev => [...prev, registerEvent]);
+      window.dispatchEvent(new Event('refreshNotifications'));
+      
       setRegisterEvent(null);
-      setInfoEvent(null);
+      
+      // Update the currently viewed event so the modal updates in real-time
+      if (infoEvent && infoEvent.id === registerEvent.id) {
+        setInfoEvent(prev => ({ ...prev, isRegistered: true }));
+      }
     } catch (error) {
       addToast({ title: 'Error', message: 'Failed to register. Please try again.', type: 'error' });
     }
@@ -260,33 +383,50 @@ export const EventsHub = () => {
             <ContextPanelLink 
               to={basePath} 
               exact={true} 
-              icon="mdi:compass-outline" 
+              icon={landingIcons.compass} 
               label="All Events" 
             />
           )}
           <ContextPanelLink 
             to={`${basePath}/public`} 
-            icon="mdi:earth" 
+            icon={calendarIcons.eventPublic} 
             label="Public Events" 
           />
           {isVerified && (
             <ContextPanelLink 
               to={`${basePath}/campus`} 
-              icon="mdi:school-outline" 
+              icon={uiIcons.schoolOutline} 
               label="Campus Exclusive" 
             />
           )}
+          <ContextPanelLink 
+            to={`${basePath}/my-events`} 
+            icon={uiIcons.calendarCheck} 
+            label="My Events" 
+          />
         </ContextPanelSection>
       </ContextPanel>
 
       <Routes>
+        <Route 
+          path="my-events" 
+          element={
+            <MyEventsView 
+              onRegister={(ev) => setInfoEvent({ ...ev, isRegistered: true })} 
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              isVerified={isVerified}
+              myEvents={myEvents}
+            />
+          } 
+        />
         {isVerified && (
           <Route 
             path="/" 
             element={
               <AllEventsView 
                 events={events} 
-                onRegister={setInfoEvent} 
+                onRegister={handleInfoEventOpen} 
                 searchQuery={searchQuery}
                 setSearchQuery={setSearchQuery}
               />
@@ -300,7 +440,7 @@ export const EventsHub = () => {
               events={publicEvents} 
               title="PUBLIC EVENTS" 
               subtitle="Events open to external participants and guests." 
-              onRegister={setInfoEvent} 
+              onRegister={handleInfoEventOpen} 
               searchQuery={searchQuery}
               setSearchQuery={setSearchQuery}
             />
@@ -314,7 +454,7 @@ export const EventsHub = () => {
                 events={campusEvents} 
                 title="CAMPUS EXCLUSIVE" 
                 subtitle="Internal events exclusively for verified university students." 
-                onRegister={setInfoEvent} 
+                onRegister={handleInfoEventOpen} 
                 searchQuery={searchQuery}
                 setSearchQuery={setSearchQuery}
               />
@@ -327,7 +467,19 @@ export const EventsHub = () => {
       <EventInfoModal
         event={infoEvent}
         onClose={() => setInfoEvent(null)}
-        onRegisterClick={(event) => setRegisterEvent(event)}
+        onRegisterClick={(event) => {
+          if (event.checkSchedule) {
+            setScheduleEvent(event);
+            setInfoEvent(null);
+          } else {
+            setRegisterEvent(event);
+          }
+        }}
+      />
+
+      <EventScheduleInfoModal
+        event={scheduleEvent}
+        onClose={() => setScheduleEvent(null)}
       />
 
       <EventRegistrationModal

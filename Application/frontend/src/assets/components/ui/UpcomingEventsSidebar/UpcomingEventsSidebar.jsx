@@ -3,10 +3,11 @@ import { Icon } from '@iconify/react';
 import { EventRegistrationModal } from '../EventRegistrationModal/EventRegistrationModal';
 import { useToast } from '../../../../context/ToastContext';
 import styles from './UpcomingEventsSidebar.module.css';
+import { uiIcons } from '../../../icons/registry';
 
 export const UpcomingEventsSidebar = ({ events }) => {
   const [registerEvent, setRegisterEvent] = useState(null);
-  const { addToast } = useToast();
+  const { showSuccess } = useToast();
 
   if (!events || events.length === 0) return null;
 
@@ -22,7 +23,7 @@ export const UpcomingEventsSidebar = ({ events }) => {
   };
 
   const handleRegisterConfirm = (formData) => {
-    addToast({ title: 'Registration Successful', message: `You are registered as ${formData.full_name}`, type: 'success' });
+    showSuccess(`You are registered as ${formData.full_name}`);
     setRegisterEvent(null);
   };
 
@@ -41,7 +42,7 @@ export const UpcomingEventsSidebar = ({ events }) => {
               <p className={styles.venue}>{ev.venue}</p>
               <h4>{ev.title}</h4>
             </div>
-            <Icon icon="mdi:chevron-right" className={styles.arrow} />
+            <Icon icon={uiIcons.chevronRight} className={styles.arrow} />
           </div>
         ))}
       </div>

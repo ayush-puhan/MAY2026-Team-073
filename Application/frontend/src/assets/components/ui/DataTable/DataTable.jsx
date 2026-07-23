@@ -3,6 +3,7 @@ import styles from './DataTable.module.css';
 import { Icon } from '@iconify/react';
 import { EmptyState } from '../EmptyState/EmptyState';
 import { Button } from '../Button/Button';
+import { uiIcons } from '../../../icons/registry';
 
 export const DataTable = ({ 
   columns, 
@@ -61,7 +62,7 @@ export const DataTable = ({
             onClick={() => setCurrentPage(prev => prev - 1)}
             className={styles.pageBtn}
           >
-            <Icon icon="mdi:chevron-left" /> Previous
+            <Icon icon={uiIcons.chevronLeft} /> Previous
           </Button>
           <span className={styles.pageInfo}>Page {currentPage} of {totalPages}</span>
           <Button 
@@ -71,7 +72,7 @@ export const DataTable = ({
             onClick={() => setCurrentPage(prev => prev + 1)}
             className={styles.pageBtn}
           >
-            Next <Icon icon="mdi:chevron-right" />
+            Next <Icon icon={uiIcons.chevronRight} />
           </Button>
         </div>
       )}
@@ -80,5 +81,5 @@ export const DataTable = ({
 };
 
 export const RowChevron = () => (
-  <Icon icon="mdi:chevron-right" style={{ color: 'var(--muted-foreground)' }} />
+  <Icon icon={uiIcons.chevronRight} style={{ color: 'var(--muted-foreground)' }} />
 );

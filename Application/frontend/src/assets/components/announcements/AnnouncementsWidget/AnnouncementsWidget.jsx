@@ -1,6 +1,6 @@
 ﻿import React from 'react';
 import { Icon } from '@iconify/react';
-import { dashboardIcons } from '../../../../icons/registry';
+import { dashboardIcons, uiIcons } from '../../../../icons/registry';
 import styles from './AnnouncementsWidget.module.css';
 
 export const AnnouncementsWidget = ({ announcements = [] }) => {
@@ -23,7 +23,7 @@ export const AnnouncementsWidget = ({ announcements = [] }) => {
                     <span className={styles.deptBadge}>{ann.department || 'General'}</span>
                     <span className={styles.itemTime}>{ann.time || 'Recently'}</span>
                   </div>
-                  {ann.pinned && <Icon icon="mdi:pin" className={styles.pinIcon} />}
+                  {ann.pinned && <Icon icon={uiIcons.pin} className={styles.pinIcon} />}
                 </div>
                 <p className={styles.itemTitle}>{ann.title}</p>
               </div>

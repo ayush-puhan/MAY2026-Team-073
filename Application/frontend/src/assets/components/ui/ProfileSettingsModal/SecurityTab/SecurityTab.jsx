@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import { ConfirmModal } from '../../ConfirmModal/ConfirmModal';
 
 import styles from '../ProfileSettingsModal.module.css';
+import { uiIcons } from '../../../../icons/registry';
 
 export const SecurityTab = ({
   fullUser,
@@ -65,7 +66,7 @@ export const SecurityTab = ({
                 <Input type="email" value={fullUser?.email || ''} disabled className={styles.secInput} />
                 {!isAdminOrFaculty && (
                   fullUser?.email_verified ? (
-                    <span className={styles.secBadge}><Icon icon="mdi:check-decagram" /> Verified</span>
+                    <span className={styles.secBadge}><Icon icon={uiIcons.checkDecagram} /> Verified</span>
                   ) : (
                     fullUser?.auth_provider === 'LOCAL' && (
                       <Button variant="outline" size="sm" type="button" className={styles.secVerifyBtn} onClick={triggerVerify("Verification link sent!")}>Verify</Button>
@@ -90,7 +91,7 @@ export const SecurityTab = ({
                   />
                   {formData?.student_profile?.institutional_email && (
                     formData?.student_profile?.is_verified ? (
-                      <span className={styles.secBadge}><Icon icon="mdi:check-decagram" /> Verified</span>
+                      <span className={styles.secBadge}><Icon icon={uiIcons.checkDecagram} /> Verified</span>
                     ) : (
                       <Button variant="outline" size="sm" type="button" className={styles.secVerifyBtn} onClick={triggerVerify("Verification link sent to campus email!")}>Verify</Button>
                     )

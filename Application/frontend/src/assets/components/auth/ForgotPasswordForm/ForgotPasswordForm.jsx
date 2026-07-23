@@ -5,7 +5,7 @@ import { authApi } from '@api/authApis/auth';
 import { useToast } from '../../../../context/ToastContext';
 import { Icon } from '@iconify/react';
 import { motion } from 'framer-motion';
-import { uiIcons } from '../../../icons/registry';
+import { uiIcons, authIcons } from '../../../icons/registry';
 
 export const ForgotPasswordForm = () => {
   const [email, setEmail] = useState('');
@@ -32,7 +32,7 @@ export const ForgotPasswordForm = () => {
     return (
       <div className={styles.container}>
         <div className={styles.successIcon}>
-          <Icon icon="mdi:email-check-outline" />
+          <Icon icon={authIcons.emailCheckOutline} />
         </div>
         <h1 className={styles.heading}>Check your email</h1>
         <p className={styles.subtitle}>We've sent password reset instructions to <strong>{email}</strong></p>
@@ -66,7 +66,7 @@ export const ForgotPasswordForm = () => {
         </div>
 
           <motion.button type="submit" className={styles.submitBtn} disabled={isLoading} whileTap={{ scale: 0.98 }}>
-            {isLoading ? <Icon icon="mdi:loading" className={styles.spinner} /> : <Icon icon="mdi:star-four-points" />}
+            {isLoading ? <Icon icon={uiIcons.loading} className={styles.spinner} /> : <Icon icon={uiIcons.starFourPoints} />}
             {isLoading ? 'Sending...' : 'Send reset link'}
           </motion.button>
 

@@ -1,6 +1,7 @@
-﻿import { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
+import { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authApi } from '@api/authApis/auth';
+import { useTheme } from './ThemeContext';
 
 const SESSION_KEY = 'session_user';
 
@@ -8,6 +9,7 @@ const SessionContext = createContext();
 
 export const SessionProvider = ({ children }) => {
   const navigate = useNavigate();
+  const { setTheme } = useTheme();
 
   const [user, setUser] = useState(() => {
     try {
@@ -18,8 +20,13 @@ export const SessionProvider = ({ children }) => {
     }
   });
 
+  // Apply on initial mount if user exists
+  useEffect(() => {
+    // Theme is now managed solely by ThemeContext + local storage
+  }, []); // Only run once on mount
+
   const login = useCallback((userData) => {
-    // In auth.api.js we already set localStorage. Here we just update React state
+    localStorage.setItem('user', JSON.stringify(userData));
     setUser(userData);
   }, []);
 
@@ -30,6 +37,7 @@ export const SessionProvider = ({ children }) => {
   }, [navigate]);
   
   const updateUser = useCallback((updatedUserData) => {
+    localStorage.setItem('user', JSON.stringify(updatedUserData));
     setUser(updatedUserData);
   }, []);
 

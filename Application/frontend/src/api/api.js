@@ -94,7 +94,7 @@ apiClient.interceptors.response.use(
     } else if (error.request) {
       // Request was made but no response received (server down)
       return Promise.reject(
-        new Error('Network error: Unable to reach the server. Is json-server running on port 3000?')
+        new Error('Network error: Unable to reach the backend server. Is the Python server running?')
       );
     }
     return Promise.reject(error);

@@ -13,7 +13,7 @@ from .clubs import Announcement, Club, ClubCreationRequest, ClubMembership, Comm
 from .communication import Document, Notification
 from .events import AttendanceRecord, Event, EventRegistration, EventSession, VolunteerAssignment, ExternalParticipant
 from .external_relations import ClubSponsor, Sponsor
-from .finance import Budget, Expense, Revenue
+from .finance import Budget, Expense
 from .interests import ClubInterest, EventInterest, Interest, UserInterest
 from .rewards import (
     RewardPointsLedger, 

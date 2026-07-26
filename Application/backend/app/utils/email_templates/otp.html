@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #FF5A5F 0%, #FF8A65 100%);
+            color: #ffffff;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .logo-container {
+            margin-bottom: 15px;
+        }
+        .logo-text {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        .content {
+            padding: 40px 30px;
+            color: #334155;
+            line-height: 1.6;
+            text-align: center;
+        }
+        .content p {
+            margin: 0 0 15px;
+            font-size: 16px;
+        }
+        .otp-box {
+            background-color: #f8fafc;
+            border: 2px dashed #FF5A5F;
+            border-radius: 8px;
+            display: inline-block;
+            padding: 15px 40px;
+            margin: 20px 0;
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: 5px;
+            color: #FF5A5F;
+        }
+        .footer {
+            background-color: #f8fafc;
+            padding: 20px;
+            text-align: center;
+            font-size: 14px;
+            color: #94a3b8;
+            border-top: 1px solid #e2e8f0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo-container">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="64" height="64">
+                    <defs>
+                        <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#FF5A5F" />
+                            <stop offset="100%" stop-color="#FF8A65" />
+                        </linearGradient>
+                    </defs>
+                    <rect width="256" height="256" rx="64" fill="#ffffff" />
+                    <text x="50%" y="54%" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="130" fill="#FF5A5F" text-anchor="middle" dominant-baseline="middle" letter-spacing="-8">CC</text>
+                </svg>
+            </div>
+            <h1 class="logo-text">Verify your email</h1>
+        </div>
+        <div class="content">
+            <p>Hi {{FULL_NAME}},</p>
+            <p>Thank you for registering with ClubConnect. Please use the following One-Time Password (OTP) to complete your registration. This code is valid for <strong>2 minutes</strong>.</p>
+            
+            <div class="otp-box">
+                {{OTP_CODE}}
+            </div>
+            
+            <p>If you didn't request this, you can safely ignore this email.</p>
+        </div>
+        <div class="footer">
+            <p>&copy; 2026 ClubConnect. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

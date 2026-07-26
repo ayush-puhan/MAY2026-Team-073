@@ -3,7 +3,8 @@ import { api } from '../../api';
 export const authApi = {
   login: async (email, password) => {
     const response = await api.post('/auth/login', { email, password });
-    localStorage.setItem('token', response.token);
+    const token = response.access_token || response.token;
+    localStorage.setItem('token', token);
     
     // Fetch full profile (with student_profile + interests) immediately
     // The JWT token is now stored, so the interceptor will attach it
@@ -14,7 +15,7 @@ export const authApi = {
       fullUser = response.user; // Fallback to basic user from login response
     }
     localStorage.setItem('user', JSON.stringify(fullUser));
-    return { user: fullUser, token: response.token };
+    return { user: fullUser, token };
   },
 
   register: async (userData) => {
@@ -23,12 +24,35 @@ export const authApi = {
     return created;
   },
 
+  verifyOTP: async (email, otp_code) => {
+    return await api.post('/auth/verify-otp', { email, otp_code });
+  },
+
+  resendOTP: async (email) => {
+    return await api.post('/auth/resend-otp', { email });
+  },
+
+  googleLogin: async (token) => {
+    const response = await api.post('/auth/google', { token });
+    localStorage.setItem('token', response.access_token);
+    localStorage.setItem('user', JSON.stringify(response.user));
+    return response;
+  },
+
   verifyEmail: async (email, otp) => {
     return await api.post('/auth/verify-email', { email, otp });
   },
 
   forgotPassword: async (email) => {
     return await api.post('/auth/forgot-password', { email });
+  },
+
+  resetPassword: async (token, new_password) => {
+    return await api.post('/auth/reset-password', { token, new_password });
+  },
+
+  setPassword: async (new_password) => {
+    return await api.post('/auth/set-password', { new_password });
   },
 
   /**
@@ -76,9 +100,9 @@ export const authApi = {
     return await api.get('/users/profile');
   },
 
-  getDepartments: async () => await api.get('/departments'),
-  getPrograms: async () => await api.get('/programs'),
-  getInterests: async () => await api.get('/interests'),
+  getDepartments: async () => await api.get('/student/departments'),
+  getPrograms: async () => await api.get('/student/programs'),
+  getInterests: async () => await api.get('/student/interests'),
   getValidDomains: async () => await api.get('/universities/domains'),
 
   logout: () => {
@@ -107,7 +131,7 @@ export const authApi = {
   },
 
   deleteAccount: async (userId) => {
-    await api.del(`/users/${userId}`);
+    await api.del('/users/profile');
     return true;
   }
 };

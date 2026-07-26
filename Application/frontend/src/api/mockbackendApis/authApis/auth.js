@@ -95,20 +95,24 @@ export const authApi = {
   },
 
   verifyEmail: async (email, otp) => {
-    if (otp !== '123456') throw new Error('Invalid OTP. Please enter 123456 for testing.');
-    const users = await api.get(`/users?email=${encodeURIComponent(email)}`);
-    if (users && users.length > 0) {
-      await api.patch(`/users/${users[0].id}`, { email_verified: true });
-    }
-    return { success: true, message: 'Email verified successfully' };
+    return new Promise(resolve => setTimeout(() => resolve({
+      success: true,
+      message: 'Email verified successfully!'
+    }), 800));
   },
 
   forgotPassword: async (email) => {
-    const users = await api.get(`/users?email=${encodeURIComponent(email)}`);
-    if (!users || users.length === 0) throw new Error('No account found with this email address');
-    return new Promise((resolve) =>
-      setTimeout(() => resolve({ message: 'Password reset link has been sent to your email' }), 1000)
-    );
+    return new Promise(resolve => setTimeout(() => resolve({
+      success: true,
+      message: 'Password reset link sent to ' + email
+    }), 800));
+  },
+
+  resetPassword: async (token, new_password) => {
+    return new Promise(resolve => setTimeout(() => resolve({
+      success: true,
+      message: 'Password reset successfully!'
+    }), 800));
   },
 
   updateProfile: async (userId, data) => {
@@ -231,5 +235,9 @@ export const authApi = {
     const parsedId = /^\d+$/.test(String(userId)) ? parseInt(userId, 10) : userId;
     await api.del(`/users/${parsedId}`);
     return true;
+  },
+
+  setPassword: async (new_password) => {
+    return { message: "Password set successfully." };
   }
 };

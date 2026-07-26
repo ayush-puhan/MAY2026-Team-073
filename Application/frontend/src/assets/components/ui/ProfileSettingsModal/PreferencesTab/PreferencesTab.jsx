@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Icon } from '@iconify/react';
 import { useToast } from '../../../../../context/ToastContext';
@@ -124,7 +124,7 @@ export const PreferencesTab = ({
 
         <div className={styles.toggleField} style={{ marginTop: '1.5rem' }}>
           <div className={styles.toggleLabel}>
-            <Icon icon={authIcons.emailOutline} className={styles.toggleIcon} />
+            <Icon icon={authIcons.email} className={styles.toggleIcon} />
             <div>
               <strong>Email Notifications</strong>
               <p className={styles.hint}>Receive important updates and reminders via email.</p>
@@ -138,6 +138,8 @@ export const PreferencesTab = ({
             <span style={{ fontSize: '0.9rem', color: 'var(--foreground)' }}>Enable Email Alerts</span>
           </label>
         </div>
+
+
 
         {!isAdminOrFaculty && !isVerified && (
           <div className={styles.toggleField} style={{ marginTop: '1.5rem' }}>

@@ -70,13 +70,6 @@ export const ForgotPasswordForm = () => {
             {isLoading ? 'Sending...' : 'Send reset link'}
           </motion.button>
 
-        <div className={styles.divider}>
-          <span>or</span>
-        </div>
-
-        <button type="button" className={styles.googleBtn} onClick={() => showSuccess('Google Sign-In will be available soon!')}>
-          <Icon icon="logos:google-icon" /> Continue with Google
-        </button>
       </form>
     </div>
   );

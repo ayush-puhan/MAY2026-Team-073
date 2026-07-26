@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #FF5A5F 0%, #FF8A65 100%);
+            color: #ffffff;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .logo-container {
+            margin-bottom: 15px;
+        }
+        .logo-text {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        .content {
+            padding: 40px 30px;
+            color: #334155;
+            line-height: 1.6;
+        }
+        .content p {
+            margin: 0 0 15px;
+            font-size: 16px;
+        }
+        .highlight {
+            color: #FF5A5F;
+            font-weight: 600;
+        }
+        .footer {
+            background-color: #f8fafc;
+            padding: 20px;
+            text-align: center;
+            font-size: 14px;
+            color: #94a3b8;
+            border-top: 1px solid #e2e8f0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo-container">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="64" height="64">
+                    <defs>
+                        <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#FF5A5F" />
+                            <stop offset="100%" stop-color="#FF8A65" />
+                        </linearGradient>
+                    </defs>
+                    <rect width="256" height="256" rx="64" fill="#ffffff" />
+                    <text x="50%" y="54%" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="130" fill="#FF5A5F" text-anchor="middle" dominant-baseline="middle" letter-spacing="-8">CC</text>
+                </svg>
+            </div>
+            <h1 class="logo-text">Welcome to ClubConnect! 🚀</h1>
+        </div>
+        <div class="content">
+            <p>Hi <span class="highlight">{{FULL_NAME}}</span>,</p>
+            <p>We are thrilled to have you join <strong>ClubConnect</strong>! You've successfully created your account and are ready to dive in.</p>
+            <p>ClubConnect is your central hub for discovering campus events, joining exciting clubs, and connecting with peers who share your interests.</p>
+            <p>Log in to your dashboard to complete your profile, explore upcoming events, and find the perfect clubs for you!</p>
+            <br>
+            <p>Cheers,<br><strong>The ClubConnect Team</strong></p>
+        </div>
+        <div class="footer">
+            <p>Need help? Reply to this email or visit our support center.</p>
+            <p>&copy; 2026 ClubConnect. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

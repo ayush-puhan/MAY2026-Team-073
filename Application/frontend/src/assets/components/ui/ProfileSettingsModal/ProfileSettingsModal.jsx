@@ -7,6 +7,7 @@ import { notificationApi } from '../../../../api';
 import { validateDOB } from '../../../../api/validation';
 import { useSession } from '../../../../context/SessionContext';
 import { useToast } from '../../../../context/ToastContext';
+
 import { uiIcons } from '../../../icons/registry';
 import { Button } from '../Button/Button';
 import { PersonalTab } from './PersonalTab/PersonalTab';
@@ -20,6 +21,7 @@ import styles from './ProfileSettingsModal.module.css';
 export const ProfileSettingsModal = ({ isOpen, onClose, user }) => {
   const { updateUser } = useSession();
   const { showSuccess, showError } = useToast();
+
   
   const [formData, setFormData] = useState({
     full_name: user?.full_name || user?.name || '',
@@ -54,18 +56,7 @@ export const ProfileSettingsModal = ({ isOpen, onClose, user }) => {
 
   useEffect(() => {
     if (isOpen && user?.id) {
-      Promise.all([
-        authApi.getDepartments(),
-        authApi.getPrograms(),
-        authApi.getInterests(),
-        authApi.getFullProfile(user.id)
-      ]).then(([deps, progs, ints, latestUser]) => {
-        setMasterData({
-          departments: deps || [],
-          programs: progs || [],
-          interests: ints || []
-        });
-        
+      authApi.getFullProfile(user.id).then(latestUser => {
         setFullUser(latestUser);
         
         let accPrefs = {};
@@ -76,6 +67,7 @@ export const ProfileSettingsModal = ({ isOpen, onClose, user }) => {
               : latestUser.accessibility_prefs;
           }
         } catch(e) { console.error('Failed to parse accessibility_prefs', e); }
+
 
         setFormData(prev => ({
           ...prev,
@@ -100,6 +92,25 @@ export const ProfileSettingsModal = ({ isOpen, onClose, user }) => {
             is_verified: latestUser.student_profile?.is_verified || false
           }
         }));
+
+        const isVerified = latestUser.student_profile?.is_verified;
+        const isStudent = latestUser.role?.toLowerCase() === 'student';
+
+        const fetches = [authApi.getInterests()];
+        let fetchDeps = false;
+        if (isStudent && isVerified) {
+          fetches.push(authApi.getDepartments());
+          fetches.push(authApi.getPrograms());
+          fetchDeps = true;
+        }
+
+        return Promise.all(fetches).then(results => {
+          setMasterData({
+            interests: results[0] || [],
+            departments: fetchDeps ? (results[1] || []) : [],
+            programs: fetchDeps ? (results[2] || []) : []
+          });
+        });
       }).catch(err => {
         showError("Failed to load some profile data");
       });
@@ -158,7 +169,7 @@ export const ProfileSettingsModal = ({ isOpen, onClose, user }) => {
       missingRequired.push("Department");
     }
 
-    if (isStudent) {
+    if (isStudent && isVerified) {
       if (!formData.student_profile.program_id) {
         newErrors.program_id = "Program is required";
         missingRequired.push("Program");
@@ -260,7 +271,11 @@ export const ProfileSettingsModal = ({ isOpen, onClose, user }) => {
         }
 
         const updated = await authApi.updateProfile(user.id, payload);
-        const updatedUser = { ...user, ...updated };
+        const updatedUser = { 
+          ...user, 
+          ...formData,
+          accessibility_prefs: payload.accessibility_prefs 
+        };
         updatedUser.name = updatedUser.full_name;
         updatedUser.avatar = updatedUser.profile_photo_url;
         
@@ -317,20 +332,21 @@ export const ProfileSettingsModal = ({ isOpen, onClose, user }) => {
     }
   };
 
-  const getRoleConfig = (role) => {
+  const resolvedUser = fullUser || user;
+  const isVerified = checkIsVerified(resolvedUser);
+
+  const getRoleConfig = (role, verified) => {
     const isStudentRole = role?.toLowerCase() === 'student';
     return { 
       isStudent: isStudentRole, 
-      showDepartment: isStudentRole, 
+      showDepartment: isStudentRole && verified, 
       showPreferences: true, 
       showInterests: isStudentRole, 
       isAdminOrFaculty: !isStudentRole 
     };
   };
 
-  const { isStudent, showDepartment, showPreferences, showInterests, isAdminOrFaculty } = getRoleConfig(user?.role);
-  const resolvedUser = fullUser || user;
-  const isVerified = checkIsVerified(resolvedUser);
+  const { isStudent, showDepartment, showPreferences, showInterests, isAdminOrFaculty } = getRoleConfig(user?.role, isVerified);
 
   const modalContent = (
     <ErrorBoundary onClose={onClose}>
@@ -420,10 +436,14 @@ export const ProfileSettingsModal = ({ isOpen, onClose, user }) => {
                 </div>
               
                 <div className={styles.footer}>
-                  <Button variant="outline" className={styles.cancelBtn} onClick={onClose} disabled={isSaving}>Cancel</Button>
-                  <Button className={styles.saveBtn} onClick={handleSave} disabled={isSaving} isLoading={isSaving}>
-                    Save Changes
+                  <Button variant="outline" className={styles.cancelBtn} onClick={onClose} disabled={isSaving}>
+                    {activeTab === 'security' ? 'Close' : 'Cancel'}
                   </Button>
+                  {activeTab !== 'security' && (
+                    <Button className={styles.saveBtn} onClick={handleSave} disabled={isSaving} isLoading={isSaving}>
+                      Save Changes
+                    </Button>
+                  )}
                 </div>
               </motion.div>
             </div>

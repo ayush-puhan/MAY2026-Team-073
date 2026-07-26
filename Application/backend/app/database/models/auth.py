@@ -72,3 +72,15 @@ class AuthSession(Base, TimestampMixin):
     expires_at = Column(DateTime, nullable=False)
 
     user = relationship("User", back_populates="auth_sessions")
+
+
+class UserOTP(Base, TimestampMixin):
+    """Tracks OTPs sent to users for email verification."""
+    __tablename__ = "user_otps"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    otp_code = Column(String(10), nullable=False)
+    expires_at = Column(DateTime, nullable=False)
+
+    user = relationship("User")

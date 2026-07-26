@@ -103,9 +103,9 @@ INSERT INTO committees (id, club_id, name, description, created_at) VALUES
 (1, 1, 'Tournament Committee', 'Organizes internal and inter-college tournaments.', '2026-01-15 09:00:00');
 
 -- ============ committee_memberships (clubs.py) ============
-INSERT INTO committee_memberships (id, committee_id, membership_id, joined_at) VALUES
-(1, 1, 1, '2026-01-15 09:30:00'),
-(2, 1, 2, '2026-01-16 09:30:00');
+INSERT INTO committee_memberships (id, committee_id, membership_id, role, joined_at) VALUES
+(1, 1, 1, 'MEMBER', '2026-01-15 09:30:00'),
+(2, 1, 2, 'MEMBER', '2026-01-16 09:30:00');
 
 -- ============ announcements (clubs.py) ============
 INSERT INTO announcements (id, club_id, posted_by, title, body, target_audience, created_at) VALUES

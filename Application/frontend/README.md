@@ -1,4 +1,4 @@
-# ClubSphere Frontend
+# ClubConnect Frontend
 
 A modern, fast, and responsive frontend web application built with [React](https://react.dev/) and [Vite](https://vitejs.dev/). 
 

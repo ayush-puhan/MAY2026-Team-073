@@ -15,7 +15,7 @@ from app.middleware.auth_middleware import require_auth
 from app.utils.email import send_email, send_welcome_email, send_otp_email
 
 auth_bp = Blueprint('auth', __name__)
-api = Api(auth_bp)
+auth_api = Api(auth_bp)
 
 class RegisterResource(Resource):
     def post(self):
@@ -397,12 +397,12 @@ class SetPasswordResource(Resource):
             return {"message": "Password set successfully."}, 200
 
 # Register the routes
-api.add_resource(RegisterResource, '/register')
-api.add_resource(VerifyOTPResource, '/verify-otp')
-api.add_resource(ResendOTPResource, '/resend-otp')
-api.add_resource(LoginResource, '/login')
-api.add_resource(LogoutResource, '/logout')
-api.add_resource(GoogleAuthResource, '/google')
-api.add_resource(ForgotPasswordResource, '/forgot-password')
-api.add_resource(ResetPasswordResource, '/reset-password')
-api.add_resource(SetPasswordResource, '/set-password')
+auth_api.add_resource(RegisterResource, '/register')
+auth_api.add_resource(VerifyOTPResource, '/verify-otp')
+auth_api.add_resource(ResendOTPResource, '/resend-otp')
+auth_api.add_resource(LoginResource, '/login')
+auth_api.add_resource(LogoutResource, '/logout')
+auth_api.add_resource(GoogleAuthResource, '/google')
+auth_api.add_resource(ForgotPasswordResource, '/forgot-password')
+auth_api.add_resource(ResetPasswordResource, '/reset-password')
+auth_api.add_resource(SetPasswordResource, '/set-password')

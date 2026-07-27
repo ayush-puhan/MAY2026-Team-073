@@ -10,7 +10,7 @@ from app.database.models.interests import UserInterest
 from app.middleware.auth_middleware import require_auth
 
 users_bp = Blueprint('users', __name__)
-api = Api(users_bp)
+user_api = Api(users_bp)
 
 class ProfileResource(Resource):
     @require_auth
@@ -175,4 +175,4 @@ class ProfileResource(Resource):
             db.commit()
             return {"message": "User account permanently deleted."}, 200
 
-api.add_resource(ProfileResource, '/profile')
+user_api.add_resource(ProfileResource, '/profile')

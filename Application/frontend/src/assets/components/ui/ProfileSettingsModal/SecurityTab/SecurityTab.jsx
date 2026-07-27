@@ -86,6 +86,7 @@ export const SecurityTab = ({
     try {
       await authApi.deleteAccount(fullUser.id);
       logout();
+      showSuccess("Your account has been permanently deleted.");
       navigate('/login');
     } catch (err) {
       showError("Failed to delete account");

@@ -52,8 +52,8 @@ def _jwt_app() -> Flask:
     the correct secret and expiry settings.
     """
     app = Flask(__name__)
-    app.config["JWT_SECRET_KEY"] = os.environ.get("JWT_SECRET_KEY", _DEV_JWT_SECRET)
-    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = ACCESS_TOKEN_EXPIRES
+    from app.config import Config
+    app.config.from_object(Config)
     JWTManager(app)
     return app
 

@@ -12,9 +12,9 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
-# JWT Configuration
-app.config["JWT_SECRET_KEY"] = os.environ.get("JWT_SECRET_KEY", "dev-only-insecure-secret-do-not-use-in-production")
-app.config["JWT_ACCESS_TOKEN_EXPIRES"] = 3600  # 1 hour
+# Load Configuration
+app.config.from_object('app.config.Config')
+
 jwt = JWTManager(app)
 
 register_api_paths(app)

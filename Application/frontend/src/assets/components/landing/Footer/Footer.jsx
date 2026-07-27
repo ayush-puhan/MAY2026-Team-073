@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import styles from './Footer.module.css';
 import { Logo } from '../../ui/Logo/Logo';
@@ -17,7 +17,7 @@ export const Footer = () => {
         <div className={styles.links}>
           <button onClick={() => setActiveDoc('privacy')} className={styles.linkBtn}>Privacy Policy</button>
           <button onClick={() => setActiveDoc('terms')} className={styles.linkBtn}>Terms of Service</button>
-          <Link to="#">Support Helpdesk</Link>
+          <a href="mailto:support.clubconnect@gmail.com">Support Helpdesk</a>
         </div>
       </div>
       <div className={styles.bottom}>

@@ -228,7 +228,8 @@ class GoogleAuthResource(Resource):
         if not token:
             return {"message": "Google token is required."}, 400
 
-        google_client_id = os.environ.get("GOOGLE_CLIENT_ID")
+        from flask import current_app
+        google_client_id = current_app.config.get("GOOGLE_CLIENT_ID")
         if not google_client_id:
             return {"message": "Server configuration error: GOOGLE_CLIENT_ID not set."}, 500
 
@@ -324,7 +325,9 @@ class ForgotPasswordResource(Resource):
                 algorithm="HS256"
             )
             
-            reset_link = f"{os.environ.get('VITE_FRONTEND_URL', 'http://localhost:5173')}/reset-password?token={reset_token}"
+            from flask import current_app
+            frontend_url = current_app.config.get("FRONTEND_URL", "http://localhost:5173")
+            reset_link = f"{frontend_url}/reset-password?token={reset_token}"
             
             from app.utils.email import send_reset_password_email
             send_reset_password_email(

@@ -1,6 +1,8 @@
 from app import create_app
+from dotenv import load_dotenv
 from app.database.database import init_engine
 
+load_dotenv()
 init_engine()
 app = create_app()
 

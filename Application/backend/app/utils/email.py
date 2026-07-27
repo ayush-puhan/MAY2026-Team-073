@@ -8,8 +8,9 @@ def send_email(to_email: str, subject: str, html_body: str) -> bool:
     Sends an email using Gmail SMTP.
     Requires GMAIL_ADDRESS and GMAIL_APP_PASSWORD in the environment variables.
     """
-    sender = os.environ.get("GMAIL_ADDRESS")
-    password = os.environ.get("GMAIL_APP_PASSWORD")
+    from app.config import Config
+    sender = Config.GMAIL_ADDRESS
+    password = Config.GMAIL_APP_PASSWORD
 
     if not sender or not password:
         print("ERROR: GMAIL_ADDRESS or GMAIL_APP_PASSWORD not set in environment.")

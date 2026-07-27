@@ -7,7 +7,7 @@ const USE_MOCK = import.meta.env.VITE_USE_MOCK_BACKEND === 'true';
 // ── Admin APIs ──
 import { adminApi as adminMockApi } from './mockbackendApis/adminApis/admin';
 import { adminApi as adminRealApi } from './backendApis/adminApis/admin';
-export const adminApi = USE_MOCK ? adminMockApi : adminMockApi;
+export const adminApi = USE_MOCK ? adminMockApi : adminRealApi;
 
 // ── Auth APIs ──
 import { authApi as authMockApi } from './mockbackendApis/authApis/auth';
@@ -23,45 +23,45 @@ export const authApi = authRealApi;
 // ── Faculty Advisor APIs ──
 import { facultyAdvisorApi as facultyAdvisorMockApi } from './mockbackendApis/facultyAdvisorApis/facultyAdvisor';
 import { facultyAdvisorApi as facultyAdvisorRealApi } from './backendApis/facultyAdvisorApis/facultyAdvisor';
-export const facultyAdvisorApi = USE_MOCK ? facultyAdvisorMockApi : facultyAdvisorMockApi;
+export const facultyAdvisorApi = USE_MOCK ? facultyAdvisorMockApi : facultyAdvisorRealApi;
 
 // ── University Admin APIs ──
 import { universityAdminApi as universityAdminMockApi } from './mockbackendApis/universityAdminApis/universityAdmin';
 import { universityAdminApi as universityAdminRealApi } from './backendApis/universityAdminApis/universityAdmin';
-export const universityAdminApi = USE_MOCK ? universityAdminMockApi : universityAdminMockApi;
+export const universityAdminApi = USE_MOCK ? universityAdminMockApi : universityAdminRealApi;
 
 // ── Notification APIs ──
 import { notificationApi as notificationMockApi } from './mockbackendApis/notificationApis/notification';
 import { notificationApi as notificationRealApi } from './backendApis/notificationApis/notification';
-export const notificationApi = USE_MOCK ? notificationMockApi : notificationMockApi;
+export const notificationApi = USE_MOCK ? notificationMockApi : notificationRealApi;
 
 // ── Announcement APIs ──
 import { announcementsApi as announcementsMockApi } from './mockbackendApis/announcementsApis/announcements';
 import { announcementsApi as announcementsRealApi } from './backendApis/announcementsApis/announcements';
-export const announcementsApi = USE_MOCK ? announcementsMockApi : announcementsMockApi;
+export const announcementsApi = USE_MOCK ? announcementsMockApi : announcementsRealApi;
 
 // ── Calendar APIs ──
 import { calendarMockApi } from './mockbackendApis/calendarApis/calendar';
 import { calendarRealApi } from './backendApis/calendarApis/calendar';
-export const calendarApi = USE_MOCK ? calendarMockApi : calendarMockApi;
+export const calendarApi = USE_MOCK ? calendarMockApi : calendarRealApi;
 
 // ── Events APIs ──
 import { eventsMockApi } from './mockbackendApis/eventsApis/events';
 import { eventsRealApi } from './backendApis/eventsApis/events';
-export const eventsApi = USE_MOCK ? eventsMockApi : eventsMockApi;
+export const eventsApi = USE_MOCK ? eventsMockApi : eventsRealApi;
 
 // ── Clubs APIs ──
 import { clubsApi as clubsMockApi } from './mockbackendApis/clubsApis/clubs';
 import { clubsApi as clubsRealApi } from './backendApis/clubsApis/clubs';
-export const clubsApi = USE_MOCK ? clubsMockApi : clubsMockApi;
+export const clubsApi = USE_MOCK ? clubsMockApi : clubsRealApi;
 
 // ── Rewards APIs ──
 import { rewardsMockApi } from './mockbackendApis/rewardsApis/rewards';
 import { rewardsRealApi } from './backendApis/rewardsApis/rewards';
-export const rewardsApi = USE_MOCK ? rewardsMockApi : rewardsMockApi;
+export const rewardsApi = USE_MOCK ? rewardsMockApi : rewardsRealApi;
 
 // ── Emergency APIs ──
 import { emergencyApi as emergencyMockApi } from './mockbackendApis/emergencyApis/emergency';
 import { emergencyApi as emergencyRealApi } from './backendApis/emergencyApis/emergency';
-export const emergencyApi = USE_MOCK ? emergencyMockApi : emergencyMockApi;
+export const emergencyApi = USE_MOCK ? emergencyMockApi : emergencyRealApi;
 

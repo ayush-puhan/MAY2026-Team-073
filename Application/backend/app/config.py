@@ -4,32 +4,18 @@ from datetime import timedelta
 class Config:
     """Base configuration containing settings common to all environments."""
     
-    # ---------------------------------------------------------
-    # FLASK CORE CONFIGURATION
-    # ---------------------------------------------------------
-    # Secret key for signing cookies and other cryptographic operations.
-    # ALWAYS override this with a strong, random environment variable in production.
     SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-super-secret-key-replace-me')
     
-    # ---------------------------------------------------------
-    # JWT & AUTHENTICATION CONFIGURATION
-    # ---------------------------------------------------------
-    # Secret key specifically for encoding/decoding JWT tokens. 
     JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY", "dev-only-insecure-secret-do-not-use-in-production")
-    
-    # Token expiration times. Adjust according to your security requirements.
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=1)
 
-    # ---------------------------------------------------------
-    # CORS CONFIGURATION (Frontend Restriction)
-    # ---------------------------------------------------------
-    # Define the URL of your frontend server. 
-    # Defaulting to localhost:3000 for standard local React/Vue/Angular development.
-    FRONTEND_URL = os.environ.get('FRONTEND_URL',"http://localhost:5173")
+    FRONTEND_URL = os.environ.get("VITE_FRONTEND_URL", "http://localhost:5173")
     CORS_ORIGINS = [FRONTEND_URL]
-    # Allow credentials (cookies, authorization headers) to be included in cross-origin requests
     CORS_SUPPORTS_CREDENTIALS = True
 
+    GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID")
+    GMAIL_ADDRESS = os.environ.get("GMAIL_ADDRESS")
+    GMAIL_APP_PASSWORD = os.environ.get("GMAIL_APP_PASSWORD")
 
 class DevelopmentConfig(Config):
     """Configuration for local development."""
@@ -48,4 +34,5 @@ class ProductionConfig(Config):
     def init_app(cls, app):
         assert os.environ.get('SECRET_KEY'), 'SECRET_KEY environment variable is missing!'
         assert os.environ.get('JWT_SECRET_KEY'), 'JWT_SECRET_KEY environment variable is missing!'
+
 

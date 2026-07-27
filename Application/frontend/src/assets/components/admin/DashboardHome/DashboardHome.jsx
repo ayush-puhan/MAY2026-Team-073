@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { adminApi } from '@api/adminApis/admin';
 import { StatCard } from '../../ui/StatCard/StatCard';
 import { DataTable } from '../../ui/DataTable/DataTable';
@@ -62,7 +62,7 @@ export const DashboardHome = () => {
           title="Total Users" 
           value={realStats.totalUsers} 
           icon={adminIcons.statsUsers}
-          trend={12}
+          trend={realStats.userTrend || 0}
           trendLabel="vs last month"
           color="var(--primary)"
         />
@@ -76,7 +76,7 @@ export const DashboardHome = () => {
           title="Events Hosted" 
           value={realStats.totalEvents} 
           icon={adminIcons.statsEvents}
-          trend={5}
+          trend={realStats.eventsTrend || 0}
           trendLabel="this semester"
           color="var(--secondary)"
         />
@@ -84,7 +84,7 @@ export const DashboardHome = () => {
           title="Open Tickets" 
           value={realStats.openTickets} 
           icon={adminIcons.statsTickets}
-          trend={-2}
+          trend={realStats.ticketsTrend || 0}
           trendLabel="vs last week"
           color="var(--warning)"
         />

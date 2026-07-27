@@ -38,7 +38,7 @@ def init_engine() -> None:
 
 
 @contextmanager
-def get_session() -> Session:
+def get_session() -> Session: #type:ignore
     """Context-manager helper for obtaining a scoped DB session.
 
     Usage:

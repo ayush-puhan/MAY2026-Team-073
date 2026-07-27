@@ -11,12 +11,31 @@ export const adminApi = {
       api.get('/support_tickets')
     ]);
 
+    const calculateTrend = (items, dateField, periodDays) => {
+      const now = new Date();
+      const currentPeriodStart = new Date(now.getTime() - periodDays * 24 * 60 * 60 * 1000);
+      const previousPeriodStart = new Date(now.getTime() - 2 * periodDays * 24 * 60 * 60 * 1000);
+
+      const currentCount = items.filter(item => item[dateField] && new Date(item[dateField]) >= currentPeriodStart).length;
+      const previousCount = items.filter(item => {
+        if (!item[dateField]) return false;
+        const date = new Date(item[dateField]);
+        return date >= previousPeriodStart && date < currentPeriodStart;
+      }).length;
+
+      if (previousCount === 0) return currentCount > 0 ? 100 : 0;
+      return Math.round(((currentCount - previousCount) / previousCount) * 100);
+    };
+
     const stats = {
       totalUsers: users.length,
       activeUsers: users.filter(u => u.is_active).length,
       totalClubs: clubs.length,
       totalEvents: events.length,
-      openTickets: tickets.filter(t => t.status === 'Open' || t.status === 'In Progress').length,
+      openTickets: tickets.filter(t => t.status === 'Open' || t.status === 'In Progress' || t.status === 'OPEN').length,
+      userTrend: calculateTrend(users, 'created_at', 30), // vs last month
+      eventsTrend: calculateTrend(events, 'created_at', 180), // vs last semester
+      ticketsTrend: calculateTrend(tickets, 'created_at', 7), // vs last week
     };
     return stats;
   },

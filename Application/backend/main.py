@@ -9,11 +9,12 @@ load_dotenv()
 
 from flask_cors import CORS
 
+from app.config import Config
+
 app = Flask(__name__)
+app.config.from_object(Config)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
-app.config["JWT_SECRET_KEY"] = os.environ.get("JWT_SECRET_KEY", "dev-only-insecure-secret-do-not-use-in-production")
-app.config["JWT_ACCESS_TOKEN_EXPIRES"] = 3600 
 jwt = JWTManager(app)
 
 register_api_paths(app)

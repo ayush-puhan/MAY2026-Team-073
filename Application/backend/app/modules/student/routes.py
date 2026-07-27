@@ -1,9 +1,11 @@
 from flask import Blueprint, jsonify
+from flask_restful import Api, Resource
 from app.database.database import get_session
 from app.database.models.academics import Department, Program
 from app.database.models.interests import Interest
 
-student_bp = Blueprint('student', __name__, url_prefix='/api/student')
+student_bp = Blueprint('student', __name__)
+student_api = Api(student_bp)
 
 @student_bp.route('/departments', methods=['GET'])
 def get_departments():

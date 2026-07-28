@@ -3,11 +3,15 @@ from flask_restful import Api, Resource
 from app.database.database import get_session
 from app.database.models.academics import Department, Program
 from app.database.models.interests import Interest
+from app.middleware.auth_middleware import require_auth ,require_role
+
+from app.database.enums import UserRole
 
 student_bp = Blueprint('student', __name__)
 student_api = Api(student_bp)
 
 @student_bp.route('/departments', methods=['GET'])
+@require_auth
 def get_departments():
     with get_session() as session:
         departments = session.query(Department).all()
@@ -21,6 +25,7 @@ def get_departments():
         ]), 200
 
 @student_bp.route('/programs', methods=['GET'])
+@require_auth
 def get_programs():
     with get_session() as session:
         programs = session.query(Program).all()
@@ -33,6 +38,7 @@ def get_programs():
         ]), 200
 
 @student_bp.route('/interests', methods=['GET'])
+@require_auth
 def get_interests():
     with get_session() as session:
         interests = session.query(Interest).all()

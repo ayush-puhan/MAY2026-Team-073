@@ -149,7 +149,7 @@ class ClubProposalResource(Resource):
 
 api.add_resource(
     ClubResource,
-    "/",
+    "",
     "/<int:club_id>"
 )
 

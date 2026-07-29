@@ -42,54 +42,6 @@ class AdminSupportResource(Resource):
 
 
                 return {
-                    "support_tickets": [
-                        {
-                            "id": str(ticket.id),
-                            "raised_by": ticket.raised_by,
-                            "club_id": ticket.club_id,
-                            "title": ticket.title,
-                            "description": ticket.description,
-                            "ticket_type": ticket.ticket_type.value,
-                            "priority": ticket.priority.value,
-                            "status": ticket.status.value,
-                            "assigned_agent_id": ticket.assigned_agent_id,
-                            "is_offensive": ticket.is_offensive,
-                            "resolution_rating": ticket.resolution_rating,
-                            "university_id": ticket.university_id,
-                            "created_at": ticket.created_at.strftime(
-                                "%Y-%m-%d %H:%M:%S"
-                            )
-                        }
-                    ],
-
-                    "ticket_responses": [
-                        {
-                            "id": str(response.id),
-                            "ticket_id": response.ticket_id,
-                            "responder_id": response.responder_id,
-                            "body": response.body,
-                            "is_resolution": response.is_resolution,
-                            "created_at": response.created_at.strftime(
-                                "%Y-%m-%d %H:%M:%S"
-                            )
-                        }
-                        for response in responses
-                    ]
-                }, 200
-
-
-            # GET /api/admin/support
-            tickets = db.query(SupportTicket).all()
-
-            responses = db.query(TicketResponse).all()
-
-            emergency_reports = db.query(EmergencyReport).all()
-
-
-            return {
-
-                "support_tickets": [
-                    {
                         "id": str(ticket.id),
                         "raised_by": ticket.raised_by,
                         "club_id": ticket.club_id,
@@ -104,55 +56,44 @@ class AdminSupportResource(Resource):
                         "university_id": ticket.university_id,
                         "created_at": ticket.created_at.strftime(
                             "%Y-%m-%d %H:%M:%S"
-                        )
-                    }
-                    for ticket in tickets
-                ],
+                            )
+                    }, 200
 
 
-                "ticket_responses": [
-                    {
-                        "id": str(response.id),
-                        "ticket_id": response.ticket_id,
-                        "responder_id": response.responder_id,
-                        "body": response.body,
-                        "is_resolution": response.is_resolution,
-                        "created_at": response.created_at.strftime(
-                            "%Y-%m-%d %H:%M:%S"
-                        )
-                    }
-                    for response in responses
-                ],
+            # GET /api/admin/support
+            tickets = db.query(SupportTicket).all()
 
+            responses = db.query(TicketResponse).all()
 
-                "emergency_reports": [
-                    {
-                        "id": str(report.id),
-                        "reported_by": report.reported_by,
-                        "event_id": report.event_id,
-                        "category": report.category.value,
-                        "description": report.description,
-                        "status": report.status.value,
-                        "handled_by": report.handled_by,
-                        "created_at": report.created_at.strftime(
-                            "%Y-%m-%d %H:%M:%S"
-                        ),
-                        "resolved_at": (
-                            report.resolved_at.strftime("%Y-%m-%d %H:%M:%S")
-                            if report.resolved_at else None
-                        )
-                    }
-                    for report in emergency_reports
-                ]
+            emergency_reports = db.query(EmergencyReport).all()
 
-            }, 200
-
+            return [
+                {
+                    "id": str(ticket.id),
+                    "raised_by": ticket.raised_by,
+                    "club_id": ticket.club_id,
+                    "title": ticket.title,
+                    "description": ticket.description,
+                    "ticket_type": ticket.ticket_type.value,
+                    "priority": ticket.priority.value,
+                    "status": ticket.status.value,
+                    "assigned_agent_id": ticket.assigned_agent_id,
+                    "is_offensive": ticket.is_offensive,
+                    "resolution_rating": ticket.resolution_rating,
+                    "university_id": ticket.university_id,
+                    "created_at": ticket.created_at.strftime(
+                        "%Y-%m-%d %H:%M:%S"
+                    ) if ticket.created_at else None
+                }
+                for ticket in tickets
+            ], 200
+            
 
 
     def patch(self, ticket_id):
 
         data = request.get_json()
-
+        
         with get_session() as db:
 
             ticket = (
@@ -170,7 +111,7 @@ class AdminSupportResource(Resource):
 
             if "status" in data:
                 ticket.status = TicketStatus(
-                    data["status"].upper()
+                    data["status"]
                 )
 
 
@@ -207,19 +148,23 @@ class TicketResponseResource(Resource):
 
         data = request.get_json()
 
+        print("Received data:", data)
+
+        # Accept both "body" and "message"
+        body = data.get("body") or data.get("message")
+
+        # Optional for now if authentication is not implemented
         responder_id = data.get("responder_id")
-        body = data.get("body")
+
         is_resolution = data.get(
             "is_resolution",
             False
         )
 
-
-        if not responder_id or not body:
+        if not body:
             return {
-                "message": "responder_id and body are required."
+                "message": "Response message is required."
             }, 400
-
 
 
         with get_session() as db:
@@ -237,7 +182,6 @@ class TicketResponseResource(Resource):
                 }, 404
 
 
-
             response = TicketResponse(
                 ticket_id=ticket_id,
                 responder_id=responder_id,
@@ -251,6 +195,8 @@ class TicketResponseResource(Resource):
 
             if is_resolution:
                 ticket.status = TicketStatus.CLOSED
+            else:
+                ticket.status = TicketStatus.IN_PROGRESS
 
 
             db.commit()
@@ -261,11 +207,9 @@ class TicketResponseResource(Resource):
                 "response_id": response.id
             }, 201
 
-
-
 api.add_resource(
     AdminSupportResource,
-    "/",
+    "",
     "/<int:ticket_id>"
 )
 

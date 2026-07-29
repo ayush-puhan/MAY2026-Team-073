@@ -2,11 +2,11 @@ import { api } from '../../api';
 
 export const eventsRealApi = {
   getAllEvents: async () => {
-    return await api.get('/api/events');
+    return await api.get('/events');
   },
 
   getEventById: async (id) => {
-    return await api.get(`/api/events/${id}`);
+    return await api.get(`/events/${id}`);
   },
 
   registerForEvent: async (eventId, userId, isExternal, externalData = null) => {
@@ -14,19 +14,19 @@ export const eventsRealApi = {
     
     let isPublic = false;
     try {
-      const ev = await api.get(`/api/events/${eventId}`);
+      const ev = await api.get(`/events/${eventId}`);
       if (ev?.data?.is_public || ev?.is_public) isPublic = true;
     } catch { }
 
     if (isExternal || isPublic) {
-      result = await api.post(`/api/events/${eventId}/register-external`, externalData);
+      result = await api.post(`/events/${eventId}/register-external`, externalData);
     } else {
-      result = await api.post(`/api/events/${eventId}/register`);
+      result = await api.post(`/events/${eventId}/register`);
     }
 
     // Trigger in-app notification + email simultaneously
     try {
-      await api.post('/api/notifications', {
+      await api.post('/notifications', {
         type: 'EVENT_REMINDER',
         title: 'Event Registration Confirmed',
         body: `You have been registered for event #${eventId}.`,
@@ -42,41 +42,41 @@ export const eventsRealApi = {
   },
 
   getUserEvents: async (userId, isExternal = false) => {
-    const endpoint = isExternal ? `/api/users/${userId}/external-events` : `/api/users/${userId}/events`;
+    const endpoint = isExternal ? `/users/${userId}/external-events` : `/users/${userId}/events`;
     return await api.get(endpoint);
   },
 
   unregisterFromEvent: async (eventId) => {
-    return await api.del(`/api/events/${eventId}/register`);
+    return await api.del(`/events/${eventId}/register`);
   },
 
   getEventSessions: async (eventId) => {
-    const res = await api.get(`/api/events/${eventId}/sessions`);
+    const res = await api.get(`/events/${eventId}/sessions`);
     return res.data;
   },
 
   createEventSessions: async (eventId, sessionsArray) => {
-    const res = await api.post(`/api/events/${eventId}/sessions`, { sessions: sessionsArray });
+    const res = await api.post(`/events/${eventId}/sessions`, { sessions: sessionsArray });
     return res.data;
   },
 
   deleteEventSessions: async (eventId) => {
-    const res = await api.delete(`/api/events/${eventId}/sessions`);
+    const res = await api.delete(`/events/${eventId}/sessions`);
     return res.data;
   },
 
   getEventAttendance: async (eventId) => {
-    const res = await api.get(`/api/events/${eventId}/attendance`);
+    const res = await api.get(`/events/${eventId}/attendance`);
     return res.data;
   },
 
   checkInUser: async (eventId, userId, recordedBy) => {
-    const res = await api.post(`/api/events/${eventId}/attendance`, { user_id: userId, recorded_by: recordedBy });
+    const res = await api.post(`/events/${eventId}/attendance`, { user_id: userId, recorded_by: recordedBy });
     return res.data;
   },
 
   undoCheckIn: async (recordId) => {
-    const res = await api.delete(`/api/attendance/${recordId}`);
+    const res = await api.delete(`/attendance/${recordId}`);
     return res.data;
   }
 };

@@ -3,6 +3,8 @@ from flask import request
 from flask_jwt_extended import verify_jwt_in_request, get_jwt, get_jwt_identity
 
 from app.database.session_manager import validate_stored_token
+from app.database.database import get_session
+from app.database.models import User
 
 def require_auth(fn):
     @wraps(fn)
@@ -29,3 +31,38 @@ def require_auth(fn):
             
         return fn(*args, **kwargs)
     return wrapper
+
+
+
+def require_role(*allowed_roles):
+    """
+    use just after the require_auth decorator
+    Example:
+        @require_role("admin")
+        @require_role("admin", "student")
+    """
+    def decorator(fn):
+        @wraps(fn)
+        def wrapper(*args, **kwargs):
+            # Verify JWT exists
+            try:
+                verify_jwt_in_request()
+            except Exception as e:
+                return {"message": f"Authentication failed: {str(e)}"}, 401
+
+            # User ID stored as JWT identity
+            user_id = get_jwt_identity()
+
+            with get_session() as db:
+                user = db.query(User).filter_by(id=user_id).first()
+                if user is None:
+                    return {"message": "User not found"}, 404
+
+                if user.role not in allowed_roles:
+                    return {"message": "Permission denied"}, 403
+
+            return fn(*args, **kwargs)
+
+        return wrapper
+
+    return decorator 

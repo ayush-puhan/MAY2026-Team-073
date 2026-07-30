@@ -1,5 +1,7 @@
 from flask import Blueprint, request
 from flask_restful import Api, Resource
+from app.middleware.auth_middleware import require_auth ,require_role
+from flask import g
 
 from app.database import get_session
 from app.database.models.support import (
@@ -15,7 +17,8 @@ api = Api(admin_support_bp)
 
 
 class AdminSupportResource(Resource):
-
+    @require_auth
+    @require_role("system_admin")
     def get(self, ticket_id=None):
         with get_session() as db:
 
@@ -89,7 +92,8 @@ class AdminSupportResource(Resource):
             ], 200
             
 
-
+    @require_auth
+    @require_role("system_admin")
     def patch(self, ticket_id):
 
         data = request.get_json()
@@ -143,7 +147,10 @@ class AdminSupportResource(Resource):
 
 
 class TicketResponseResource(Resource):
-
+    
+    @require_auth
+    @require_role("system_admin")
+    
     def post(self, ticket_id):
 
         data = request.get_json()
@@ -153,8 +160,8 @@ class TicketResponseResource(Resource):
         # Accept both "body" and "message"
         body = data.get("body") or data.get("message")
 
-        # Optional for now if authentication is not implemented
-        responder_id = data.get("responder_id")
+        # Get responder from authenticated user
+        responder_id = g.current_user.id
 
         is_resolution = data.get(
             "is_resolution",
@@ -207,6 +214,67 @@ class TicketResponseResource(Resource):
                 "response_id": response.id
             }, 201
 
+#====================================================================
+admin_support_bp = Blueprint("admin_support", __name__)
+api = Api(admin_support_bp)
+
+ticket_response_bp = Blueprint("ticket_response", __name__)
+ticket_response_api = Api(ticket_response_bp)
+class TicketResponsesListResource(Resource):
+
+    @require_auth
+    def get(self):
+
+        ticket_id = request.args.get("ticket_id")
+
+        if not ticket_id:
+            return {
+                "message": "ticket_id is required"
+            }, 400
+
+        with get_session() as db:
+
+            ticket = (
+                db.query(SupportTicket)
+                .filter_by(id=ticket_id)
+                .first()
+            )
+
+            if not ticket:
+                return {
+                    "message": "Ticket not found"
+                }, 404
+
+            # ---------- Authorization ----------
+
+            if g.current_user.role.value != "system_admin":
+
+                if ticket.raised_by != g.current_user.id:
+                    return {
+                        "message": "Permission denied"
+                    }, 403
+
+            responses = (
+                db.query(TicketResponse)
+                .filter_by(ticket_id=ticket_id)
+                .all()
+            )
+
+            return [
+                {
+                    "id": r.id,
+                    "message": r.body,
+                    "responder_id": r.responder_id,
+                    "is_resolution": r.is_resolution,
+                    "created_at": (
+                        r.created_at.strftime("%Y-%m-%d %H:%M:%S")
+                        if r.created_at else None
+                    )
+                }
+                for r in responses
+            ], 200
+
+
 api.add_resource(
     AdminSupportResource,
     "",
@@ -217,4 +285,8 @@ api.add_resource(
 api.add_resource(
     TicketResponseResource,
     "/<int:ticket_id>/respond"
+)
+ticket_response_api.add_resource(
+    TicketResponsesListResource,
+    "/ticket_responses"
 )

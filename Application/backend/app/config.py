@@ -1,4 +1,4 @@
-import os
+import os,pathlib
 from datetime import timedelta
 
 class Config:
@@ -16,6 +16,10 @@ class Config:
     GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID")
     GMAIL_ADDRESS = os.environ.get("GMAIL_ADDRESS")
     GMAIL_APP_PASSWORD = os.environ.get("GMAIL_APP_PASSWORD")
+
+    BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+    UPLOAD_FOLDER = "uploads"
+    UNI_BANNER_UPLOAD_DIR = os.path.join(BASE_DIR,UPLOAD_FOLDER,"university_banner") 
 
 class DevelopmentConfig(Config):
     """Configuration for local development."""

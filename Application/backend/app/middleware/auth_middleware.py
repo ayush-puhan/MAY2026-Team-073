@@ -1,5 +1,5 @@
 from functools import wraps
-from flask import request
+from flask import request, g
 from flask_jwt_extended import verify_jwt_in_request, get_jwt, get_jwt_identity
 
 from app.database.session_manager import validate_stored_token
@@ -27,7 +27,17 @@ def require_auth(fn):
             return {"message": "Token has been revoked or expired session"}, 401
             
         # Optional: you can pass the user_id to the endpoint via request if needed
-        # current_user_id = get_jwt_identity()
+        # 4. Load the authenticated user
+        user_id = get_jwt_identity()
+
+        with get_session() as db:
+            user = db.query(User).filter_by(id=user_id).first()
+
+            if user is None:
+                return {"message": "User not found"}, 404
+
+            # Make the current user available throughout this request
+            g.current_user = user
             
         return fn(*args, **kwargs)
     return wrapper
@@ -44,22 +54,8 @@ def require_role(*allowed_roles):
     def decorator(fn):
         @wraps(fn)
         def wrapper(*args, **kwargs):
-            # Verify JWT exists
-            try:
-                verify_jwt_in_request()
-            except Exception as e:
-                return {"message": f"Authentication failed: {str(e)}"}, 401
-
-            # User ID stored as JWT identity
-            user_id = get_jwt_identity()
-
-            with get_session() as db:
-                user = db.query(User).filter_by(id=user_id).first()
-                if user is None:
-                    return {"message": "User not found"}, 404
-
-                if user.role not in allowed_roles:
-                    return {"message": "Permission denied"}, 403
+            if g.current_user.role not in allowed_roles:
+                return {"message": "Permission denied"}, 403
 
             return fn(*args, **kwargs)
 

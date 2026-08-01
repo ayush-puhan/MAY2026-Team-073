@@ -51,8 +51,6 @@ def get_admin_stats():
     }), 200
 
 
-
-
 @system_admin_bp.route('/audit-logs',methods=['GET'])
 @require_auth
 @require_role(UserRole.SYSTEM_ADMIN)
@@ -382,9 +380,37 @@ def admin_support_get_tickets():
     return jsonify(result)
 
             
-@system_admin_bp.route('/support/<int:id>', methods=['GET'])
+@system_admin_bp.route('/support/recent', methods=['GET'])
 @require_auth
 @require_role(UserRole.SYSTEM_ADMIN)
-def admin_support_get_ticket_by_id(id):
-    pass
+def admin_support_get_recent_ticket_by_id():
+    try : 
+        with get_session() as db:
+            recent_tkts = (db.query(SupportTicket)
+                            .order_by(SupportTicket.created_at.desc())
+                            .limit(5)
+                            .all())   
+            result = [
+                {
+                    "id": tkt.id,
+                    "raised_by": tkt.raised_by,
+                    "club_id": tkt.club_id,
+                    "title": tkt.title,
+                    "description": tkt.description,
+                    "ticket_type": tkt.ticket_type,
+                    "priority": tkt.priority,
+                    "status": tkt.status,
+                    "assigned_agent_id": tkt.assigned_agent_id,
+                    "is_offensive": tkt.is_offensive,
+                    "resolution_rating": tkt.resolution_rating,
+                    "university_id": tkt.university_id,
+                    "created_at": tkt.created_at 
+
+                } for tkt in recent_tkts
+            ]              
+    except Exception as e:
+        print(e)
+        return { "message" : f"error : {e}"}, 500
+    
+    return jsonify(result), 200
 

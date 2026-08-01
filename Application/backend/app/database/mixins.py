@@ -20,3 +20,10 @@ class SoftDeleteMixin:
     @property
     def is_deleted(self) -> bool:
         return self.deleted_at is not None
+
+
+import sqlalchemy as sa
+class SAEnum(sa.Enum):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault('values_callable', lambda obj: [e.value for e in obj])
+        super().__init__(*args, **kwargs)

@@ -30,7 +30,7 @@ export const SupportManagement = () => {
     { id: 'in_progress', label: 'In Progress' },
     { id: 'resolved', label: 'Resolved' }
   ];
-
+  const { user } = useSession();
   const fetchTickets = async () => {
     setLoading(true);
     try {

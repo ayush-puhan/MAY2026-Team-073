@@ -5,6 +5,7 @@ from flask_jwt_extended import verify_jwt_in_request, get_jwt, get_jwt_identity
 from app.database.session_manager import validate_stored_token
 from app.database.database import get_session
 from app.database.models import User
+from app.database.models import ClubMembership
 
 def require_auth(fn):
     @wraps(fn)
@@ -66,3 +67,36 @@ def require_role(*allowed_roles):
         return wrapper
 
     return decorator 
+
+
+def require_club_role(*allowed_roles):
+    """
+    If no roles are provided, only checks that the user belongs to the club.
+    Otherwise checks that the user's club role is one of the allowed roles.
+    """
+    def decorator(fn):
+        @wraps(fn)
+        def wrapper(*args, **kwargs):
+            user_id = get_jwt_identity()
+            # Club ID can come from URL or request body
+            club_id = kwargs.get("club_id")
+            if club_id is None:
+                return {"error": "club_id is required"}, 400
+            with get_session() as session:
+                membership = ( session.query(ClubMembership).filter(
+                        ClubMembership.club_id == club_id,
+                        ClubMembership.user_id == user_id,
+                    ).first()
+                )
+                if membership is None:
+                    return {"error": "You are not a member of this club"}, 403
+                if allowed_roles and membership.role_in_club not in allowed_roles:
+                    return {"error": "Insufficient club permissions"}, 403
+            return fn(*args, **kwargs)
+        return wrapper
+    return decorator
+
+
+
+
+

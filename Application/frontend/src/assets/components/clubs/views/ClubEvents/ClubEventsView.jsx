@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { useToast } from '../../../../../context/ToastContext';
 import { Icon } from '@iconify/react';
-import { clubsApi } from '../../../../../api/mockbackendApis/clubsApis/clubs';
-import { eventsMockApi } from '../../../../../api/mockbackendApis/eventsApis/events';
+import { clubsApi } from '../../../../../api/backendApis/clubsApis/clubs';
+import { eventsRealApi } from '../../../../../api/backendApis/eventsApis/events';
 import { canManageEvents, canApproveEvents, canManageAttendance } from '../../../../../utils/clubPermissions';
 import styles from './ClubEventsView.module.css';
 import layoutStyles from '../../../ui/ContextLayout/ContextLayout.module.css';
@@ -77,9 +77,10 @@ const ClubEventsView = () => {
       });
       // Try to fetch sessions
       try {
-        const evData = await eventsMockApi.getEventDetails(event.id);
+        const evData = await eventsRealApi.getEventDetails(event.id);
         setSessions(evData.sessions || []);
       } catch (e) {
+        console.error("Failed to load sessions", e);
         setSessions([]);
       }
     } else {
@@ -122,7 +123,7 @@ const ClubEventsView = () => {
       if (sessions.length > 0) {
         // Strip the temp ids from sessions if new
         const cleanSessions = sessions.map(({ id, isNew, ...rest }) => rest);
-        await eventsMockApi.createEventSessions(eventId, cleanSessions);
+        await eventsRealApi.createEventSessions(eventId, cleanSessions);
       }
 
       setShowCreateForm(false);

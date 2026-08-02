@@ -80,6 +80,7 @@ export const uiIcons = {
   flashOutline: 'mdi:flash-outline',
   pulse: 'mdi:pulse',
   shieldAlertOutline: 'mdi:shield-alert-outline',
+  refresh: 'mdi:refresh',
 };
 
 // ── Auth ──
@@ -181,6 +182,17 @@ export const dashboardIcons = {
   advisedClubs: 'mdi:account-group-outline',
   eventApprovals: 'mdi:calendar-check-outline',
   studentReports: 'mdi:file-document-outline',
+
+  // Aliases used by Faculty Advisor / University Admin components
+  // (kept alongside the equivalent existing keys above for backward compatibility)
+  accountGroupOutline: 'mdi:account-group-outline',
+  accountMultipleOutline: 'mdi:account-multiple-outline',
+  calendarCheckOutline: 'mdi:calendar-check-outline',
+  calendarBlankOutline: 'mdi:calendar-blank-outline',
+  calendarStar: 'mdi:calendar-star',
+  checkDecagramOutline: 'mdi:check-decagram-outline',
+  cashMultiple: 'mdi:cash-multiple',
+  emergencyAlert: 'mdi:alert-octagon-outline',
 };
 
 // ── Admin Dashboard ──

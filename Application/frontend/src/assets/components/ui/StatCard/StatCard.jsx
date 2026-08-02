@@ -1,11 +1,15 @@
 ﻿import styles from './StatCard.module.css';
 import { Icon } from '@iconify/react';
 
-export const StatCard = ({ title, value, icon, trend, trendLabel, color = 'var(--primary)' }) => {
+export const StatCard = ({ title, value, icon, trend, trendLabel, color = 'var(--primary)', onClick }) => {
   const isPositive = trend > 0;
-  
+
   return (
-    <div className={styles.statCard}>
+    <div
+      className={styles.statCard}
+      onClick={onClick}
+      style={onClick ? { cursor: 'pointer' } : undefined}
+    >
       <div className={styles.statHeader}>
         <h3 className={styles.statTitle}>{title}</h3>
         <div className={styles.iconWrapper} style={{ backgroundColor: `${color}15`, color }}>

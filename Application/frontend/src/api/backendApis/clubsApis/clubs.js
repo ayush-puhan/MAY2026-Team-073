@@ -4,32 +4,52 @@ export const clubsApi = {
   getAllClubs: async (universityId = null) => {
     const endpoint = universityId ? `/clubs?university_id=${universityId}` : '/clubs';
     const res = await api.get(endpoint);
-    return res.data;
+    return res;
   },
 
   getClubById: async (clubId) => {
     const res = await api.get(`/clubs/${clubId}`);
-    return res.data;
+    return res;
   },
-
+  getClubEvents: async (clubId) => {
+    const response = await api.get(
+        `/events?club_id=${clubId}`
+    );
+    
+    return response;
+  },
+  getClubRecentActivity: async (clubId) => {
+    return [];
+  },
+  getClubCommittees: async (clubId) => {
+    const committees = await api.get(`/clubs/${clubId}/committees`);
+    return committees;
+  },
+  getUserCertificates: async (userId) => {
+    return await api.get(`/users/${userId}/certificates`);
+  },
+  getCommitteeMembers: async (committeeId) => {
+    const members = await api.get(`/committees/${committeeId}/members`);
+  return members;
+  },
   getUserClubs: async (userId) => {
     const res = await api.get(`/users/${userId}/clubs`);
-    return res.data;
+    return res;
   },
 
   getUserRoleInClub: async (userId, clubId) => {
     const res = await api.get(`/clubs/${clubId}/members/${userId}/role`);
-    return res.data?.role_in_club || null;
+    return res?.role_in_club || null;
   },
 
   getClubMembers: async (clubId) => {
     const res = await api.get(`/clubs/${clubId}/members`);
-    return res.data;
+    return res;
   },
 
   getMembershipRequests: async (clubId) => {
     const res = await api.get(`/clubs/${clubId}/membership-requests`);
-    return res.data;
+    return res;
   },
 
   joinClub: async (clubId, userId, role = 'member', reason = '') => {
@@ -37,44 +57,44 @@ export const clubsApi = {
       role_in_club: role,
       reason: reason
     });
-    return res.data;
+    return res;
   },
 
   approveMembership: async (membershipId, approvedBy) => {
     const res = await api.patch(`/memberships/${membershipId}/approve`);
-    return res.data;
+    return res;
   },
 
   rejectMembership: async (membershipId, rejectedBy, reason = '') => {
     const res = await api.patch(`/memberships/${membershipId}/reject`, { reason });
-    return res.data;
+    return res;
   },
 
   updateMemberRole: async (membershipId, newRole, changedBy) => {
     const res = await api.patch(`/memberships/${membershipId}/role`, { role: newRole });
-    return res.data;
+    return res;
   },
 
   removeMember: async (membershipId, removedBy) => {
     const res = await api.delete(`/memberships/${membershipId}`);
-    return res.data;
+    return res;
   },
 
   leaveClub: async (membershipId, userId) => {
     const res = await api.post(`/memberships/${membershipId}/leave`);
-    return res.data;
+    return res;
   },
 
   // ── Volunteer Tasks ──
 
   getMyTasks: async (clubId, userId) => {
     const res = await api.get(`/clubs/${clubId}/tasks?user_id=${userId}`);
-    return res.data;
+    return res;
   },
 
   getClubTasks: async (clubId) => {
     const res = await api.get(`/clubs/${clubId}/tasks`);
-    return res.data;
+    return res;
   },
 
   createTask: async (eventId, assigneeMembershipId, assignedBy, description, dueAt) => {
@@ -84,43 +104,43 @@ export const clubsApi = {
       task_description: description,
       due_at: dueAt
     });
-    return res.data;
+    return res;
   },
 
   updateTaskStatus: async (taskId, newStatus, userId) => {
     const res = await api.patch(`/volunteer-tasks/${taskId}/status`, { status: newStatus });
-    return res.data;
+    return res;
   },
 
   checkOverdueTasks: async () => {
     const res = await api.post('/volunteer-tasks/check-overdue');
-    return res.data;
+    return res;
   },
 
   // ── Announcements ──
 
   getClubAnnouncements: async (clubId) => {
     const res = await api.get(`/clubs/${clubId}/announcements`);
-    return res.data;
+    return res;
   },
 
   // ── Club Settings ──
 
   updateClubSettings: async (clubId, updates, userId) => {
     const res = await api.patch(`/clubs/${clubId}/settings`, updates);
-    return res.data;
+    return res;
   },
 
   // ── Club Applications (New Workflow) ──
 
   submitJoinApplication: async (clubId, userId, applicationData) => {
     const res = await api.post(`/clubs/${clubId}/applications`, { ...applicationData, user_id: userId });
-    return res.data;
+    return res;
   },
 
   getClubApplications: async (clubId) => {
     const res = await api.get(`/clubs/${clubId}/applications`);
-    return res.data;
+    return res;
   },
 
   reviewApplication: async (applicationId, decision, reviewerId, reviewComments = '') => {
@@ -129,36 +149,36 @@ export const clubsApi = {
       reviewer_id: reviewerId,
       review_comments: reviewComments
     });
-    return res.data;
+    return res;
   },
 
   getUserApplications: async (userId) => {
     const res = await api.get(`/users/${userId}/club-applications`);
-    return res.data;
+    return res;
   },
 
   // ── Club Interests ──
 
   getClubInterests: async (clubId) => {
     const res = await api.get(`/clubs/${clubId}/interests`);
-    return res.data;
+    return res;
   },
 
   setClubInterests: async (clubId, interestIds) => {
     const res = await api.post(`/clubs/${clubId}/interests`, { interests: interestIds });
-    return res.data;
+    return res;
   },
 
   // ── Club Creation Workflow (Phase 2) ──
 
   getClubCreationRequests: async () => {
     const res = await api.get('/club-creation-requests');
-    return res.data;
+    return res;
   },
 
   getFacultyClubRequests: async (facultyAdvisorId) => {
     const res = await api.get(`/club-creation-requests?faculty_advisor_id=${facultyAdvisorId}`);
-    return res.data;
+    return res;
   },
 
   requestClubCreation: async (requesterId, clubData) => {
@@ -166,23 +186,23 @@ export const clubsApi = {
       requester_id: requesterId,
       ...clubData
     });
-    return res.data;
+    return res;
   },
 
   approveClubRequest: async (requestId, adminId) => {
     const res = await api.patch(`/club-creation-requests/${requestId}/approve`, { admin_id: adminId });
-    return res.data;
+    return res;
   },
 
   rejectClubRequest: async (requestId, rejectorId) => {
     const res = await api.patch(`/club-creation-requests/${requestId}/reject`, { rejector_id: rejectorId });
-    return res.data;
+    return res;
   },
 
   // ── Create Event ──
 
   createEvent: async (eventData) => {
     const res = await api.post('/events', eventData);
-    return res.data;
+    return res;
   }
 };

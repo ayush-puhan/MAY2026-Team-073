@@ -5,7 +5,7 @@ import { Icon } from '@iconify/react';
 import { Button } from '../../ui/Button/Button';
 import { Input } from '../../ui/Input/Input';
 import { Dropdown } from '../../ui/Dropdown/Dropdown';
-import { clubsApi } from '../../../../api/mockbackendApis/clubsApis/clubs';
+import { clubsApi } from '../../../../api/backendApis/clubsApis/clubs';
 import styles from './AnnouncementComposerModal.module.css';
 
 // clubOptions: optional [{ value, label }] — when provided, the composer asks which club to post to.

@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Icon } from '@iconify/react';
 import styles from './ClubDashboard.module.css';
 import layoutStyles from '../../../ui/ContextLayout/ContextLayout.module.css';
-import { clubsApi } from '../../../../../api/mockbackendApis/clubsApis/clubs';
+import { clubsApi } from '../../../../../api/backendApis/clubsApis/clubs';
 import {
   canManageMembers,
   canPostAnnouncement,

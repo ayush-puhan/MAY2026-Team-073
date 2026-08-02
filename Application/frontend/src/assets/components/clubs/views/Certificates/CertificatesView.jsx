@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { Icon } from '@iconify/react';
-import { clubsApi } from '../../../../../api/mockbackendApis/clubsApis/clubs';
+import { clubsApi } from '../../../../../api/backendApis/clubsApis/clubs';
 import styles from './CertificatesView.module.css';
 import { useToast } from '../../../../../context/ToastContext';
 import { uiIcons, landingIcons, adminIcons } from '../../../../icons/registry';

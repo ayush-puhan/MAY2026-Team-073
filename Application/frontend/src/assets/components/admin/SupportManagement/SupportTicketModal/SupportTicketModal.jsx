@@ -19,7 +19,6 @@ export const SupportTicketModal = ({ ticket, onClose, onUpdate }) => {
   const [responseMsg, setResponseMsg] = useState('');
   const [responses, setResponses] = useState([]);
   const { showInfo } = useToast();
-
   if (!ticket) return null;
 
   useEffect(() => {

@@ -1,4 +1,5 @@
 ﻿import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Icon } from '@iconify/react';
 import { StatCard } from '../../ui/StatCard/StatCard';
 import { DataTable } from '../../ui/DataTable/DataTable';
@@ -8,6 +9,7 @@ import styles from './AdminOverviewHome.module.css';
 import { uiIcons, dashboardIcons } from '../../../icons/registry';
 
 export const AdminOverviewHome = () => {
+  const navigate = useNavigate();
   const [stats, setStats] = useState(null);
   const [pendingRequests, setPendingRequests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -44,10 +46,10 @@ export const AdminOverviewHome = () => {
       </div>
 
       <div className={styles.statsGrid}>
-        <StatCard title="Active Clubs" value={stats.totalClubs} icon={dashboardIcons.accountGroupOutline} color="var(--primary)" />
-        <StatCard title="Total Memberships" value={stats.totalMemberships} icon={dashboardIcons.accountMultipleOutline} color="var(--sky)" />
-        <StatCard title="Active Events" value={stats.activeEvents} icon={dashboardIcons.calendarBlankOutline} color="var(--innovation)" />
-        <StatCard title="Pending Club Approvals" value={stats.pendingApprovals} icon={dashboardIcons.checkDecagramOutline} color="var(--campus-orange)" />
+        <StatCard title="Active Clubs" value={stats.totalClubs} icon={dashboardIcons.accountGroupOutline} color="var(--primary)" onClick={() => navigate('/university-admin-dashboard/clubs')} />
+        <StatCard title="Total Memberships" value={stats.totalMemberships} icon={dashboardIcons.accountMultipleOutline} color="var(--sky)" onClick={() => navigate('/university-admin-dashboard/reports')} />
+        <StatCard title="Active Events" value={stats.activeEvents} icon={dashboardIcons.calendarBlankOutline} color="var(--innovation)" onClick={() => navigate('/university-admin-dashboard/events')} />
+        <StatCard title="Pending Club Approvals" value={stats.pendingApprovals} icon={dashboardIcons.checkDecagramOutline} color="var(--campus-orange)" onClick={() => navigate('/university-admin-dashboard/approvals')} />
       </div>
 
       <div className={styles.section}>
@@ -60,6 +62,7 @@ export const AdminOverviewHome = () => {
             { header: 'Status', cell: (row) => <StatusBadge status={row.status} /> },
           ]}
           data={pendingRequests}
+          onRowClick={() => navigate('/university-admin-dashboard/approvals')}
           emptyIcon={dashboardIcons.checkDecagramOutline}
           emptyTitle="No pending club proposals"
         />

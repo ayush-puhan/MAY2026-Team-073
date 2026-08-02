@@ -91,7 +91,7 @@ export const ClubDetailModal = ({ clubId, onClose }) => {
                       min="0"
                       value={budgetAmount}
                       onChange={e => setBudgetAmount(e.target.value)}
-                      placeholder="Amount ($)"
+                      placeholder="Amount (₹)"
                       required
                       style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid var(--border)', background: 'var(--background)', color: 'var(--text)' }}
                     />
@@ -104,7 +104,7 @@ export const ClubDetailModal = ({ clubId, onClose }) => {
                   </form>
                 ) : (
                   <div style={{ marginTop: '0.5rem', fontSize: '1.2rem', fontWeight: 600, color: club.mainBudget ? 'var(--text)' : 'var(--muted-foreground)' }}>
-                    {club.mainBudget ? `$${parseFloat(club.mainBudget.allocated_amount).toFixed(2)}` : 'No budget allocated yet.'}
+                    {club.mainBudget ? `₹${parseFloat(club.mainBudget.allocated_amount).toFixed(2)}` : 'No budget allocated yet.'}
                   </div>
                 )}
               </div>

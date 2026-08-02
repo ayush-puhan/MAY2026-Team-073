@@ -223,7 +223,7 @@ def get_faculty_expenses(user_id):
 @faculty_advisor_bp.route('/expenses/<int:expenses_id>/decision',methods=['PATCH'])
 @require_auth
 @require_role(UserRole.FACULTY_ADVISOR)
-def let_faculty_decide_expenses(user_id):   
+def let_faculty_decide_expenses(expenses_id):   
     try:
         data = request.get_json()
         print(data)
@@ -235,3 +235,17 @@ def let_faculty_decide_expenses(user_id):
     return jsonify(result), 200
 
 
+
+@faculty_advisor_bp.route('/<int:user_id>/announcements',methods=['GET'])
+@require_auth
+@require_role(UserRole.FACULTY_ADVISOR)
+def let_faculty_decide_expenses(user_id): 
+    pass
+
+
+# post announcement
+@faculty_advisor_bp.route('/announcements',methods=['POST'])
+@require_auth
+@require_role(UserRole.FACULTY_ADVISOR)
+def let_faculty_decide_expenses(): 
+    pass

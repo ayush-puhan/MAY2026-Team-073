@@ -73,7 +73,7 @@ export const FacultyReports = () => {
           { header: 'Description', accessor: 'description' },
           { header: 'Budget', accessor: 'budget_title' },
           { header: 'Category', accessor: 'category' },
-          { header: 'Amount', cell: (row) => `â‚¹${row.amount}` },
+          { header: 'Amount', cell: (row) => `₹${row.amount}` },
           { header: 'Status', cell: (row) => <StatusBadge status={row.approval_status} /> },
           {
             header: '',

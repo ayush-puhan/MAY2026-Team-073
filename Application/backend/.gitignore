@@ -31,7 +31,7 @@ secrets.json
 instance/
 *.sqlite
 *.sqlite3
-*.db
+
 
 # =========================
 # Logs

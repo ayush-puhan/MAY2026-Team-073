@@ -14,7 +14,7 @@ from app.database.models.audit import AuditLog
 from app.database.models.academics import Department
 from app.database.models.university import UniversityDomain, University
 from app.database.enums import UserRole, TicketStatus,ClubRequestStatus,EventStatus,ExpenseStatus
-from app.database.models.finance import Expense
+from app.database.models.finance import Expense,Budget
 
 from app.middleware.auth_middleware import require_auth ,require_role
 
@@ -120,7 +120,7 @@ def get_club_detail_by_id(club_id):
             if not club:
                 return {"message" : "Not Found any club for faculty."},404
             result = {
-                "id": "1",
+                "id": club.id,
                 "name": club.name,
                 "description": club.description,
                 "category": club.category,
@@ -191,11 +191,32 @@ def get_events_detail_by(user_id):
 @faculty_advisor_bp.route('/events/<int:event_id>/decision',methods=['PATCH'])
 @require_auth
 @require_role(UserRole.FACULTY_ADVISOR)
-def let_faculty_decide_events(user_id):   
+def let_faculty_decide_events(event_id):  
+    token_user_id = get_jwt_identity() 
     try:
         data = request.get_json()
+        approval_status = data.get('approval_status')
+        review_comments = data.get('review_comments')
+        reviewed_by = data.get('reviewed_by')
         print(data)
-        result = {}
+        with get_session() as db:
+            event_to_approve = (
+                db.query(Event)
+                .join(Club, Event.club_id == Club.id)
+                .filter(
+                    Event.id == event_id,
+                    Club.faculty_advisor_id == token_user_id
+                )
+                .first()
+            )
+            if not event_to_approve:
+                return {'message' : 'Forbidden : Can not update even of other clubs.'}, 403
+            event_to_approve.status = approval_status.upper()
+            db.commit()
+            result = {
+                "created_by" : event_to_approve.created_by,
+                "title" : event_to_approve.title
+            }
     except Exception as e :
         msg = {"message" : f"Error : {e}"}
         print(msg)
@@ -208,11 +229,38 @@ def let_faculty_decide_events(user_id):
 @require_auth
 @require_role(UserRole.FACULTY_ADVISOR)
 def get_faculty_expenses(user_id):   
+    token_user_id = get_jwt_identity()
+    if user_id != int(token_user_id):
+        return {'message' : "Forbidden : Can not see expenses of other clubs."}, 403
     try:
-        status_flag = request.args.get('status', default=ExpenseStatus.PENDING, type=str)
+        status_filter = request.args.get('status', default=ExpenseStatus.PENDING, type=str)
+        with get_session() as db:
+            all_expenses = (
+                db.query(Expense)
+                .join(Budget, Expense.budget_id == Budget.id)
+                .join(Club, Budget.club_id == Club.id)
+                .filter(Club.faculty_advisor_id == user_id)
+                .filter(Expense.approval_status == status_filter)
+                .all()
+            )
+            result = [
+                {
+                    "id": expense.id,
+                    "budget_id": expense.budget_id,
+                    "description": expense.description,
+                    "amount": expense.amount,
+                    "category": expense.category,
+                    "receipt_document_id": expense.receipt_document_id,
+                    "submitted_by": expense.submitted_by,
+                    "status": expense.status.upper(),
+                    "approval_status": expense.approval_status.upper(),
+                    "approved_by": expense.approved_by,
+                    "approval_date": expense.approval_date,
+                    "approval_remarks": expense.approval_remarks,
+                    "created_at": expense.created_at 
+                } for expense in all_expenses
+            ]
 
-        print(status_flag)
-        result = {}
     except Exception as e :
         msg = {"message" : f"Error : {e}"}
         print(msg)
@@ -220,26 +268,51 @@ def get_faculty_expenses(user_id):
     return jsonify(result), 200
 
 
-@faculty_advisor_bp.route('/expenses/<int:expenses_id>/decision',methods=['PATCH'])
+@faculty_advisor_bp.route('/expenses/<int:expense_id>/decision',methods=['PATCH'])
 @require_auth
 @require_role(UserRole.FACULTY_ADVISOR)
-def let_faculty_decide_expenses(expenses_id):   
+def let_faculty_decide_expenses(expense_id):  
+    token_user_id = get_jwt_identity() 
     try:
         data = request.get_json()
-        print(data)
-        result = {}
+        approval_status = data.get('approval_status')
+        status = data.get('status')
+        approval_remarks = data.get('approval_remarks')
+        approved_by = data.get('approved_by')
+        approval_date = data.get('approval_date')
+        with get_session() as db:
+            expense = (
+                db.query(Expense)
+                .join(Budget, Expense.budget_id == Budget.id)
+                .join(Club, Budget.club_id == Club.id)
+                .filter(
+                    Expense.id == expense_id,
+                    Club.faculty_advisor_id == token_user_id  # <-- SECURITY CHECK ENFORCED HERE
+                )
+                .first()
+            )
+            if not expense:
+                return {'message' : 'Expense not found or unauthorized access'}, 403
+            expense.approval_status = approval_status.upper()
+            expense.status = status.upper()
+            expense.approval_remarks = approval_remarks
+            expense.approved_by = approved_by
+            expense.approval_date = datetime.now()
+            db.commit()
+            result = {
+                "description" : expense.description,
+                "submitted_by" : expense.submitted_by
+            }
     except Exception as e :
         msg = {"message" : f"Error : {e}"}
         print(msg)
         return msg, 500
     return jsonify(result), 200
-
-
 
 @faculty_advisor_bp.route('/<int:user_id>/announcements',methods=['GET'])
 @require_auth
 @require_role(UserRole.FACULTY_ADVISOR)
-def let_faculty_decide_expenses(user_id): 
+def get_faculty_announcements(user_id): 
     pass
 
 
@@ -247,5 +320,5 @@ def let_faculty_decide_expenses(user_id):
 @faculty_advisor_bp.route('/announcements',methods=['POST'])
 @require_auth
 @require_role(UserRole.FACULTY_ADVISOR)
-def let_faculty_decide_expenses(): 
+def make_faculty_announcements(): 
     pass

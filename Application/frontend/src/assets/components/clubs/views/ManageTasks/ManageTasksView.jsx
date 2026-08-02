@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useOutletContext, Navigate } from 'react-router-dom';
 import { Icon } from '@iconify/react';
-import { clubsApi } from '../../../../../api/mockbackendApis/clubsApis/clubs';
+import { clubsApi } from '../../../../../api/backendApis/clubsApis/clubs';
 import { canAssignTaskTo, getRoleLabel, canManageTasks } from '../../../../../utils/clubPermissions';
 import styles from './ManageTasksView.module.css';
 import { Button } from '../../../ui/Button/Button';

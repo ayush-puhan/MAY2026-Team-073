@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { Icon } from '@iconify/react';
-import { announcementsApi } from '../../../../../api/mockbackendApis/announcementsApis/announcements';
+import { announcementsApi } from '../../../../../api/backendApis/announcementsApis/announcements';
 import { canPostAnnouncement } from '../../../../../utils/clubPermissions';
 import { useSession } from '../../../../../context/SessionContext';
 import { useToast } from '../../../../../context/ToastContext';

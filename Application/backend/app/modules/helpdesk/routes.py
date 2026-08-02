@@ -215,9 +215,6 @@ class TicketResponseResource(Resource):
             }, 201
 
 #====================================================================
-admin_support_bp = Blueprint("admin_support", __name__)
-api = Api(admin_support_bp)
-
 ticket_response_bp = Blueprint("ticket_response", __name__)
 ticket_response_api = Api(ticket_response_bp)
 class TicketResponsesListResource(Resource):

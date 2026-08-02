@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { Icon } from '@iconify/react';
-import { clubsApi } from '../../../../../api/mockbackendApis/clubsApis/clubs';
+import { clubsApi } from '../../../../../api/backendApis/clubsApis/clubs';
 import styles from './ClubActivityLogView.module.css';
 import { EmptyState } from '../../../ui/EmptyState/EmptyState';
 import { dashboardIcons, uiIcons, rewardsIcons } from '../../../../icons/registry';

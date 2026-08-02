@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useOutletContext, Navigate } from 'react-router-dom';
 import { Icon } from '@iconify/react';
-import { clubsApi } from '../../../../../api/mockbackendApis/clubsApis/clubs';
+import { clubsApi } from '../../../../../api/backendApis/clubsApis/clubs';
 import { canManageBudget, canApproveExpenses, canViewBudget } from '../../../../../utils/clubPermissions';
 import layoutStyles from '../../../ui/ContextLayout/ContextLayout.module.css';
 import styles from './ClubBudgetView.module.css';

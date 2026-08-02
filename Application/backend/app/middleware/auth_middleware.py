@@ -4,7 +4,9 @@ from flask_jwt_extended import verify_jwt_in_request, get_jwt, get_jwt_identity
 
 from app.database.session_manager import validate_stored_token
 from app.database.database import get_session
-from app.database.models import User
+from app.database.models import User, ClubMembership, Event,AttendanceRecord
+from app.database.enums import MembershipStatus
+
 
 def require_auth(fn):
     @wraps(fn)
@@ -62,3 +64,128 @@ def require_role(*allowed_roles):
         return wrapper
 
     return decorator 
+
+
+
+
+def require_club_role(*allowed_roles):
+    """
+    Checks the authenticated user's role inside a specific club.
+
+    Supports:
+        /clubs/<club_id>/...
+        ?club_id=<club_id>
+        /events/<event_id>/...
+        /attendance/<record_id>
+    """
+
+    def decorator(fn):
+        @wraps(fn)
+        def wrapper(*args, **kwargs):
+
+            if not hasattr(g, "current_user"):
+                return {
+                    "message": "Authentication required"
+                }, 401
+
+            with get_session() as db:
+
+                # -------------------------------------------------
+                # Determine club_id
+                # -------------------------------------------------
+
+                # 1. From URL or query parameter
+                club_id = (
+                    kwargs.get("club_id")
+                    or request.args.get("club_id")
+                )
+
+                # 2. From event_id
+                if not club_id and kwargs.get("event_id"):
+
+                    event = (
+                        db.query(Event)
+                        .filter(
+                            Event.id == kwargs["event_id"]
+                        )
+                        .first()
+                    )
+
+                    if not event:
+                        return {
+                            "message": "Event not found"
+                        }, 404
+
+                    club_id = event.club_id
+
+                # 3. From attendance record
+                if not club_id and kwargs.get("record_id"):
+
+                    attendance = (
+                        db.query(AttendanceRecord)
+                        .filter(
+                            AttendanceRecord.id == kwargs["record_id"]
+                        )
+                        .first()
+                    )
+
+                    if not attendance:
+                        return {
+                            "message": "Attendance record not found"
+                        }, 404
+
+                    event = (
+                        db.query(Event)
+                        .filter(
+                            Event.id == attendance.event_id
+                        )
+                        .first()
+                    )
+
+                    if not event:
+                        return {
+                            "message": "Event not found"
+                        }, 404
+
+                    club_id = event.club_id
+
+                if not club_id:
+                    return {
+                        "message": "Club ID missing"
+                    }, 400
+
+                membership = (
+                    db.query(ClubMembership)
+                    .filter(
+                        ClubMembership.user_id == g.current_user.id,
+                        ClubMembership.club_id == int(club_id),
+                        ClubMembership.status == MembershipStatus.APPROVED
+                    )
+                    .first()
+                )
+
+                if not membership:
+                    return {
+                        "message": "You are not a member of this club"
+                    }, 403
+
+                user_club_role = (
+                    membership.role_in_club.value
+                    if hasattr(membership.role_in_club, "value")
+                    else membership.role_in_club
+                )
+
+                if user_club_role not in allowed_roles:
+                    return {
+                        "message": "Insufficient club permissions"
+                    }, 403
+
+                g.club_membership = membership
+                g.club_role = user_club_role
+
+            return fn(*args, **kwargs)
+
+        return wrapper
+
+    return decorator
+

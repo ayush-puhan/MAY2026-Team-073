@@ -488,7 +488,6 @@ export const ClubsHub = () => {
           clubsApi.getAllClubs(user?.university_id),
           user?.id ? clubsApi.getUserClubs(user.id) : Promise.resolve([])
         ]);
-        
         // Build a map of club_id -> { membership_status, role_in_club }
         const myClubMap = new Map();
         myData.forEach(c => myClubMap.set(c.id, { 

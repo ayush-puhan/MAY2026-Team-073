@@ -58,7 +58,7 @@ def serialize_club(club, db):
 class ClubListResource(Resource):
 
     @require_auth
-    @require_role("student")
+    
     def get(self):
         university_id = request.args.get("university_id")
         with get_session() as db:

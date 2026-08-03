@@ -53,7 +53,7 @@ def get_admin_stats():
 
 @system_admin_bp.route('/audit-logs',methods=['GET'])
 @require_auth
-@require_role(UserRole.SYSTEM_ADMIN)
+# @require_role(UserRole.SYSTEM_ADMIN)
 def get_admin_audit_logs():
     try:
         limit = request.args.get("limit", default=10, type=int)

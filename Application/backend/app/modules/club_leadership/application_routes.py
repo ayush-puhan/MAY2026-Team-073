@@ -4,7 +4,7 @@ from flask_restful import Api, Resource
 from app.database import get_session
 from app.database.models.applications import ClubJoinApplication
 from app.database.enums import MembershipStatus
-
+from app.middleware.auth_middleware import require_auth, require_role
 
 application_bp = Blueprint(
     "club_join_applications",
@@ -90,7 +90,7 @@ def serialize_application(application):
 # -------------------------------------------------
 
 class ClubApplicationsResource(Resource):
-
+    @require_role("student")
     def get(self, club_id):
 
         status = request.args.get("status")

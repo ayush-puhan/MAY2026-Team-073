@@ -9,7 +9,7 @@ from app.database.models.support import (
     TicketResponse,
     EmergencyReport
 )
-from app.database.enums import TicketStatus, TicketPriority
+from app.database.enums import TicketStatus, TicketPriority, TicketType
 
 
 admin_support_bp = Blueprint("admin_support", __name__)
@@ -270,8 +270,67 @@ class TicketResponsesListResource(Resource):
                 }
                 for r in responses
             ], 200
+#=================================================================
+support_ticket_bp = Blueprint("support_ticket", __name__)
+support_ticket_api = Api(support_ticket_bp)
 
 
+class SupportTicketResource(Resource):
+
+    @require_auth
+    def get(self):
+
+        with get_session() as db:
+
+            tickets = (
+                db.query(SupportTicket)
+                .filter(
+                    SupportTicket.raised_by == g.current_user.id
+                )
+                .all()
+            )
+
+            return [
+                {
+                    "id": ticket.id,
+                    "title": ticket.title,
+                    "description": ticket.description,
+                    "ticket_type": ticket.ticket_type.value,
+                    "priority": ticket.priority.value,
+                    "status": ticket.status.value,
+                    "club_id": ticket.club_id,
+                    "created_at": (
+                        ticket.created_at.strftime("%Y-%m-%d %H:%M:%S")
+                        if ticket.created_at else None
+                    )
+                }
+                for ticket in tickets
+            ], 200
+    
+    @require_auth
+    def post(self):
+
+        data = request.get_json()
+
+        with get_session() as db:
+
+            ticket = SupportTicket(
+                raised_by=g.current_user.id,
+                club_id=data.get("club_id"),
+                title=data["title"],
+                description=data["description"],
+                ticket_type=TicketType(data.get("ticket_type", "support")),
+                priority=TicketPriority(data.get("priority", "MEDIUM")),
+                university_id=data.get("university_id"),
+            )
+
+            db.add(ticket)
+            db.commit()
+
+            return {
+                "message": "Ticket created successfully.",
+                "ticket_id": ticket.id
+            }, 201
 api.add_resource(
     AdminSupportResource,
     "",
@@ -286,4 +345,8 @@ api.add_resource(
 ticket_response_api.add_resource(
     TicketResponsesListResource,
     "/ticket_responses"
+)
+support_ticket_api.add_resource(
+    SupportTicketResource,
+    "/support_tickets"
 )

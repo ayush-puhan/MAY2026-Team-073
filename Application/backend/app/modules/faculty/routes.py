@@ -29,31 +29,40 @@ def get_stats_of_id(id):
         return {"message" : "Forbidden : You are not advisor of this club"}, 404
     try:
         with get_session() as db:
-            clubs_adv = db.query(Club).filter_by(faculty_advisor_id=id).count()
-            pending_club_prop = db.query(ClubCreationRequest).filter(
-                ClubCreationRequest.faculty_advisor_id ==id,
-                ClubCreationRequest.status != ClubRequestStatus.APPROVED,
-                ClubCreationRequest.status != ClubRequestStatus.REJECTED
-            ).count()
+            club_stats = (
+                db.query(
+                    func.count(Club.id).label('total_clubs'),
+                    func.sum(Club.member_count_cache).label('total_members')
+                )
+                .filter(Club.faculty_advisor_id == token_user_id)
+                .first()
+            )
+            pending_event = (
+                db.query(Event)
+                .join(Club, Event.club_id == Club.id)
+                .filter(
+                    Event.status == EventStatus.PENDING_APPROVAL,
+                    Club.faculty_advisor_id == token_user_id 
+                )
+                .count()
+            )
 
-            pending_event_approv = db.query(Event).filter_by(
-                status=EventStatus.PENDING_APPROVAL
-            ).count()
-
-            pending_expenses = db.query(Expense).filter_by(
-                status=ExpenseStatus.PENDING
-            ).count()
-                
-
+            pending_expenses = (
+                db.query(Expense)
+                .join(Budget, Expense.budget_id == Budget.id)
+                .join(Club, Budget.club_id == Club.id)
+                .filter(
+                    Expense.status == ExpenseStatus.PENDING,
+                    Club.faculty_advisor_id == token_user_id 
+                )
+                .count()
+            )
+            
             result = {
-                "totalAdvisedClubs": clubs_adv,
-                "pendingEventApprovals": pending_event_approv,
-                "pendingProposals": pending_club_prop,
-                "pendingExpenses": pending_expenses,
-                "clubsTrend": "+1",
-                "eventsTrend": "-2",
-                "proposalsTrend": "0",
-                "expensesTrend": "+3"
+                "advisedClubs": club_stats.total_clubs,
+                "pendingEvents": pending_event,
+                "totalMembers" : club_stats.total_members,
+                "pendingExpenses": pending_expenses
             }
     except Exception as e:
         msg = {"message" : f"Error : {e}"}
@@ -72,32 +81,26 @@ def get_clubs_of_id(user_id):
         return {"message" : "Forbidden : You are not advisor of this club"}, 404
     try:
         with get_session() as db:
-            rows = (
-                db.query(
-                    Club,
-                    func.sum(
-                        case((Event.status == EventStatus.SCHEDULED, 1), else_=0)
-                    ).label("scheduled_count"),
-                    func.sum(
-                        case((Event.status == EventStatus.PENDING_APPROVAL, 1), else_=0)
-                    ).label("pending_count"),
-                )
-                .outerjoin(Event, Event.club_id == Club.id)
-                .filter(Club.faculty_advisor_id == user_id)
-                .group_by(Club.id)
-                .all()
-            )
-
+            clubs = db.query(Club).filter_by(faculty_advisor_id=user_id).all()
 
             result = [
                 {
                     "id": club.id,
                     "name": club.name,
+                    "description": club.description,
                     "category": club.category,
-                    "scheduled_events": scheduled_count or 0,
-                    "pending_events": pending_count or 0,
+                    "university_id": club.university_id,
+                    "status": club.status,
+                    "logo_url": club.logo_url,
+                    "banner": club.banner,
+                    "member_count_cache": club.member_count_cache,
+                    "slug": club.slug,
+                    "objectives": club.objectives,
+                    "faculty_advisor_id": club.faculty_advisor_id,
+                    "created_at": club.created_at,
+                    "updated_at": club.updated_at
                 }
-                for club, scheduled_count, pending_count in rows
+                for club in clubs
             ]
 
     except Exception as e :
@@ -152,7 +155,7 @@ def get_events_detail_by(user_id):
     if user_id != int(token_user_id):
         return {"message" : "Forbidden : You are not advisor of this club."}, 404
     try:
-        status_flag = request.args.get('status', default=EventStatus.SCHEDULED, type=str)
+        status_flag = request.args.get('status', default=EventStatus.PENDING_APPROVAL, type=str) 
         with get_session() as db:
             events = (
                 db.query(Event)

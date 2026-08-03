@@ -22,7 +22,7 @@ export const FacultyDashboardHome = () => {
       try {
         const [statsData, events] = await Promise.all([
           facultyAdvisorApi.getStats(user.id),
-          facultyAdvisorApi.getEvents(user.id, 'pending'),
+          facultyAdvisorApi.getEvents(user.id, 'pending_approval'),
         ]);
         if (isMounted) {
           setStats(statsData);

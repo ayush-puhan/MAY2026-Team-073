@@ -1,6 +1,7 @@
 ﻿import { api } from '../../api';
 
 export const facultyAdvisorApi = {
+  getFacultyAdvisors: async () => api.get('/faculty-advisors'),
   getStats: async (userId) => api.get(`/faculty/${userId}/stats`),
   getAdvisedClubs: async (userId) => api.get(`/faculty/${userId}/clubs`),
   getClubDetail: async (clubId) => api.get(`/faculty/clubs/${clubId}`),

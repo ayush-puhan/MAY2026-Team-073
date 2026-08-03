@@ -3,7 +3,7 @@ from app.modules.auth import auth_bp
 from app.modules.users import users_bp
 from app.modules.student.routes import student_bp
 from app.modules.club_leadership.routes import club_bp
-from app.modules.helpdesk.routes import admin_support_bp,ticket_response_bp
+from app.modules.helpdesk.routes import admin_support_bp,ticket_response_bp, support_ticket_bp
 from app.modules.club_leadership.routes import club_bp
 from app.modules.club_leadership.membership_routes import membership_bp
 from app.modules.club_leadership.application_routes import application_bp
@@ -48,5 +48,5 @@ def register_api_paths(app):
     app.register_blueprint(certificate_bp,url_prefix="/api")    
     app.register_blueprint(university_bp, url_prefix='/api/universities')
     app.register_blueprint(system_admin_bp, url_prefix='/api/admin')#from akash
-
+    app.register_blueprint(support_ticket_bp,url_prefix="/api")
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Icon } from '@iconify/react';
 import styles from './ProposeClubModal.module.css';
-import { clubsApi, authApi } from '../../../../../api';
+import { clubsApi, facultyAdvisorApi, authApi } from '../../../../../api';
 import { useSession } from '../../../../../context/SessionContext';
 import { useToast } from '../../../../../context/ToastContext';
 import { uiIcons } from '../../../../icons/registry';
@@ -23,7 +23,7 @@ export const ProposeClubModal = ({ isOpen, onClose }) => {
 
   useEffect(() => {
     if (isOpen) {
-      authApi.getFacultyAdvisors()
+      facultyAdvisorApi.getFacultyAdvisors()
         .then(data => setFaculties(data || []))
         .catch(err => console.error("Failed to fetch faculties", err));
       

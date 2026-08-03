@@ -17,7 +17,7 @@ from app.modules.club_leadership.interests import interest_bp
 from app.modules.student.certificates import certificate_bp
 from app.modules.university_administration.routes import university_bp
 from app.modules.system_admin.admin_routes import system_admin_bp
-
+from app.modules.faculty.routes import  faculty_advisor_bp
 
 def register_api_paths(app):
     # Register the auth blueprint which contains its own Api setup
@@ -47,6 +47,7 @@ def register_api_paths(app):
     app.register_blueprint(interest_bp,url_prefix="/api")
     app.register_blueprint(certificate_bp,url_prefix="/api")    
     app.register_blueprint(university_bp, url_prefix='/api/universities')
+    app.register_blueprint(faculty_advisor_bp, url_prefix='/api/faculty')
     app.register_blueprint(system_admin_bp, url_prefix='/api/admin')#from akash
     app.register_blueprint(support_ticket_bp,url_prefix="/api")
 

@@ -1,9 +1,7 @@
-def test_logout_success(client):
+def test_logout_success(client, auth_headers):
     response = client.post(
         "/api/auth/logout",
-        headers={
-            "Authorization": "Bearer test-token"
-        }
+        headers=auth_headers
     )
     assert response.status_code == 200
     body = response.get_json()
@@ -23,8 +21,5 @@ def test_logout_invalid_header(client):
             "Authorization": "Token abc123"
         }
     )
-    # If require_auth allows it through:
     assert response.status_code in (400, 401)
-    assert response.get_json()["message"] == "Missig Bearer token"
-
-    # Otherwise, require_auth may return 401 first.
+    assert "Authentication failed" in response.get_json()["message"]

@@ -14,7 +14,7 @@ def test_verify_otp_success(client, db_session, inactive_user_with_otp):
     body = response.get_json()
 
     assert body["message"] == "Email verified successfully."
-    assert body["token"] == "test-token"
+    assert "token" in body
 
     db_session.refresh(inactive_user_with_otp)
 

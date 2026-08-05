@@ -1,15 +1,18 @@
 from flask import Blueprint, jsonify, request
+from flask_jwt_extended import get_jwt_identity
 from datetime import datetime, timedelta
 import bcrypt
 from sqlalchemy import func
 from app.database.database import get_session
-from app.database.models.auth import User
-from app.database.models.clubs import Club
-from app.database.models.events import Event
-from app.database.models.support import SupportTicket
-from app.database.models.audit import AuditLog
-from app.database.models.academics import Department
-from app.database.models.university import UniversityDomain, University
+from app.database.models import (
+    User,
+    Club,
+    Event,
+    SupportTicket,
+    AuditLog,
+    Department,
+    UniversityDomain, University
+ )
 from app.database.enums import UserRole, TicketStatus
 
 
@@ -23,6 +26,10 @@ system_admin_bp = Blueprint('system_admin', __name__)
 @require_auth
 @require_role(UserRole.SYSTEM_ADMIN)
 def get_admin_stats():
+    """
+        This end point will give the complete club related
+        information in system admin dashboard.
+    """
     try:
         with get_session() as db:
             now = datetime.utcnow()
@@ -103,11 +110,73 @@ def get_admin_stats():
         "ticketsTrend": round(tickets_trend, 2)
     }), 200
 
+@system_admin_bp.route("/analytics", methods=["GET"])
+@require_auth
+@require_role(UserRole.SYSTEM_ADMIN)
+def get_platform_analytics():
+    """
+        This endpoint is for analytics view for system admin.
+        It will show admin some visualization chart about some 
+        key metric of club functions.
+    """
+    try:
+        time_range = request.args.get("range", "month")
+        with get_session() as db:
+            if time_range == "year":
+                rows = (
+                    db.query(
+                        func.strftime("%Y", User.created_at).label("period"),
+                        func.count(User.id)
+                    )
+                    .group_by("period")
+                    .order_by("period")
+                    .all()
+                )
+            elif time_range == "week":
+                rows = (
+                    db.query(
+                        func.strftime("%Y-W%W", User.created_at).label("period"),
+                        func.count(User.id)
+                    )
+                    .group_by("period")
+                    .order_by("period")
+                    .all()
+                )
+            else:# month
+                rows = (
+                    db.query(
+                        func.strftime("%Y-%m", User.created_at).label("period"),
+                        func.count(User.id)
+                    )
+                    .group_by("period")
+                    .order_by("period")
+                    .all()
+                )
+
+            growth = {
+                period: count
+                for period, count in rows
+            }
+
+            return jsonify({
+                "growth": growth
+            }), 200
+
+    except Exception as e:
+        return jsonify({
+            "message": str(e)
+        }), 500
+
+
 
 @system_admin_bp.route('/audit-logs',methods=['GET'])
 @require_auth
-# @require_role(UserRole.SYSTEM_ADMIN)
+@require_role(UserRole.SYSTEM_ADMIN)
 def get_admin_audit_logs():
+    """
+        This gives admin access to all audit related information in 
+        a single focused UI.
+    """
     try:
         limit = request.args.get("limit", default=10, type=int)
         with get_session() as db:
@@ -127,17 +196,42 @@ def get_admin_audit_logs():
         } for audit in audit_logs
     ]), 200
 
-@system_admin_bp.route('/audit-logs',methods=['POST'])
+@system_admin_bp.route("/audit-logs", methods=["POST"])
 @require_auth
 @require_role(UserRole.SYSTEM_ADMIN)
-def make_admin_audit_logs():
-    # ----------NOT IMPLEMENTED------------
-    try : 
+def create_audit_log():
+    try:
         data = request.get_json()
-        print(data)
+        required_fields = ["action", "entity_type", "entity_id"]
+        for field in required_fields:
+            if not data.get(field):
+                return jsonify({
+                    "message": f"{field} is required."
+                }), 400
+
+        with get_session() as db:
+            user_id = get_jwt_identity()
+            user = db.query(User).filter_by(id=user_id).first()
+            audit = AuditLog(
+                user_id=user_id,
+                university_id=user.university_id,
+                action=data["action"],
+                entity_type=data["entity_type"],
+                entity_id=data["entity_id"],
+                details=data.get("details")
+            )
+            db.add(audit)
+            db.commit()
+            db.flush()
+            return jsonify({
+                "message": "Audit log created successfully.",
+                "audit_log_id": audit.id
+            }), 201
+
     except Exception as e:
-        return { "message" : f"Error : {e}"}, 500
-    pass
+        return jsonify({
+            "message": str(e)
+        }), 500
     
 @system_admin_bp.route('/users',methods=['POST'])
 @require_auth
@@ -177,17 +271,17 @@ def admin_user_create_user():
             db.commit()
     except Exception as e:
         print(e)
-        return { "message" : f"error : {e}"}, 500
+        return { "message" : f"DATABASE Error : {e}"}, 500
     
     # Send password email in background
     try:
         import threading
         subject = "Don't Reply : New Accout Created"
-        html = f"your email : {email}\n password : {password}"
+        html = f"<p>your email : {email}</p><br><p> password : {password}</p>"
         threading.Thread(target=send_email, args=(email,subject, html)).start()
     except Exception as e:
         print(f"Background email error: {e}")
-
+        return { "message" : f"Email Error : {e}"}, 500
     return {"message": "User created successfully", "email": email,"password":password}, 201
     
 

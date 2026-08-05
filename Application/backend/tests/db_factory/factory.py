@@ -1,0 +1,116 @@
+from .base import factory, BaseFactory
+from factory import fuzzy
+
+import bcrypt
+from datetime import datetime, timedelta
+
+from app.database.models import (
+    User,Club,University,Event,SupportTicket ,AuditLog
+)
+
+from app.database.enums import (
+UserRole,AuthProvider,ClubStatus,EventStatus,TicketType,
+TicketPriority,
+TicketStatus, 
+)
+
+class UserFactory(BaseFactory):
+    class Meta:
+        model = User
+
+    email = factory.Sequence(lambda n: f"user{n}@test.com")
+    full_name = factory.Faker("name")
+    password_hash = bcrypt.hashpw(b"Password@123",bcrypt.gensalt()).decode("utf-8")
+    role = UserRole.STUDENT
+    is_active = True
+    email_verified = True
+    auth_provider = AuthProvider.LOCAL
+    phone = None
+    roll_number = factory.Sequence(lambda n: f"2025CS{n:03d}")
+    profile_photo_url = None
+    accessibility_prefs = None
+    google_id = None
+    dob = None
+    gender = None
+    color_blind_mode = False
+    department = None
+    university = None
+
+class UniversityFactory(BaseFactory):
+    class Meta:
+        model = University
+
+    name = factory.Sequence(lambda n: f"University {n}")
+    short_name = factory.Sequence(lambda n: f"UNI{n}")
+    domain = factory.Sequence(lambda n: f"university{n}.edu")
+    address = factory.Faker("address")
+    website = factory.LazyAttribute(
+        lambda obj: f"https://www.{obj.domain}"
+    )
+    logo_url = None
+    banner = None
+    is_active = True
+
+class ClubFactory(BaseFactory):
+    class Meta:
+        model = Club
+
+    name = factory.Sequence(lambda n: f"Club {n}")
+    slug = factory.Sequence(lambda n: f"club-{n}")
+    category = "Technical"
+    description = factory.Faker("paragraph")
+    objectives = factory.Faker("paragraph")
+    logo_url = None
+    banner = None
+    status = ClubStatus.ACTIVE
+    member_count_cache = 0
+    university = None
+    faculty_advisor = None
+
+
+class EventFactory(BaseFactory):
+    class Meta:
+        model = Event
+
+    club = None
+    creator = None
+    title = factory.Sequence(lambda n: f"Event {n}")
+    description = factory.Faker("paragraph")
+    venue = factory.Faker("city")
+    start_at = datetime.utcnow()
+    end_at = datetime.utcnow() + timedelta(days=1)
+    registration_deadline = datetime.utcnow() - timedelta(days=2)
+    capacity = 100
+    status = EventStatus.SCHEDULED
+    banner = None
+    requires_external_participants = False
+    is_public = False
+
+
+class SupportTicketFactory(BaseFactory):
+    class Meta:
+        model = SupportTicket
+    raised_by_user = None
+    university = None
+    title = factory.Sequence(lambda n: f"Support Ticket {n}")
+    description = factory.Faker("paragraph")
+    ticket_type = TicketType.SUPPORT
+    priority = TicketPriority.MEDIUM
+    status = TicketStatus.OPEN
+    assigned_agent = None
+    is_offensive = False
+    resolution_rating = None
+
+
+class AuditLogFactory(BaseFactory):
+    class Meta:
+        model = AuditLog
+    # Relationships (these automatically populate user_id and university_id)
+    user = None
+    university_id = None
+    # Required field
+    action = 'LOGIN'
+    # Optional/Nullable fields
+    entity_type = None
+    entity_id = None
+    details = None

@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 from datetime import datetime, timedelta
 import bcrypt
-
+from sqlalchemy import func
 from app.database.database import get_session
 from app.database.models.auth import User
 from app.database.models.clubs import Club
@@ -25,29 +25,82 @@ system_admin_bp = Blueprint('system_admin', __name__)
 def get_admin_stats():
     try:
         with get_session() as db:
-            total_users = db.query(User).count()
-            active_users = db.query(User).filter_by(is_active = 1).count()
-            total_clubs = db.query(Club).count()
-            total_evetns = db.query(Event).count()
-            open_tickets = db.query(SupportTicket).filter_by(status = TicketStatus.OPEN).count()
+            now = datetime.utcnow()
+            last_30 = now - timedelta(days=30)
+            previous_30 = last_30 - timedelta(days=30)
+
+            total_users = db.query(func.count(User.id)).scalar()
+            active_users = db.query(func.count(User.id)).filter(
+                User.is_active == True
+            ).scalar()
+
+            total_clubs = db.query(func.count(Club.id)).scalar()
+
+            total_events = db.query(func.count(Event.id)).scalar()
+
+            open_tickets = db.query(func.count(SupportTicket.id)).filter(
+                SupportTicket.status == TicketStatus.OPEN
+            ).scalar()
+
+            # ---------- User Trend ----------
+            current_users = db.query(func.count(User.id)).filter(
+                User.created_at >= last_30
+            ).scalar()
+
+            previous_users = db.query(func.count(User.id)).filter(
+                User.created_at >= previous_30,
+                User.created_at < last_30
+            ).scalar()
+
+            user_trend = (
+                ((current_users - previous_users) / previous_users) * 100
+                if previous_users else 100.0
+            )
+
+            # ---------- Event Trend ----------
+            current_events = db.query(func.count(Event.id)).filter(
+                Event.created_at >= last_30
+            ).scalar()
+
+            previous_events = db.query(func.count(Event.id)).filter(
+                Event.created_at >= previous_30,
+                Event.created_at < last_30
+            ).scalar()
+
+            events_trend = (
+                ((current_events - previous_events) / previous_events) * 100
+                if previous_events else 100.0
+            )
+
+            # ---------- Ticket Trend ----------
+            current_tickets = db.query(func.count(SupportTicket.id)).filter(
+                SupportTicket.created_at >= last_30,
+                SupportTicket.status == TicketStatus.OPEN
+            ).scalar()
+
+            previous_tickets = db.query(func.count(SupportTicket.id)).filter(
+                SupportTicket.created_at >= previous_30,
+                SupportTicket.created_at < last_30,
+                SupportTicket.status == TicketStatus.OPEN
+            ).scalar()
+
+            tickets_trend = (
+                ((current_tickets - previous_tickets) / previous_tickets) * 100
+                if previous_tickets else 100.0
+            )
 
     except Exception as e:
         return {"message" : f"Error : {e}"}, 500
     
     return jsonify({
-        "totalUsers" : total_users,
-        "activeUsers" : active_users,
-        "totalClubs" : total_clubs,
-        "totalEvents" : total_evetns,
-        "openTickets" : open_tickets,
-        "userTrend": 5.2,
-        "clubTrend": 2.1,
-        "eventTrend": 10.5,
-        "ticketTrend": -3.0,
-        "userTrendDirection": "up",
-        "clubTrendDirection": "up",
-        "eventTrendDirection": "up",
-        "ticketTrendDirection": "down"
+        "totalUsers": total_users,
+        "activeUsers": active_users,
+        "totalClubs": total_clubs,
+        "totalEvents": total_events,
+        "openTickets": open_tickets,
+        "userTrend": round(user_trend, 2),
+        "eventsTrend": round(events_trend, 2),
+        "ticketsTrend": round(tickets_trend, 2)
     }), 200
 
 

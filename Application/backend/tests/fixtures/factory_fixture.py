@@ -93,6 +93,23 @@ def system_admin_user(db_session):
     return user
 
 @pytest.fixture
+def faculty_advisor_user(db_session):
+    user = User(
+        email="advisor@test.com",
+        full_name="Faculty Advisor",
+        password_hash=bcrypt.hashpw(
+            b"Password@123",
+            bcrypt.gensalt()
+        ).decode(),
+        role=UserRole.FACULTY_ADVISOR,
+        is_active=True,
+        auth_provider="LOCAL",
+    )
+    db_session.add(user)
+    db_session.commit()
+    return user
+
+@pytest.fixture
 def student_user(db_session):
     user = User(
         email="student@test.com",
@@ -111,7 +128,8 @@ def student_user(db_session):
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # More Modular Factory db for facking real database resources
 from db_factory.factory import (
-    UserFactory,ClubFactory,EventFactory,UniversityFactory,SupportTicketFactory,AuditLogFactory,DepartmentFactory
+    UserFactory,ClubFactory,EventFactory,UniversityFactory,SupportTicketFactory,AuditLogFactory,DepartmentFactory,
+    BudgetFactory,ExpenseFactory,ClubMembershipFactory,CommitteeFactory
 )
 
 @pytest.fixture(autouse=True)
@@ -123,7 +141,11 @@ def factory_session(db_session):
         EventFactory,
         SupportTicketFactory,
         AuditLogFactory,
-        DepartmentFactory
+        DepartmentFactory,
+        BudgetFactory,
+        ExpenseFactory,
+        ClubMembershipFactory,
+        CommitteeFactory
     ]
     for factory_cls in factories:
         factory_cls._meta.sqlalchemy_session = db_session

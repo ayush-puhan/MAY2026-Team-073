@@ -68,7 +68,19 @@ def db_session(monkeypatch):
     transaction.rollback()
     connection.close()
 
+@pytest.fixture
+def db_error(monkeypatch):
+    def _patch(module):
+        def broken_session():
+            raise Exception("Database Error")
 
+        monkeypatch.setattr(
+            module,
+            "get_session",
+            broken_session,
+        )
+
+    return _patch
 
 
 @pytest.fixture

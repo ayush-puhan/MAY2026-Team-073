@@ -6,15 +6,16 @@ from sqlalchemy import func, case
 
 
 from app.database.database import get_session
-from app.database.models.auth import User
-from app.database.models.clubs import Club, ClubMembership,Committee,Announcement
-from app.database.models.events import Event
-from app.database.models.support import SupportTicket
-from app.database.models.audit import AuditLog
-from app.database.models.academics import Department
-from app.database.models.university import UniversityDomain, University
+from app.database.models import (User,
+ Club, ClubMembership,Committee,Announcement,
+ Event,
+ SupportTicket,
+ AuditLog,
+ Department,
+ UniversityDomain, University,
+ Expense,Budget
+)
 from app.database.enums import UserRole, TicketStatus,ClubRequestStatus,EventStatus,ExpenseStatus,MembershipStatus
-from app.database.models.finance import Expense,Budget
 
 from app.middleware.auth_middleware import require_auth ,require_role
 
@@ -194,13 +195,13 @@ def get_events_detail_by(user_id):
     try:
         status_flag = request.args.get('status', default=EventStatus.PENDING_APPROVAL, type=str) 
         with get_session() as db:
+            print(status_flag)
             events = (
                 db.query(Event, Club.name.label('club_name'))
                 .join(Club, Event.club_id == Club.id)
-                .filter(Club.faculty_advisor_id == user_id, Event.status == status_flag)
+                .filter(Club.faculty_advisor_id == user_id, Event.status == EventStatus(status_flag))
                 .all()
             )
-
             result = [
                 {
                     "id": event.id,
@@ -251,7 +252,7 @@ def let_faculty_decide_events(event_id):
                 .first()
             )
             if not event_to_approve:
-                return {'message' : 'Forbidden : Can not update even of other clubs.'}, 403
+                return {'message' : 'Forbidden : Can not update event of other clubs.'}, 403
             event_to_approve.status = approval_status.upper()
             db.commit()
             result = {
@@ -294,8 +295,8 @@ def get_faculty_expenses(user_id):
                     "category": expense.category,
                     "receipt_document_id": expense.receipt_document_id,
                     "submitted_by": expense.submitted_by,
-                    "status": expense.status.upper(),
-                    "approval_status": expense.approval_status.upper(),
+                    "status": expense.status,
+                    "approval_status": expense.approval_status,
                     "approved_by": expense.approved_by,
                     "approval_date": expense.approval_date,
                     "approval_remarks": expense.approval_remarks,

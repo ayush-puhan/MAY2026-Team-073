@@ -5,13 +5,15 @@ import bcrypt
 from datetime import datetime, timedelta
 
 from app.database.models import (
-    User,Club,University,Event,SupportTicket ,AuditLog,Department
+    User,Club,University,Event,SupportTicket ,AuditLog,Department,Budget,Expense,ClubMembership,
+    Committee
 )
 
 from app.database.enums import (
-UserRole,AuthProvider,ClubStatus,EventStatus,TicketType,
-TicketPriority,
-TicketStatus, 
+    UserRole,AuthProvider,ClubStatus,EventStatus,TicketType,
+    TicketPriority,ClubMemberRole,
+    TicketStatus, MembershipStatus,
+    BudgetStatus,ExpenseStatus,ExpenseApprovalStatus
 )
 
 class UserFactory(BaseFactory):
@@ -121,3 +123,62 @@ class AuditLogFactory(BaseFactory):
     entity_type = None
     entity_id = None
     details = None
+
+
+class BudgetFactory(BaseFactory):
+    class Meta:
+        model = Budget
+    club = None
+    committee = None
+    parent_budget = None
+    title = factory.Sequence(lambda n: f"Budget {n}")
+    period_start = factory.LazyFunction(datetime.utcnow)
+    period_end = factory.LazyAttribute(
+        lambda obj: obj.period_start + timedelta(days=30)
+    )
+    allocated_amount = 10000.00
+    status = BudgetStatus.DRAFT
+    creator = None
+    created_at = factory.LazyFunction(datetime.utcnow)
+
+
+class ExpenseFactory(BaseFactory):
+    class Meta:
+        model = Expense
+    budget = None
+    description = factory.Faker("sentence")
+    amount = 500.00
+    category = "General"
+    receipt_document = None
+    submitter = None #
+    status = ExpenseStatus.PENDING
+    approval_status = ExpenseApprovalStatus.PENDING
+    approver = None
+    approval_date = None
+    approval_remarks = None
+    created_at = factory.LazyFunction(datetime.utcnow)
+
+
+
+class ClubMembershipFactory(BaseFactory):
+    class Meta:
+        model = ClubMembership
+    user = None #factory.SubFactory(UserFactory)
+    club = None #factory.SubFactory(ClubFactory)
+    role_in_club = ClubMemberRole.MEMBER
+    status = MembershipStatus.PENDING
+    applied_at = factory.LazyFunction(datetime.utcnow)
+    decided_at = None
+    approver = None
+    rejection_reason = None
+
+
+class CommitteeFactory(BaseFactory):
+    class Meta:
+        model = Committee
+    club = None#factory.SubFactory(ClubFactory)
+
+    name = factory.Sequence(lambda n: f"Committee {n}")
+    description = factory.Faker("sentence")
+
+    created_at = factory.LazyFunction(datetime.utcnow)

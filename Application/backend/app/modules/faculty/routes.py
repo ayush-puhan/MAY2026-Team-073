@@ -375,7 +375,7 @@ def get_faculty_announcements(user_id):
                     "posted_by" : ann.posted_by,
                     "title" : ann.title,
                     "body" : ann.body,
-                    "target_audience" : ann.target_audience,
+                    "target_audience" : ann.target_audience.upper(),
                     "created_at" : ann.created_at
                 } for ann, club_name in all_anns
             ]
@@ -405,7 +405,7 @@ def make_faculty_announcements():
                 club_id=club_id,
                 posted_by=posted_by,
                 title=title,body=body,
-                target_audience=target_audience,
+                target_audience=target_audience.upper(),
                 created_at=created_at
             )
             db.add(new_ann)

@@ -192,7 +192,32 @@ def require_club_role(*allowed_roles):
 
     return decorator
 
-
+def _require_club_role(*allowed_roles):
+    """
+    If no roles are provided, only checks that the user belongs to the club.
+    Otherwise checks that the user's club role is one of the allowed roles.
+    """
+    def decorator(fn):
+        @wraps(fn)
+        def wrapper(*args, **kwargs):
+            user_id = get_jwt_identity()
+            # Club ID can come from URL or request body
+            club_id = kwargs.get("club_id")
+            if club_id is None:
+                return {"error": "club_id is required"}, 400
+            with get_session() as session:
+                membership = ( session.query(ClubMembership).filter(
+                        ClubMembership.club_id == club_id,
+                        ClubMembership.user_id == user_id,
+                    ).first()
+                )
+                if membership is None:
+                    return {"error": "You are not a member of this club"}, 403
+                if allowed_roles and membership.role_in_club not in allowed_roles:
+                    return {"error": "Insufficient club permissions"}, 403
+            return fn(*args, **kwargs)
+        return wrapper
+    return decorator
 # Example usage:
 # @app.get("/clubs/<int:club_id>/events")
 # @require_auth

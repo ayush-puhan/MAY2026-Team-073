@@ -30,7 +30,7 @@ def test_event_approve_success(
         f"/api/faculty/events/{event.id}/decision",
         headers=headers,
         json={
-            "approval_status": EventStatus.PENDING_APPROVAL.value,
+            "approval_status": "approved",
             "review_comments": "Looks good.",
             "reviewed_by": faculty_advisor_user.id,
         },
@@ -39,7 +39,7 @@ def test_event_approve_success(
     assert response.status_code == 200
 
     db_session.refresh(event)
-    assert event.status == EventStatus.PENDING_APPROVAL
+    assert event.status == EventStatus.SCHEDULED
 
     body = response.get_json()
     assert body["created_by"] == faculty_advisor_user.id

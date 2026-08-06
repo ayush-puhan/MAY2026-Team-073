@@ -27,11 +27,14 @@ export const EventApprovals = () => {
 
   useEffect(() => { loadEvents(); }, [user.id]);
 
-  const filtered = events.filter((e) => e.approval_status === activeTab);
+  const STATUS_BY_TAB = { pending: 'pending_approval', approved: 'scheduled', rejected: 'rejected' };
+  const LABEL_BY_STATUS = { pending_approval: 'Pending', scheduled: 'Approved', rejected: 'Rejected' };
+
+  const filtered = events.filter((e) => e.status === STATUS_BY_TAB[activeTab]);
   const tabs = [
-    { value: 'pending', label: 'Pending', count: events.filter((e) => e.approval_status === 'pending').length },
-    { value: 'approved', label: 'Approved', count: events.filter((e) => e.approval_status === 'approved').length },
-    { value: 'rejected', label: 'Rejected', count: events.filter((e) => e.approval_status === 'rejected').length },
+    { id: 'pending', label: 'Pending', count: events.filter((e) => e.status === STATUS_BY_TAB.pending).length },
+    { id: 'approved', label: 'Approved', count: events.filter((e) => e.status === STATUS_BY_TAB.approved).length },
+    { id: 'rejected', label: 'Rejected', count: events.filter((e) => e.status === STATUS_BY_TAB.rejected).length },
   ];
 
   const handleDecide = async (eventId, approval_status, review_comments) => {
@@ -77,11 +80,11 @@ export const EventApprovals = () => {
               icon={uiIcons.calendarText}
               bannerKeyword={ev.bannerKeyword}
               color={activeTab === 'pending' ? 'var(--campus-orange)' : activeTab === 'approved' ? 'var(--success)' : 'var(--destructive)'}
-              onClick={() => ev.approval_status === 'pending' && setSelectedEvent(ev)}
+              onClick={() => ev.status === STATUS_BY_TAB.pending && setSelectedEvent(ev)}
               rightElement={
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', alignItems: 'flex-end' }}>
-                  <StatusBadge status={ev.approval_status} />
-                  {ev.approval_status === 'pending' && (
+                  <StatusBadge status={LABEL_BY_STATUS[ev.status] || ev.status} />
+                  {ev.status === STATUS_BY_TAB.pending && (
                     <Icon icon={uiIcons.chevronRight} style={{ color: 'var(--muted-foreground)' }} />
                   )}
                 </div>

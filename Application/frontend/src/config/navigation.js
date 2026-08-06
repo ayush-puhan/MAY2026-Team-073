@@ -56,7 +56,7 @@ export const FACULTY_ADVISOR_NAV = [
   { name: 'Dashboard', path: '/faculty-advisor-dashboard', icon: dashboardIcons.dashboard },
   { name: 'Advised Clubs',    path: '/faculty-advisor-dashboard/clubs', icon: dashboardIcons.advisedClubs },
   { name: 'Event Approvals',  path: '/faculty-advisor-dashboard/events', icon: dashboardIcons.eventApprovals },
-  { name: 'Student Reports',  path: '/faculty-advisor-dashboard/reports', icon: dashboardIcons.studentReports },
+  { name: 'Expense Approvals',  path: '/faculty-advisor-dashboard/reports', icon: dashboardIcons.studentReports },
   ...getGlobalBottomNav('/faculty-advisor-dashboard')
 ];
 

@@ -69,11 +69,11 @@ class NotificationListResource(Resource):
 
             notification = Notification(
                 user_id=g.current_user.id,
-                type=NotificationType(data["type"]),
+                type=NotificationType(data["type"].lower()),
                 title=data["title"],
                 body=data["body"],
                 channel=NotificationChannel(
-                    data.get("channel", "in_app")
+                    data.get("channel", "in_app").lower()
                 ),
                 related_entity_type=data.get("related_entity_type"),
                 related_entity_id=data.get("related_entity_id")

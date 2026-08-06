@@ -3,8 +3,8 @@ from flask_restful import Api, Resource
 
 from app.database import get_session
 from app.database.models.clubs import ClubMembership
-from app.database.enums import MembershipStatus
-from app.middleware.auth_middleware import require_auth, require_role
+from app.database.enums import ClubMemberRole, MembershipStatus
+from app.middleware.auth_middleware import require_auth, require_role, require_club_role
 
 membership_bp = Blueprint(
     "club_memberships",
@@ -291,7 +291,70 @@ class UserRoleInClubResource(Resource):
 
             }, 200
 
+# -------------------------------------------------
+# PATCH /api/memberships/<id>/role
+# -------------------------------------------------
 
+class UpdateMemberRoleResource(Resource):
+
+    @require_auth
+    @require_club_role("president")
+    def patch(self, id):
+
+        data = request.get_json()
+
+        if not data:
+            return {
+                "message": "Request body required."
+            }, 400
+
+
+        new_role = data.get("role_in_club")
+
+        if not new_role:
+            return {
+                "message": "role_in_club is required."
+            }, 400
+
+
+        with get_session() as db:
+
+            membership = (
+                db.query(ClubMembership)
+                .filter(
+                    ClubMembership.id == id
+                )
+                .first()
+            )
+
+
+            if not membership:
+                return {
+                    "message": "Membership not found."
+                }, 404
+
+
+            try:
+
+                membership.role_in_club = ClubMemberRole(
+                    new_role.upper()
+                )
+
+            except ValueError:
+
+                return {
+                    "message": "Invalid club role."
+                }, 400
+
+
+            db.commit()
+            db.refresh(membership)
+
+
+            return {
+                "message": "Member role updated successfully.",
+                "membership": serialize_membership(membership)
+            }, 200
 
 # -------------------------------------------------
 # Route Registration
@@ -301,3 +364,4 @@ api.add_resource(UserClubResource,"/users/<int:user_id>/clubs")
 api.add_resource(ClubMembersResource,"/clubs/<int:club_id>/members","/club_memberships")
 api.add_resource(ClubMembershipRequestsResource,"/clubs/<int:club_id>/membership-requests")
 api.add_resource(UserRoleInClubResource,"/clubs/<int:club_id>/members/<int:user_id>/role")
+api.add_resource(UpdateMemberRoleResource,"/memberships/<int:id>/role")

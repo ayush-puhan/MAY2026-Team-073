@@ -18,6 +18,18 @@ export const clubsApi = {
     
     return response;
   },
+  updateEvent: async (eventId, eventData, userId) => {
+    const res = await api.patch(
+      `/events/${eventId}`,
+      eventData,
+      {
+        headers: {
+          "X-User-Id": userId
+        }
+      }
+    );
+    return res;
+  },
   getClubRecentActivity: async (clubId) => {
     return [];
   },
@@ -36,7 +48,12 @@ export const clubsApi = {
     const res = await api.get(`/users/${userId}/clubs`);
     return res;
   },
-
+  getCommitteeTasks: async (clubId, committeeId) => {
+    const res = await api.get(
+        `/clubs/${clubId}/committees/${committeeId}/tasks`
+    );
+    return res;
+  },
   getUserRoleInClub: async (userId, clubId) => {
     const res = await api.get(`/clubs/${clubId}/members/${userId}/role`);
     return res?.role_in_club || null;
@@ -72,6 +89,7 @@ export const clubsApi = {
 
   updateMemberRole: async (membershipId, newRole, changedBy) => {
     const res = await api.patch(`/memberships/${membershipId}/role`, { role: newRole });
+    console.log(res);
     return res;
   },
 
@@ -201,8 +219,104 @@ export const clubsApi = {
 
   // ── Create Event ──
 
-  createEvent: async (eventData) => {
-    const res = await api.post('/events', eventData);
+  createEvent: async (eventData, clubId) => {
+    const res = await api.post('/events', {
+      ...eventData,
+      club_id: clubId,
+    });
     return res;
-  }
+  },
+  // ===============================
+  // Club Resources
+  // ===============================
+
+  getClubResources: async (clubId) => {
+    const res = await api.get(`/clubs/${clubId}/resources`);
+    return res;
+  },
+
+  addClubResource: async (clubId, resourceData) => {
+    const res = await api.post(
+      `/clubs/${clubId}/resources`,
+      resourceData
+    );
+    return res;
+  },
+
+  deleteClubResource: async (clubId, resourceId) => {
+    const res = await api.del(
+      `/clubs/${clubId}/resources/${resourceId}`
+    );
+    return res;
+  },
+
+  // ===============================
+  // Committee Resources
+  // ===============================
+
+  getCommitteeResources: async (committeeId) => {
+    const res = await api.get(
+      `/committees/${committeeId}/resources`
+    );
+    return res;
+  },
+  // ── Budgets ─────────────────────────────
+
+  getClubBudgets: async (clubId) => {
+    const res = await api.get(`/budgets?club_id=${clubId}`);
+    return res;
+  },
+
+  getCommitteeBudgets: async (clubId, committeeId) => {
+    // If you still need committee budgets, filter on backend or client.
+    // Simple approach: fetch all budgets for the club and filter by committee_id.
+    const budgets = await api.get(`/budgets?club_id=${clubId}`);
+    return budgets.filter(b => b.committee_id === committeeId);
+  },
+
+  allocateCommitteeBudget: async (clubId, committeeId, budgetData) => {
+    // Add committee_id into the payload; URL stays flat.
+    const res = await api.post(`/budgets`, {
+      ...budgetData,
+      club_id: clubId,
+      committee_id: committeeId,
+    });
+    return res;
+  },
+
+  // ── Expenses ─────────────────────────────
+
+  getClubExpenses: async (clubId) => {
+    const budgets = await api.get(`/budgets?club_id=${clubId}`);
+
+    const allExpenses = await Promise.all(
+      budgets.map(b => api.get(`/expenses?budget_id=${b.id}`))
+    );
+
+    return allExpenses.flat();
+  },
+
+  createExpense: async (expenseData) => {
+    const res = await api.post(`/expenses`, expenseData);
+    return res;
+  },
+
+  approveExpense: async (expenseId, approvalData) => {
+    const res = await api.patch(
+      `/expenses/${expenseId}/approve`,
+      approvalData
+    );
+    return res;
+  },
+  transferPresidency: async (clubId, currentMembershipId, successorMembershipId) => {
+    const res = await api.patch(
+      `/clubs/${clubId}/transfer-presidency`,
+      {
+        current_membership_id: currentMembershipId,
+        successor_membership_id: successorMembershipId,
+      }
+    );
+    return res;
+  },
+  
 };

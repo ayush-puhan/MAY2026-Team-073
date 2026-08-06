@@ -112,6 +112,7 @@ class DocumentType(str, enum.Enum):
     RULEBOOK = "rulebook"
     FILE = "file"
     DRIVE_LINK = "drive_link"
+    GUIDELINE = "guideline"
 
 
 class NotificationType(str, enum.Enum):

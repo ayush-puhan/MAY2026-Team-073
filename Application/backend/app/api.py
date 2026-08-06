@@ -4,7 +4,6 @@ from app.modules.users import users_bp
 from app.modules.student.routes import student_bp
 from app.modules.club_leadership.routes import club_bp
 from app.modules.helpdesk.routes import admin_support_bp,ticket_response_bp, support_ticket_bp
-from app.modules.club_leadership.routes import club_bp
 from app.modules.club_leadership.membership_routes import membership_bp
 from app.modules.club_leadership.application_routes import application_bp
 from app.modules.notification_system.routes import notification_bp
@@ -18,6 +17,12 @@ from app.modules.student.certificates import certificate_bp
 from app.modules.university_administration.routes import university_bp
 from app.modules.system_admin.admin_routes import system_admin_bp
 from app.modules.faculty.routes import  faculty_advisor_bp
+from app.modules.faculty.faculty_advisors import faculty_bp
+from app.modules.club_leadership.club_creation_requests import club_creation_bp
+from app.modules.club_leadership.club_resources import communication_bp
+from app.modules.club_leadership.leave_club import memberships_bp as leave_club_bp
+from app.modules.club_leadership.club_budget import budget_bp
+from app.modules.club_leadership.transfer_presidency import transfer_presidency_bp
 
 def register_api_paths(app):
     # Register the auth blueprint which contains its own Api setup
@@ -51,3 +56,9 @@ def register_api_paths(app):
     app.register_blueprint(system_admin_bp, url_prefix='/api/admin')#from akash
     app.register_blueprint(support_ticket_bp,url_prefix="/api")
 
+    app.register_blueprint(faculty_bp)
+    app.register_blueprint(club_creation_bp,url_prefix="/api")
+    app.register_blueprint(communication_bp,url_prefix="/api")
+    app.register_blueprint(leave_club_bp,url_prefix="/api")
+    app.register_blueprint(budget_bp,url_prefix="/api")
+    app.register_blueprint(transfer_presidency_bp, url_prefix="/api")

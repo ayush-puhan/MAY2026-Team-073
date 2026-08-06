@@ -1,7 +1,7 @@
-def test_logout_success(client, auth_headers):
+def test_logout_success(client, auth_headers, active_user):
     response = client.post(
         "/api/auth/logout",
-        headers=auth_headers
+        headers=auth_headers(active_user.email)
     )
     assert response.status_code == 200
     body = response.get_json()

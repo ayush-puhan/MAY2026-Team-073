@@ -12,9 +12,12 @@ from app.database import Base
 import  app.database.database as db_module
 from app.database.models.auth import User,UserOTP
 
+
+
+
 pytest_plugins =[
-    "tests.fixtures.mock_auth",
-    "tests.fixtures.mock_user"
+    "tests.fixtures.auth_fixture",
+    "tests.fixtures.factory_fixture"
 ]
 
 engine = create_engine(
@@ -65,12 +68,17 @@ def db_session(monkeypatch):
     transaction.rollback()
     connection.close()
 
+
+
+
 @pytest.fixture
 def client(db_session):
     app = create_app()
 
     with app.test_client() as client:
         yield client
+
+
 
 
 

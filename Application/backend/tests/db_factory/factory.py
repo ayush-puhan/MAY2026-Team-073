@@ -5,7 +5,7 @@ import bcrypt
 from datetime import datetime, timedelta
 
 from app.database.models import (
-    User,Club,University,Event,SupportTicket ,AuditLog
+    User,Club,University,Event,SupportTicket ,AuditLog,Department
 )
 
 from app.database.enums import (
@@ -50,6 +50,13 @@ class UniversityFactory(BaseFactory):
     logo_url = None
     banner = None
     is_active = True
+
+class DepartmentFactory(BaseFactory):
+    class Meta:
+        model = Department
+    name = factory.Sequence(lambda n: f"Department {n}")
+    code = factory.Sequence(lambda n: f"DEPT{n:03d}")
+    university = None
 
 class ClubFactory(BaseFactory):
     class Meta:

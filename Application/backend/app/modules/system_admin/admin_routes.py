@@ -200,6 +200,11 @@ def get_admin_audit_logs():
 @require_auth
 @require_role(UserRole.SYSTEM_ADMIN)
 def create_audit_log():
+    """
+        This allow admin to create auditlog.
+        It must be global api where all role can access it whenever
+        they create any resources or login or logout.
+    """
     try:
         data = request.get_json()
         required_fields = ["action", "entity_type", "entity_id"]
@@ -237,6 +242,11 @@ def create_audit_log():
 @require_auth
 @require_role(UserRole.SYSTEM_ADMIN)
 def admin_user_create_user():
+    """
+        Allow admin to create users directly manualy.
+        The created User will be inactive.Admin must activate it 
+        through different api call if required.
+    """
     try : 
         data = request.get_json()
         full_name = data.get('full_name')
@@ -289,6 +299,10 @@ def admin_user_create_user():
 @require_auth
 @require_role(UserRole.SYSTEM_ADMIN)
 def admin_user_get_all_users():
+    """
+        Fcilitate admin to get all the users of the system and
+        their status active or inactive.
+    """
     try : 
         with get_session() as db:
             users = db.query(User).outerjoin(User.department).outerjoin(User.university).all()   
@@ -316,9 +330,14 @@ def admin_user_get_all_users():
 @require_auth
 @require_role(UserRole.SYSTEM_ADMIN)
 def admin_user_get_by_id(id):
+    """
+        Allow admin to get user information based on user id.
+    """
     try : 
         with get_session() as db:
-            user = db.query(User).filter_by(id=id).outerjoin(User.department).outerjoin(User.university).first()   
+            user = db.query(User).filter_by(id=id).outerjoin(User.department).outerjoin(User.university).first()
+            if not user:
+                return {"message": "ERROR : User not found."}, 404   
             result = {
                     "id" : user.id,
                     "full_name" : user.full_name,
@@ -341,10 +360,17 @@ def admin_user_get_by_id(id):
 @require_auth
 @require_role(UserRole.SYSTEM_ADMIN)
 def admin_user_change_status_by_id(id):
+    """
+        Alter the status is_active filed of users. 
+    """
     try : 
         data = request.get_json()
         with get_session() as db:
+            if "status" not in data:
+                return {"message": "status is required."}, 400
             user = db.query(User).filter_by(id=id).first()   
+            if not user:
+                return {"message": "User not found."}, 404
             user.is_active = data['status']
             db.commit() 
     except Exception as e:
@@ -358,9 +384,15 @@ def admin_user_change_status_by_id(id):
 @require_auth
 @require_role(UserRole.SYSTEM_ADMIN)
 def admin_user_delete_by_id(id):
+    """
+        Admin can delete users Soft delete, 
+        making is_active true and deleted_at = deleteed time.
+    """
     try : 
         with get_session() as db:
             user = db.query(User).filter_by(id=id).first()  
+            if not user:
+                return {'message' : 'No user found with the provided id'}, 404
             user.is_active = False 
             user.deleted_at = datetime.utcnow()
             db.commit() 
@@ -374,11 +406,18 @@ def admin_user_delete_by_id(id):
 @require_auth
 @require_role(UserRole.SYSTEM_ADMIN)
 def admin_user_change_role_by_id(id):
+    """
+        Admin can alter or assign new role to users.
+    """
     try : 
         data = request.get_json()
         print(data)
         with get_session() as db:
+            if "role" not in data:
+                return {"message": "role is required."}, 400
             user = db.query(User).filter_by(id=id).first()   
+            if not user:
+                return {'message' : 'No user found with the provided id'}, 404
             user.role = data['role']
             db.commit() 
     except Exception as e:
@@ -392,6 +431,10 @@ def admin_user_change_role_by_id(id):
 @require_auth
 @require_role(UserRole.SYSTEM_ADMIN)
 def admin_get_universities():
+    """
+        Admin can access all the university associated with theapplication in 
+        the university section of admin dashboard.
+    """
     try:
         with get_session() as db:
             universities = db.query(University).all()
@@ -410,12 +453,17 @@ def admin_get_universities():
         print(e)
         return { "message" : f"error : {e}"}, 500
     return jsonify(result)
-    pass
+    
     
 @system_admin_bp.route('/universities', methods=['POST'])
 @require_auth
 @require_role(UserRole.SYSTEM_ADMIN)
 def admin_create_university():
+    """
+        System admin create new university. 
+        And automatically required domain for entered university will be created 
+        in UniversityDomain table.
+    """
     try:
         data = request.get_json()
         #print(data)
@@ -457,19 +505,21 @@ def admin_create_university():
 @require_auth
 @require_role(UserRole.SYSTEM_ADMIN)
 def admin_update_universitiy_by_id(id):
+    """
+        Update University details by university id. 
+    """
     try:
         data = request.get_json()
-        #{'name': 'Indian Institute of Technology Delhi', 'domain': 'iitd.ac.in', 'banner': '', 'allowed_domains': [], 'is_active': False}
         name = data.get('name')
         domain = data.get('domain')
         banner_img_data = data.get('banner') #optional
         allowed_domains = data.get('allowed_domains') #optional
         is_active = data.get('is_active')
-        print(data)
+
         bnner_img_file_url = None
         if banner_img_data and banner_img_data.startswith("data:image/"):
             bnner_img_file_url = save_base64_image(banner_img_data)
-            pass
+            
         with get_session() as db:
             university = db.query(University).filter_by(id=id).first()
             if not university:
@@ -500,6 +550,9 @@ def admin_update_universitiy_by_id(id):
 @require_auth
 @require_role(UserRole.SYSTEM_ADMIN)
 def admin_support_get_tickets():
+    """
+     Get five recent newly created users.
+    """
     try : 
         with get_session() as db:
             recent_users = (db.query(User).outerjoin(User.department).outerjoin(User.university)
@@ -531,6 +584,9 @@ def admin_support_get_tickets():
 @require_auth
 @require_role(UserRole.SYSTEM_ADMIN)
 def admin_support_get_recent_ticket_by_id():
+    """
+        Get 5 recent support ticket .
+    """
     try : 
         with get_session() as db:
             recent_tkts = (db.query(SupportTicket)

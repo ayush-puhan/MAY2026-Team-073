@@ -111,7 +111,7 @@ def student_user(db_session):
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # More Modular Factory db for facking real database resources
 from db_factory.factory import (
-    UserFactory,ClubFactory,EventFactory,UniversityFactory,SupportTicketFactory,AuditLogFactory
+    UserFactory,ClubFactory,EventFactory,UniversityFactory,SupportTicketFactory,AuditLogFactory,DepartmentFactory
 )
 
 @pytest.fixture(autouse=True)
@@ -122,7 +122,8 @@ def factory_session(db_session):
         ClubFactory,
         EventFactory,
         SupportTicketFactory,
-        AuditLogFactory
+        AuditLogFactory,
+        DepartmentFactory
     ]
     for factory_cls in factories:
         factory_cls._meta.sqlalchemy_session = db_session

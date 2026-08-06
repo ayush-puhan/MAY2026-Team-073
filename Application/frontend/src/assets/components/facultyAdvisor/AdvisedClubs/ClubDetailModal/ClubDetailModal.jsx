@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Icon } from '@iconify/react';
 import { StatusBadge } from '../../../ui/StatusBadge/StatusBadge';
 import { facultyAdvisorApi } from '@api/facultyAdvisorApis/facultyAdvisor';
+import { clubBudgetApi } from '@api/clubBudgetApis/clubBudgetApi';
 import { useSession } from '../../../../../context/SessionContext';
 import styles from './ClubDetailModal.module.css';
 import { uiIcons } from '../../../../icons/registry';
@@ -34,12 +35,15 @@ export const ClubDetailModal = ({ clubId, onClose }) => {
 
   const handleSaveBudget = async (e) => {
     e.preventDefault();
+    console.log('[handleSaveBudget] called', { clubId, budgetAmount, user });
+
     try {
-      await facultyAdvisorApi.setClubBudget(clubId, budgetAmount, user.id);
+      await clubBudgetApi.setClubBudget(clubId, budgetAmount, user.id);
       setEditingBudget(false);
       fetchClub();
     } catch (err) {
-      alert("Failed to save budget");
+      console.error('[handleSaveBudget] error:', err);
+      alert('Failed to save budget: ' + (err?.message || 'Unknown error'));
     }
   };
 

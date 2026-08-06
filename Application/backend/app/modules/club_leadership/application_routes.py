@@ -1,10 +1,11 @@
-from flask import Blueprint, request
+from flask import Blueprint, g, request
+from datetime import datetime
 from flask_restful import Api, Resource
-
+from app.database.models.clubs import ClubMembership
 from app.database import get_session
 from app.database.models.applications import ClubJoinApplication
-from app.database.enums import MembershipStatus
-from app.middleware.auth_middleware import require_auth, require_role
+from app.database.enums import MembershipStatus, ClubMemberRole
+from app.middleware.auth_middleware import require_auth, require_club_role, require_role
 
 application_bp = Blueprint(
     "club_join_applications",
@@ -90,7 +91,8 @@ def serialize_application(application):
 # -------------------------------------------------
 
 class ClubApplicationsResource(Resource):
-    @require_role("student")
+    @require_auth
+    @require_club_role("president", "vice_president")
     def get(self, club_id):
 
         status = request.args.get("status")
@@ -136,7 +138,7 @@ class ClubApplicationsResource(Resource):
 # -------------------------------------------------
 
 class UserClubApplicationsResource(Resource):
-
+    @require_auth
     def get(self, user_id):
 
         with get_session() as db:
@@ -167,7 +169,8 @@ class UserClubApplicationsResource(Resource):
 # -------------------------------------------------
 
 class ClubApplicationSubmissionResource(Resource):
-
+    @require_auth
+    @require_role("student")
     def post(self, club_id):
 
         data = request.get_json()
@@ -180,13 +183,7 @@ class ClubApplicationSubmissionResource(Resource):
             }, 400
 
 
-        required = [
-
-            "user_id",
-
-            "motivation"
-
-        ]
+        required = ["motivation"]
 
         missing = [
 
@@ -213,7 +210,7 @@ class ClubApplicationSubmissionResource(Resource):
 
             application = ClubJoinApplication(
 
-                user_id=data["user_id"],
+                user_id=g.current_user.id,
 
                 club_id=club_id,
 
@@ -264,75 +261,171 @@ class ClubApplicationSubmissionResource(Resource):
 
 class ReviewApplicationResource(Resource):
 
+    @require_auth
+    @require_club_role(
+        "president",
+        "vice_president"
+    )
     def patch(self, application_id):
 
         data = request.get_json()
 
         if not data:
-
             return {
-
-                "message":
-                "Request body required."
-
+                "message": "Request body required."
             }, 400
+
+
+        # Support frontend field name: decision
+        # Also support API field name: status
+        new_status = (
+            data.get("status")
+            or data.get("decision")
+        )
+
+
+        if not new_status:
+            return {
+                "message": "Status/decision is required."
+            }, 400
+
+
+        try:
+            new_status = MembershipStatus(
+                new_status.lower()
+            )
+
+        except ValueError:
+            return {
+                "message": "Invalid application status."
+            }, 400
+
 
 
         with get_session() as db:
 
             application = (
-
                 db.query(ClubJoinApplication)
-
-                .filter_by(id=application_id)
-
+                .filter(
+                    ClubJoinApplication.id == application_id
+                )
                 .first()
-
             )
 
+
             if not application:
-
                 return {
-
-                    "message":
-                    "Application not found."
-
+                    "message": "Application not found."
                 }, 404
 
 
-            if "status" in data:
 
-                try:
+            if application.status != MembershipStatus.PENDING:
 
-                    application.status = MembershipStatus(
-                        data["status"].lower()
+                return {
+                    "message":
+                    "Application already reviewed."
+                }, 400
+
+
+
+            club_id = application.club_id
+
+
+            if not club_id:
+                return {
+                    "message":
+                    "Application has no club assigned."
+                }, 400
+
+
+
+            # -----------------------------
+            # APPROVE APPLICATION
+            # -----------------------------
+
+            if new_status == MembershipStatus.APPROVED:
+
+
+                existing_membership = (
+                    db.query(ClubMembership)
+                    .filter(
+                        ClubMembership.user_id ==
+                        application.user_id,
+
+                        ClubMembership.club_id ==
+                        club_id
                     )
+                    .first()
+                )
 
-                except ValueError:
+
+                if existing_membership:
 
                     return {
-
                         "message":
-                        "Invalid application status."
-
+                        "User already has membership."
                     }, 400
 
 
-            application.reviewed_by = data.get(
-                "reviewed_by"
+
+                membership = ClubMembership(
+
+                    user_id=application.user_id,
+
+                    # Required field
+                    club_id=club_id,
+
+                    role_in_club=ClubMemberRole.MEMBER,
+
+                    status=MembershipStatus.APPROVED,
+
+                    applied_at=application.applied_at,
+
+                    decided_at=datetime.utcnow(),
+
+                    approved_by=g.current_user.id
+                )
+
+
+                db.add(membership)
+
+
+
+            # -----------------------------
+            # REJECT APPLICATION
+            # -----------------------------
+
+            elif new_status == MembershipStatus.REJECTED:
+
+                application.review_comments = (
+                    data.get("review_comments")
+                )
+
+
+
+            # -----------------------------
+            # UPDATE APPLICATION
+            # -----------------------------
+
+            application.status = new_status
+
+            application.reviewed_by = (
+                g.current_user.id
             )
 
-            application.review_comments = data.get(
-                "review_comments"
+            application.review_comments = (
+                data.get("review_comments")
             )
 
-            application.reviewed_at = data.get(
-                "reviewed_at"
-            )
+            application.reviewed_at = datetime.utcnow()
+
+
 
             db.commit()
 
             db.refresh(application)
+
 
             return {
 

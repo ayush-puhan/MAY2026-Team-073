@@ -193,7 +193,6 @@ class CreateVolunteerTaskResource(Resource):
         require_auth
     ]
 
-
     @require_club_role(
         "event_coordinator",
         "volunteer_coordinator",
@@ -203,63 +202,117 @@ class CreateVolunteerTaskResource(Resource):
 
         data = request.get_json()
 
+        print("REQUEST DATA:", data)
 
-        required = [
+        if not data:
+            return {
+                "message": "Request body is required"
+            }, 400
+
+
+        required_fields = [
             "event_id",
             "assignee_membership_id",
             "task_description"
         ]
 
-
-        for field in required:
+        for field in required_fields:
             if field not in data:
-                return {
-                    "message":
-                    f"{field} required"
-                },400
+                print("MISSING FIELD:", field)
 
+                return {
+                    "message": f"{field} is required"
+                }, 400
 
 
         with get_session() as db:
 
-
             event = (
                 db.query(Event)
                 .filter(
-                    Event.id ==
-                    data["event_id"]
+                    Event.id == data["event_id"]
                 )
                 .first()
             )
 
 
+            print("EVENT:", event)
+
+
             if not event:
                 return {
-                    "message":
-                    "Event not found"
-                },404
+                    "message": "Event not found"
+                }, 404
 
 
 
             membership = (
                 db.query(ClubMembership)
                 .filter(
-                    ClubMembership.id ==
-                    data["assignee_membership_id"],
-                    ClubMembership.club_id ==
-                    event.club_id,
-                    ClubMembership.status ==
-                    MembershipStatus.APPROVED
+                    ClubMembership.id == data["assignee_membership_id"]
                 )
                 .first()
+            )
+
+
+            print(
+                "ASSIGNEE MEMBERSHIP:",
+                membership
             )
 
 
             if not membership:
                 return {
                     "message":
-                    "Invalid assignee"
+                    "Membership ID does not exist"
                 },400
+
+
+
+            print(
+                "MEMBERSHIP CLUB:",
+                membership.club_id
+            )
+
+            print(
+                "EVENT CLUB:",
+                event.club_id
+            )
+
+
+            if membership.club_id != event.club_id:
+
+                return {
+                    "message":
+                    "Assignee does not belong to event club"
+                },400
+
+
+
+            if membership.status != MembershipStatus.APPROVED:
+
+                return {
+                    "message":
+                    "Assignee membership is not approved"
+                },400
+
+
+
+            due_at = None
+
+            if data.get("due_at"):
+
+                try:
+                    due_at = datetime.fromisoformat(
+                        data["due_at"]
+                    )
+
+                except ValueError:
+
+                    return {
+                        "message":
+                        "Invalid due_at format"
+                    },400
 
 
 
@@ -276,32 +329,31 @@ class CreateVolunteerTaskResource(Resource):
                 task_description=
                 data["task_description"],
 
-                due_at=
-                datetime.fromisoformat(
-                    data["due_at"]
-                )
-                if data.get("due_at")
-                else None
+                due_at=due_at,
+
+                committee_id=
+                data.get("committee_id")
             )
 
 
             db.add(task)
+
             db.commit()
+
             db.refresh(task)
 
 
-            return serialize_task(task),201
+            print("TASK CREATED:", task.id)
 
 
-
-
+            return serialize_task(task), 201
 # -------------------------------------------------
 # UPDATE TASK STATUS
 # PATCH /api/volunteer-tasks/<id>/status
 # -------------------------------------------------
 
 class VolunteerTaskStatusResource(Resource):
-
+    @require_auth
     @require_club_role(
         "member",
         "event_coordinator",

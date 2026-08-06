@@ -38,8 +38,12 @@ export const ClubAnnouncementsView = () => {
   const handlePublish = async ({ title, body, club_id, target_role, target_committee }) => {
     try {
       let audience = 'all_members';
-      if (target_role !== 'ALL' || target_committee !== 'ALL') {
-        audience = 'targeted';
+
+      if (target_committee !== 'ALL') {
+        audience = 'committee';
+      }
+      else if (target_role !== 'ALL') {
+        audience = 'leadership';
       }
 
       const payload = {

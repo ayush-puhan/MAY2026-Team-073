@@ -75,11 +75,12 @@ const ClubBudgetView = () => {
     }
 
     try {
-      await clubsApi.createExpense(mainBudget.id, {
+      await clubsApi.createExpense({
+        budget_id: mainBudget.id,
         description: newDesc,
         amount: parseFloat(newAmount),
         category: newCategory
-      }, currentUserId);
+      });
       setShowExpenseForm(false);
       setNewDesc('');
       setNewAmount('');
@@ -100,7 +101,16 @@ const ClubBudgetView = () => {
     }
 
     try {
-      await clubsApi.allocateCommitteeBudget(club.id, allocCommittee, allocTitle, parseFloat(allocAmount), currentUserId, mainBudget.id);
+      await clubsApi.allocateCommitteeBudget(
+        club.id,
+        allocCommittee,
+        {
+          title: allocTitle,
+          allocated_amount: parseFloat(allocAmount),
+          created_by: currentUserId,
+          parent_budget_id: mainBudget.id,
+        }
+      );
       setShowAllocateForm(false);
       setAllocCommittee('');
       setAllocAmount('');

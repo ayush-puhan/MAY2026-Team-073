@@ -133,4 +133,5 @@ class AnnouncementListResource(Resource):
             db.refresh(announcement)
 
             return serialize_announcement(announcement), 201
+
 api.add_resource(AnnouncementListResource, "/announcements")

@@ -53,3 +53,4 @@ __pypackages__/
 htmlcov/
 .tox/
 .coverage
+*.cmd

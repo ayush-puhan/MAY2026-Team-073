@@ -2732,3 +2732,397 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+
+
+
+
+
+
+# =============================================================================
+# AI Services section — paste into the team's master api_doc.yaml
+# =============================================================================
+# 1. Add this tag to the top-level `tags:` list:
+#      - name: AI Assistant
+# 2. Paste everything under `paths:` below (from `/ai/health` through
+#    `/ai/content`) into the master file's existing `paths:` block.
+# 3. `components.securitySchemes.bearerAuth` already exists in the master
+#    file — no changes needed there.
+#
+# Base path note: the master file's `servers[0].url` is
+# `http://127.0.0.1:5000/api`, and every path below is written relative to
+# that (e.g. `/ai/chat` = `http://127.0.0.1:5000/api/ai/chat`), matching the
+# `/auth/...`, `/admin/...` etc. convention already used for every other tag.
+# The AI blueprint itself is mounted at `/api/ai` in main.py/app/api.py.
+# =============================================================================
+
+paths:
+
+  /ai/health:
+    get:
+      tags:
+        - AI Assistant
+      summary: AI Services Health Check
+      description: |
+        Unauthenticated scaffold/config check. Confirms the Gemini API key
+        is configured and the knowledge base directory (System + RAG
+        documents) is wired up correctly. Intended for a startup/smoke
+        check (e.g. before showing the AI chat widget in the UI) — if
+        `gemini_api_key_configured` is `false`, every other AI endpoint
+        below will return `503` for any request that needs Gemini
+        (effectively all of them).
+      responses:
+        "200":
+          description: AI services scaffold status
+          content:
+            application/json:
+              schema: {}
+
+  /ai/chat:
+    post:
+      tags:
+        - AI Assistant
+      summary: AI Assistant Chat
+      description: |
+        Main conversational endpoint for the ClubConnect Assistant.
+        Stateless per call — there is no server-side thread; short-term
+        conversation memory (last 5 exchanges) is Redis-backed and applied
+        automatically per user, not managed by the frontend.
+
+        Pipeline: intent detection (keyword pre-filter, with a Gemini
+        fallback for ambiguous messages) → authorization check against the
+        caller's platform role and club-scoped role(s) → (if authorized)
+        scoped SQL context + RAG context → Redis cache check → prompt
+        assembly → Gemini call → cache write.
+
+        Authorization is intent-level, not row-level: an authorized
+        request still only ever sees data scoped to the caller's own
+        account/club(s) via the SQL context builder. An unauthorized
+        request (recognized intent, but this user's role doesn't grant
+        it) still returns `200` with a plain-language decline — this is
+        **not** modeled as a 403; see `authorized` in the response body.
+
+        `Emergency Reporting` is reachable by every role regardless of
+        authorization rules (safety-first design) but never attaches SQL
+        context — the response instead directs the user to the in-app
+        Emergency Report action and appends a literal `escalate: true`
+        marker.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - message
+              properties:
+                message:
+                  type: string
+                  description: >-
+                    Non-empty after trimming whitespace. Free-text user
+                    question.
+      responses:
+        "200":
+          description: >-
+            Assistant response. Includes `authorized` (bool),
+            `detected_intent`, `response`, `sql_context` (nullable),
+            `rag_context` (array, may be empty), `cache_hit` (bool, present
+            only on the authorized/successful path), and `user_context`.
+          content:
+            application/json:
+              schema: {}
+        "400":
+          description: Missing or empty `message` field.
+          content:
+            application/json:
+              schema: {}
+        "401":
+          description: Missing, invalid, expired, or revoked bearer token.
+          content:
+            application/json:
+              schema: {}
+        "503":
+          description: >-
+            Gemini isn't configured, or the Gemini request itself failed.
+            Body shape: `{"status": "ai_unavailable", "message": "..."}`.
+          content:
+            application/json:
+              schema: {}
+
+  /ai/reports:
+    post:
+      tags:
+        - AI Assistant
+      summary: AI Report Generation
+      description: |
+        Generates a short AI-written narrative report over a
+        backend-computed data pull. Not a chat turn — no intent
+        detection, no RAG, no conversation memory, and responses are
+        never cached (Phase 6A caching only applies to `/ai/chat`).
+
+        Nine report types are supported (`report_type`), each with its
+        own access rule and data scope — see the "Report types and
+        access" notes below. An unrecognized `report_type` is a client
+        input error (`400`), distinct from a recognized-but-unauthorized
+        type (`200` with `"authorized": false`).
+
+        **Report types and access (exact catalog keys — do not alias):**
+          - `student_activity` — every role, caller's own data
+            (memberships + attendance + rewards + open support tickets).
+          - `attendance` — every role, caller's own event
+            registrations/attendance.
+          - `membership` — every role, caller's own club memberships.
+          - `reward` — every role, caller's own points ledger/redemptions.
+          - `support_ticket` — every role, caller's own tickets.
+          - `volunteer` — every role, caller's own volunteer assignments.
+          - `club_activity` — every role may call it; scope is derived
+            from the caller (admin-tier: platform-wide/university-scoped;
+            faculty advisor: their advised clubs; club officer: their led
+            club(s)); a caller with no qualifying club gets an honest
+            empty result, not a 403.
+          - `budget` — club **treasurer** (any club, including a
+            platform-role `student` who holds a club-scoped `TREASURER`
+            role — intentional, verified against `club_memberships`),
+            **faculty advisor**, or admin-tier (`system_admin`,
+            `student_affairs_office`, `dean_student_welfare`). Treasurer/
+            faculty get only their own club(s)'s figures; an admin-tier
+            caller with no club of their own gets a platform-wide
+            aggregate instead.
+          - `emergency_summary` — admin-tier only
+            (`system_admin`/`student_affairs_office`/
+            `dean_student_welfare`). Aggregate counts/breakdowns only —
+            never individual reporter identity or free-text description.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - report_type
+              properties:
+                report_type:
+                  type: string
+                  enum:
+                    - student_activity
+                    - attendance
+                    - membership
+                    - reward
+                    - support_ticket
+                    - volunteer
+                    - club_activity
+                    - budget
+                    - emergency_summary
+      responses:
+        "200":
+          description: >-
+            `{"status", "report_type", "label", "authorized", "data",
+            "summary"}`. When `authorized` is `false`, `data`/`summary`
+            are both `null` — this is a role limitation, not an error.
+          content:
+            application/json:
+              schema: {}
+        "400":
+          description: >-
+            Unrecognized `report_type`.
+            `{"status": "error", "message": "Unsupported report type.",
+            "supported_report_types": [...]}`.
+          content:
+            application/json:
+              schema: {}
+        "401":
+          description: Missing, invalid, expired, or revoked bearer token.
+          content:
+            application/json:
+              schema: {}
+        "503":
+          description: >-
+            Gemini isn't configured, or the Gemini request itself failed.
+            Body: `{"status": "ai_unavailable", "message": "...",
+            "report_type": "<echoed>"}`.
+          content:
+            application/json:
+              schema: {}
+
+  /ai/analytics/financial:
+    post:
+      tags:
+        - AI Assistant
+      summary: Financial Analytics
+      description: |
+        Backend-computed budget/expense analytics (per-club utilization
+        percentage + bar-chart-ready series) with an AI-written plain-
+        language explanation. No prediction/forecasting — Gemini only
+        interprets numbers the backend already computed.
+
+        **Access:** club treasurer (any club — including a `student`
+        platform role who holds a club-scoped `TREASURER` role),
+        faculty advisor, or admin-tier
+        (`system_admin`/`student_affairs_office`/`dean_student_welfare`).
+        A caller without one of these does **not** get a 403 — the
+        endpoint returns `200` with `"authorized": false`.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              description: No request body fields — scope is derived entirely from the caller's identity and club roles.
+      responses:
+        "200":
+          description: >-
+            Authorized: `{"status", "authorized": true, "summary",
+            "analytics": {"clubs": [...], "total_pending_approvals"},
+            "chart"}`. Not authorized: `{"status", "authorized": false,
+            "message"}`.
+          content:
+            application/json:
+              schema: {}
+        "401":
+          description: Missing, invalid, expired, or revoked bearer token.
+          content:
+            application/json:
+              schema: {}
+        "503":
+          description: >-
+            `{"status": "ai_unavailable", "message": "...",
+            "analytics_type": "financial"}`.
+          content:
+            application/json:
+              schema: {}
+
+  /ai/analytics/performance:
+    post:
+      tags:
+        - AI Assistant
+      summary: Performance Analytics
+      description: |
+        Role-orthogonal — every authenticated role gets a response,
+        auto-scoped to what's appropriate for them (no allowed/denied
+        state, no request body fields):
+          - Admin-tier (`system_admin`/`student_affairs_office`/
+            `dean_student_welfare`) → `scope: "platform"`.
+          - Faculty advisor → `scope: "advised_clubs"`.
+          - Club officer (any officer-tier `role_in_club`) →
+            `scope: "led_clubs"`.
+          - Everyone else (plain student/member) →
+            `scope: "personal"`.
+        Treat `scope` as informational text for a UI label, not a fixed
+        enum to switch on.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              description: No request body fields.
+      responses:
+        "200":
+          description: >-
+            `{"status", "authorized": true, "scope", "summary",
+            "analytics", "chart"}`.
+          content:
+            application/json:
+              schema: {}
+        "401":
+          description: Missing, invalid, expired, or revoked bearer token.
+          content:
+            application/json:
+              schema: {}
+        "503":
+          description: >-
+            `{"status": "ai_unavailable", "message": "...",
+            "analytics_type": "performance"}`.
+          content:
+            application/json:
+              schema: {}
+
+  /ai/content:
+    post:
+      tags:
+        - AI Assistant
+      summary: AI Content Generation
+      description: |
+        Drafts short, professional platform copy. Every authenticated
+        role may use every content type (intentional — not role-gated).
+        Never persisted, never sent/emailed — draft text only; the
+        frontend is responsible for placing it wherever it's meant to go.
+
+        Behavior when `details` is omitted or empty: the draft is still
+        generated (generic, non-specific copy for that content type)
+        rather than the request being rejected — Gemini is instructed not
+        to invent names/dates/facts not present in `details`, so an empty
+        `details` field produces a deliberately generic draft, not an
+        error.
+
+        Valid `content_type` values (exact keys): `announcement`,
+        `event_description`, `club_description`, `invitation`,
+        `volunteer_recruitment`, `reminder`, `approval_comment`,
+        `rejection_message`, `budget_justification`,
+        `certificate_description`.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - content_type
+              properties:
+                content_type:
+                  type: string
+                  enum:
+                    - announcement
+                    - event_description
+                    - club_description
+                    - invitation
+                    - volunteer_recruitment
+                    - reminder
+                    - approval_comment
+                    - rejection_message
+                    - budget_justification
+                    - certificate_description
+                details:
+                  type: string
+                  description: >-
+                    Optional free text supplying the specifics for the
+                    draft (event name, date, amount, reason, etc.).
+                    Defaults to an empty string when omitted.
+      responses:
+        "200":
+          description: >-
+            `{"status", "content_type", "label", "draft"}`.
+          content:
+            application/json:
+              schema: {}
+        "400":
+          description: >-
+            Missing `content_type`
+            (`{"message": "A 'content_type' field is required."}`) or an
+            unrecognized `content_type`
+            (`{"message": "Unknown content_type: '<value>'."}`).
+            Validated before any Gemini call — never a 503 for this case.
+          content:
+            application/json:
+              schema: {}
+        "401":
+          description: Missing, invalid, expired, or revoked bearer token.
+          content:
+            application/json:
+              schema: {}
+        "503":
+          description: >-
+            `{"status": "ai_unavailable", "message": "...",
+            "content_type": "<echoed>"}`.
+          content:
+            application/json:
+              schema: {}

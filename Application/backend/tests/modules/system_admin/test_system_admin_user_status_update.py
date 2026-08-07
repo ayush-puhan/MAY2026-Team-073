@@ -1,13 +1,8 @@
 # tests/modules/system_admin/test_change_user_status.py
 import bcrypt
-from app.database.enums import (
-    UserRole,
-    TicketStatus
-)
-from db_factory.factory import (
-    UserFactory,ClubFactory,EventFactory,UniversityFactory,SupportTicketFactory,AuditLogFactory
-)
-from app.database.models import User
+from app.database.enums import *
+from db_factory.factory import *
+from app.database.models import *
 
 # Test: Successfully deactivate a user
 def test_change_user_status_success(client,auth_headers,system_admin_user,db_session):

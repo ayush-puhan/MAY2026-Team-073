@@ -59,18 +59,20 @@ export const Helpdesk = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const isFacultyAdvisor = user.role?.toLowerCase() === 'faculty_advisor';
         const [ticketsData, clubsData, memberships, emergencyData] = await Promise.all([
           api.get(`/support_tickets`),
           api.get('/clubs'),
-          api.get(`/club_memberships?user_id=${user.id}`),
+          isFacultyAdvisor ? Promise.resolve([]) : api.get(`/club_memberships?user_id=${user.id}`),
           emergencyApi.getEmergencyReports({ reported_by: user.id })
         ]);
         const userTickets = ticketsData.filter(t => String(t.raised_by) === String(user.id));
         setTickets(userTickets);
         setEmergencies(emergencyData);
-        
-        const userClubIds = memberships.map(m => String(m.club_id));
-        const userClubs = clubsData.filter(c => userClubIds.includes(String(c.id)));
+
+        const userClubs = isFacultyAdvisor
+          ? clubsData.filter(c => String(c.faculty_advisor_id) === String(user.id))
+          : clubsData.filter(c => memberships.map(m => String(m.club_id)).includes(String(c.id)));
         setClubs(userClubs);
       } catch (err) {
         console.error("Failed to fetch helpdesk data", err);

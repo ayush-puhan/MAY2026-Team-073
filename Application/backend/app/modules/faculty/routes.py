@@ -193,15 +193,17 @@ def get_events_detail_by(user_id):
     if user_id != int(token_user_id):
         return {"message" : "Forbidden : You are not advisor of this club."}, 404
     try:
-        status_flag = request.args.get('status', default=EventStatus.PENDING_APPROVAL, type=str) 
+        status_flag = request.args.get('status', default=None, type=str)
         with get_session() as db:
-            print(status_flag)
-            events = (
+            query = (
                 db.query(Event, Club.name.label('club_name'))
                 .join(Club, Event.club_id == Club.id)
-                .filter(Club.faculty_advisor_id == user_id, Event.status == EventStatus(status_flag))
-                .all()
+                .filter(Club.faculty_advisor_id == user_id)
             )
+            if status_flag:
+                query = query.filter(Event.status == EventStatus(status_flag))
+            events = query.all()
+
             result = [
                 {
                     "id": event.id,
@@ -253,7 +255,11 @@ def let_faculty_decide_events(event_id):
             )
             if not event_to_approve:
                 return {'message' : 'Forbidden : Can not update event of other clubs.'}, 403
-            event_to_approve.status = approval_status.upper()
+            decision_status_map = {'approved': EventStatus.SCHEDULED, 'rejected': EventStatus.REJECTED}
+            new_status = decision_status_map.get(approval_status)
+            if new_status is None:
+                return {'message': f"Invalid approval_status '{approval_status}'"}, 400
+            event_to_approve.status = new_status
             db.commit()
             result = {
                 "created_by" : event_to_approve.created_by,
@@ -275,16 +281,17 @@ def get_faculty_expenses(user_id):
     if user_id != int(token_user_id):
         return {'message' : "Forbidden : Can not see expenses of other clubs."}, 403
     try:
-        status_filter = request.args.get('status', default=ExpenseStatus.PENDING, type=str)
+        status_filter = request.args.get('status', default=None, type=str)
         with get_session() as db:
-            all_expenses = (
+            query = (
                 db.query(Expense, Budget.title.label('budget_title'))
                 .join(Budget, Expense.budget_id == Budget.id)
                 .join(Club, Budget.club_id == Club.id)
                 .filter(Club.faculty_advisor_id == user_id)
-                .filter(Expense.approval_status == status_filter)
-                .all()
             )
+            if status_filter:
+                query = query.filter(Expense.approval_status == status_filter)
+            all_expenses = query.all()
             result = [
                 {
                     "id": expense.id,
@@ -300,7 +307,7 @@ def get_faculty_expenses(user_id):
                     "approved_by": expense.approved_by,
                     "approval_date": expense.approval_date,
                     "approval_remarks": expense.approval_remarks,
-                    "created_at": expense.created_at 
+                    "created_at": expense.created_at
                 } for expense, budget_title in all_expenses
             ]
 
@@ -319,10 +326,10 @@ def let_faculty_decide_expenses(expense_id):
     try:
         data = request.get_json()
         approval_status = data.get('approval_status')
-        status = data.get('status')
         approval_remarks = data.get('approval_remarks')
         approved_by = data.get('approved_by')
-        approval_date = data.get('approval_date')
+        if approval_status not in ('approved', 'rejected'):
+            return {'message': f"Invalid approval_status '{approval_status}'"}, 400
         with get_session() as db:
             expense = (
                 db.query(Expense)
@@ -337,7 +344,7 @@ def let_faculty_decide_expenses(expense_id):
             if not expense:
                 return {'message' : 'Expense not found or unauthorized access'}, 403
             expense.approval_status = approval_status.upper()
-            expense.status = status.upper()
+            expense.status = approval_status.upper()
             expense.approval_remarks = approval_remarks
             expense.approved_by = approved_by
             expense.approval_date = datetime.now()

@@ -49,7 +49,8 @@ def serialize_club(club, db):
             else club.status,
         "members": member_count,
         "interests": interests,
-        "university": university
+        "university": university,
+        "faculty_advisor_id": club.faculty_advisor_id
     }
 # ---------------------------------------------------
 # GET ALL CLUBS

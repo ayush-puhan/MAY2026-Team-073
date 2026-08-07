@@ -24,7 +24,14 @@ from app.modules.club_leadership.club_resources import communication_bp
 from app.modules.club_leadership.leave_club import memberships_bp as leave_club_bp
 from app.modules.club_leadership.club_budget import budget_bp
 from app.modules.club_leadership.transfer_presidency import transfer_presidency_bp
-from app.modules.emergency_report.routes import  em_report 
+from app.modules.emergency_report.routes import  em_report
+
+# ----------------------------------------------------
+# ClubConnect AI Module
+# Integrated by AI Backend
+# Module Owner: AI Assistant / RAG Pipeline
+# ----------------------------------------------------
+from app.modules.ai_services import ai_bp
 
 def register_api_paths(app):
     # Register the auth blueprint which contains its own Api setup
@@ -74,4 +81,7 @@ def register_api_paths(app):
 
     # Emergency Report
     app.register_blueprint(em_report, url_prefix="/api/emergency-reports")
+
+    # AI Services (ClubConnect Assistant) - url_prefix already set on the blueprint itself
+    app.register_blueprint(ai_bp)
 

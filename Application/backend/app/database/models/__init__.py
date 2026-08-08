@@ -52,7 +52,7 @@ __all__ = [
     "ExternalParticipant",
     "Budget",
     "Expense",
-    "Revenue",
+    #"Revenue",
     "Notification",
     "Document",
     "SupportTicket",

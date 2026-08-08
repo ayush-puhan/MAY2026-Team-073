@@ -28,7 +28,7 @@ def make_emergency_report():
     description = data.get("description")
     event_id = data.get("event_id")
 
-    if not category or not description:
+    if not category or not description or not event_id:
         return jsonify({
             "message": "category and description are required"
         }), 400
@@ -64,92 +64,58 @@ def make_emergency_report():
 
     except ValueError:
         return jsonify({"message": "Invalid emergency category"}), 400
-
     except SQLAlchemyError:
         return jsonify({"message": "Failed to submit emergency report"}), 500
 
 
 @em_report.route("", methods=["GET"])
 @require_auth
+@require_role(UserRole.SYSTEM_ADMIN,UserRole.DEAN_STUDENT_WELFARE,UserRole.STUDENT_AFFAIRS_OFFICE)
 def get_emergency_reports():
-    status = request.args.get("status")
-    category = request.args.get("category")
-    reported_by = request.args.get("reported_by", type=int)
-
-    Reporter = aliased(User)
-    Handler = aliased(User)
-
     try:
+        status = request.args.get("status")
+        category = request.args.get("category")
+        reported_by = request.args.get("reported_by", type=int)
+
         with get_session() as db:
-            query = (
-                db.query(
-                    EmergencyReport,
-                    Reporter.full_name.label("reporter_name"),
-                    Handler.full_name.label("handler_name")
-                )
-                .outerjoin(
-                    Reporter,
-                    EmergencyReport.reported_by == Reporter.id
-                )
-                .outerjoin(
-                    Handler,
-                    EmergencyReport.handled_by == Handler.id
-                )
-            )
-
+            query = db.query(EmergencyReport)
             if status:
-                query = query.filter(
-                    EmergencyReport.status == EmergencyStatus(status)
-                )
-
+                query = query.filter(EmergencyReport.status == status)
             if category:
-                query = query.filter(
-                    EmergencyReport.category == EmergencyCategory(category)
-                )
-
+                query = query.filter(EmergencyReport.category == category)
             if reported_by:
-                query = query.filter(
-                    EmergencyReport.reported_by == reported_by
-                )
-
-            reports = (
-                query.order_by(EmergencyReport.created_at.desc())
-                .all()
-            )
-
+                query = query.filter(EmergencyReport.reported_by == reported_by)
+            reports = query.order_by(EmergencyReport.created_at.desc()).all()
+            users = db.query(User).all()
             result = []
+            for report in reports:
+                reporter = next(
+                    (u for u in users if u.id == report.reported_by), None
+                )
+                handler = next(
+                    (u for u in users if u.id == report.handled_by), None
+                ) if report.handled_by else None
 
-            for report, reporter_name, handler_name in reports:
                 result.append({
                     "id": report.id,
-                    "reported_by": report.reported_by,
-                    "reporter_name": reporter_name or "Unknown",
-                    "event_id": report.event_id,
-                    "category": report.category.value,
                     "description": report.description,
+                    "category": report.category.value,
                     "status": report.status.value,
+                    "reported_by": report.reported_by,
                     "handled_by": report.handled_by,
-                    "handler_name": handler_name or "Unassigned",
-                    "created_at": report.created_at.isoformat(),
-                    "resolved_at": (
-                        report.resolved_at.isoformat()
-                        if report.resolved_at
-                        else None
-                    )
+                    "reporter_name": reporter.full_name if reporter else "Unknown",
+                    "handler_name": handler.full_name if handler else "Unassigned",
+                    "created_at": report.created_at.isoformat()
                 })
-            print(len(result))
             return jsonify(result), 200
-
-    except ValueError:
-        return jsonify({"message": "Invalid filter value"}), 400
-
-    except Exception:
-        return jsonify({"message": "Failed to fetch emergency reports"}), 500
+    except Exception as e:
+        print(e)
+        return jsonify({"message": str(e)}), 500
 
 
 @em_report.route("/<int:report_id>/status",methods=['PATCH'])
 @require_auth
-#@require_role(UserRole.SYSTEM_ADMIN)
+@require_role(UserRole.SYSTEM_ADMIN,UserRole.DEAN_STUDENT_WELFARE,UserRole.STUDENT_AFFAIRS_OFFICE)
 def admin_update_emergency_report(report_id):
     data = request.get_json()
     user_id = get_jwt_identity()
@@ -211,57 +177,43 @@ def admin_update_emergency_report(report_id):
 
 @em_report.route("/active",methods=['GET'])
 @require_auth
-@require_role(UserRole.SYSTEM_ADMIN)
+@require_role(UserRole.SYSTEM_ADMIN,UserRole.DEAN_STUDENT_WELFARE,UserRole.STUDENT_AFFAIRS_OFFICE)
 def admin_get_active_emergency_report():
     Reporter = aliased(User)
     Handler = aliased(User)
 
     try:
         with get_session() as db:
-            reports = (
-                db.query(
-                    EmergencyReport,
-                    Reporter.full_name.label("reporter_name"),
-                    Handler.full_name.label("handler_name")
+            query = db.query(EmergencyReport).filter(EmergencyReport.status != EmergencyStatus.RESOLVED)
+            reports = query.order_by(EmergencyReport.created_at.desc()).all()
+            users = db.query(User).all()
+            result = []
+            for report in reports:
+                reporter = next(
+                    (u for u in users if u.id == report.reported_by), None
                 )
-                .outerjoin(
-                    Reporter,
-                    EmergencyReport.reported_by == Reporter.id
-                )
-                .outerjoin(
-                    Handler,
-                    EmergencyReport.handled_by == Handler.id
-                )
-                .filter(
-                    EmergencyReport.status != EmergencyStatus.RESOLVED
-                )
-                .order_by(EmergencyReport.created_at.desc())
-                .all()
-            )
+                handler = next(
+                    (u for u in users if u.id == report.handled_by), None
+                ) if report.handled_by else None
 
-            result = [
-                {
+                result.append({
                     "id": report.id,
                     "reported_by": report.reported_by,
-                    "reporter_name": reporter_name or "Unknown",
+                    "reporter_name": reporter.full_name if reporter else "Unknown",
                     "event_id": report.event_id,
                     "category": report.category.value,
                     "description": report.description,
                     "status": report.status.value,
                     "handled_by": report.handled_by,
-                    "handler_name": handler_name or "Unassigned",
+                    "handler_name": handler.full_name if handler else "Unassigned",
                     "created_at": report.created_at.isoformat(),
                     "resolved_at": (
                         report.resolved_at.isoformat()
                         if report.resolved_at
                         else None
                     )
-                }
-                for report, reporter_name, handler_name in reports
-            ]
-
+                })   
             return jsonify(result), 200
-
     except Exception:
         return jsonify({
             "message": "Failed to fetch active emergency reports"

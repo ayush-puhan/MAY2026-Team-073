@@ -6,12 +6,12 @@ from datetime import datetime, timedelta
 
 from app.database.models import (
     User,Club,University,Event,SupportTicket ,AuditLog,Department,Budget,Expense,ClubMembership,
-    Committee
+    Committee, ClubCreationRequest
 )
 
 from app.database.enums import (
     UserRole,AuthProvider,ClubStatus,EventStatus,TicketType,
-    TicketPriority,ClubMemberRole,
+    TicketPriority,ClubMemberRole,ClubRequestStatus,
     TicketStatus, MembershipStatus,
     BudgetStatus,ExpenseStatus,ExpenseApprovalStatus
 )
@@ -182,3 +182,22 @@ class CommitteeFactory(BaseFactory):
     description = factory.Faker("sentence")
 
     created_at = factory.LazyFunction(datetime.utcnow)
+
+
+class ClubCreationRequestFactory(BaseFactory):
+    class Meta:
+        model = ClubCreationRequest
+    proposed_name = factory.Sequence(lambda n: f"Proposed Club {n}")
+    proposed_category = "Technical"
+    proposal_description = factory.Faker("paragraph")
+    requester = None #factory.SubFactory(UserFactory)
+
+    status = ClubRequestStatus.SUBMITTED
+
+    reviewer = None
+    faculty_advisor = None
+    review_comments = None
+    resulting_club = None
+
+    created_at = factory.LazyFunction(datetime.utcnow)
+    decided_at = None

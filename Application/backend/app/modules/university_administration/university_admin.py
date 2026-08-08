@@ -157,7 +157,6 @@ def decide_ua_club_request(req_id):
     user_id = get_jwt_identity()
     try:
         data = request.get_json()
-        id = data.get('id')
         status = data.get('status')
         reviewed_by = data.get('reviewed_by')
         review_comments = data.get('review_comments')
@@ -168,17 +167,17 @@ def decide_ua_club_request(req_id):
                 return {'message' : 'Required Resource not found or empty resource'}, 400
             
             
-            if status.upper() == ClubRequestStatus.APPROVED:
+            if status == ClubRequestStatus.APPROVED:
                 new_club = Club(
                     name = req.proposed_name,
                     slug = "_".join(req.proposed_name.split(" ")),
                     category = req.proposed_category,
-                    description = req.proposal.description,
+                    description = req.proposal_description,
                     objectives = None,
                     logo_url = None,
                     status = ClubStatus.ACTIVE,
                     faculty_advisor_id = faculty_advisor_id,
-                    university_id = 1, 
+                    university_id = req.requester.university_id, 
                     member_count_cache = 0,
                     created_at = datetime.utcnow()
                 )

@@ -6,14 +6,14 @@ from datetime import datetime, timedelta
 
 from app.database.models import (
     User,Club,University,Event,SupportTicket ,AuditLog,Department,Budget,Expense,ClubMembership,
-    Committee, ClubCreationRequest
+    Committee, ClubCreationRequest,Announcement,ClubJoinApplication,Document
 )
 
 from app.database.enums import (
     UserRole,AuthProvider,ClubStatus,EventStatus,TicketType,
     TicketPriority,ClubMemberRole,ClubRequestStatus,
-    TicketStatus, MembershipStatus,
-    BudgetStatus,ExpenseStatus,ExpenseApprovalStatus
+    TicketStatus, MembershipStatus,AnnouncementAudience,
+    BudgetStatus,ExpenseStatus,ExpenseApprovalStatus,DocumentType
 )
 
 class UserFactory(BaseFactory):
@@ -201,3 +201,56 @@ class ClubCreationRequestFactory(BaseFactory):
 
     created_at = factory.LazyFunction(datetime.utcnow)
     decided_at = None
+
+
+class AnnouncementFactory(BaseFactory):
+    class Meta:
+        model = Announcement
+    club = None #factory.SubFactory(ClubFactory)
+    poster = None #factory.SubFactory(UserFactory)
+    title = factory.Sequence(lambda n: f"Announcement {n}")
+    body = factory.Faker("paragraph")
+    target_audience = AnnouncementAudience.ALL_MEMBERS
+    created_at = factory.LazyFunction(datetime.utcnow)
+
+
+class ClubJoinApplicationFactory(BaseFactory):
+    class Meta:
+        model = ClubJoinApplication
+
+    user = None #factory.SubFactory(UserFactory)
+    club = None #factory.SubFactory(ClubFactory)
+
+    motivation = factory.Faker("paragraph")
+    contribution = factory.Faker("sentence")
+    previous_experience = factory.Faker("paragraph")
+    skills = factory.Faker("sentence")
+    portfolio_url = factory.Faker("url")
+    resume_document = None
+    weekly_availability = "10 hours/week"
+
+    status = MembershipStatus.PENDING
+
+    reviewer = None
+    review_comments = None
+
+    applied_at = factory.LazyFunction(datetime.utcnow)
+    reviewed_at = None
+
+
+class DocumentFactory(BaseFactory):
+    class Meta:
+        model = Document
+
+    owner = None #factory.SubFactory(UserFactory)
+
+    club = None
+    event = None
+    committee = None
+
+    doc_type = DocumentType.GENERAL
+
+    file_url = factory.Faker("url")
+    title = factory.Sequence(lambda n: f"Document {n}")
+
+    created_at = factory.LazyFunction(datetime.utcnow)

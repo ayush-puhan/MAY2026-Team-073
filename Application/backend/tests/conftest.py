@@ -7,7 +7,8 @@ from sqlalchemy.pool import StaticPool
 from contextlib import contextmanager
 
 from app import create_app
-from app.database import models
+from app.database.enums import MembershipStatus
+from app.database.models.clubs import ClubMembership
 from app.database import Base
 import  app.database.database as db_module
 from app.database.models.auth import User,UserOTP
@@ -82,6 +83,28 @@ def db_error(monkeypatch):
 
     return _patch
 
+
+@pytest.fixture
+def mock_resolve_club_id(monkeypatch):
+    def _mock_resolve_club_id(user):
+        def fake_resolve_club_id(db, kwargs):
+            membership = (
+                db.query(ClubMembership)
+                .filter(
+                    ClubMembership.user_id == user.id,
+                    ClubMembership.status == MembershipStatus.APPROVED,
+                )
+                .first()
+            )
+
+            return membership.club_id if membership else None
+
+        monkeypatch.setattr(
+            "app.middleware.auth_middleware.resolve_club_id", #"app.modules.middleware.auth_middleware.resolve_club_id"
+            fake_resolve_club_id,
+        )
+
+    return _mock_resolve_club_id
 
 @pytest.fixture
 def client(db_session):

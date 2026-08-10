@@ -61,16 +61,19 @@ class ClubListResource(Resource):
     @require_auth
     
     def get(self):
-        university_id = request.args.get("university_id")
-        with get_session() as db:
-            query = (db.query(Club))
-            if university_id:
-                query = query.filter(Club.university_id ==university_id)
-            clubs = query.all()
-            return [
-                serialize_club(club,db)
-                for club in clubs
-            ], 200
+        try:
+            university_id = request.args.get("university_id")
+            with get_session() as db:
+                query = (db.query(Club))
+                if university_id:
+                    query = query.filter(Club.university_id ==university_id)
+                clubs = query.all()
+                return [
+                    serialize_club(club,db)
+                    for club in clubs
+                ], 200
+        except Exception as e:
+            return {'messge' : 'Uncaught Error'}, 500
 
 # ---------------------------------------------------
 # GET CLUB BY ID
@@ -81,18 +84,21 @@ class ClubDetailResource(Resource):
 
     @require_auth
     def get(self,club_id):
-        with get_session() as db:
-            club = (db.query(Club).filter(Club.id == club_id).first())
-            if not club:
-                return {
-                    "message":
-                    "Club not found"
-                },404
+        try:
+            with get_session() as db:
+                club = (db.query(Club).filter(Club.id == club_id).first())
+                if not club:
+                    return {
+                        "message":
+                        "Club not found"
+                    },404
 
-            return serialize_club(
-                club,
-                db
-            ),200
+                return serialize_club(
+                    club,
+                    db
+                ),200
+        except Exception as e:
+            return {'messge' : 'Uncaught Error'}, 500
 
 
 

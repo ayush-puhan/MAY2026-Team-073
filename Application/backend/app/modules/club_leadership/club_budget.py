@@ -128,68 +128,71 @@ class BudgetListResource(Resource):
         ClubMemberRole.PRESIDENT
     )
     def post(self):
-        with get_session() as session:
-            data = request.get_json() or {}
+        try:
+            with get_session() as session:
+                data = request.get_json() or {}
 
-            # Required fields
-            required_fields = ["club_id", "allocated_amount"]
-            for field in required_fields:
-                if field not in data:
-                    return {"message": f"Missing field: {field}"}, 400
-
-            club_id = int(data["club_id"])
-            committee_id = data.get("committee_id")
-
-            # Committee budgets inherit dates from the main club budget
-            if committee_id:
-                parent_budget = (
-                    session.query(Budget)
-                    .filter(
-                        Budget.club_id == club_id,
-                        Budget.committee_id.is_(None),
-                        Budget.parent_budget_id.is_(None),
-                    )
-                    .first()
-                )
-
-                if not parent_budget:
-                    return {
-                        "message": "Main club budget not found. Create it first."
-                    }, 400
-
-                budget = Budget(
-                    club_id=club_id,
-                    committee_id=int(committee_id),
-                    parent_budget_id=parent_budget.id,
-                    title=data.get("title", "Committee Budget"),
-                    allocated_amount=float(data["allocated_amount"]),
-                    period_start=parent_budget.period_start,
-                    period_end=parent_budget.period_end,
-                    status=BudgetStatus.APPROVED,
-                    created_by=get_jwt_identity(),
-                )
-
-            # Main club budget
-            else:
-                required_dates = ["period_start", "period_end"]
-                for field in required_dates:
+                # Required fields
+                required_fields = ["club_id", "allocated_amount"]
+                for field in required_fields:
                     if field not in data:
                         return {"message": f"Missing field: {field}"}, 400
 
-                budget = Budget(
-                    club_id=club_id,
-                    title=data.get("title", "Main Club Budget"),
-                    allocated_amount=float(data["allocated_amount"]),
-                    period_start=datetime.fromisoformat(data["period_start"]),
-                    period_end=datetime.fromisoformat(data["period_end"]),
-                    status=BudgetStatus.APPROVED,
-                    created_by=get_jwt_identity(),
-                )
+                club_id = int(data["club_id"])
+                committee_id = data.get("committee_id")
 
-            session.add(budget)
-            session.commit()
+                # Committee budgets inherit dates from the main club budget
+                if committee_id:
+                    parent_budget = (
+                        session.query(Budget)
+                        .filter(
+                            Budget.club_id == club_id,
+                            Budget.committee_id.is_(None),
+                            Budget.parent_budget_id.is_(None),
+                        )
+                        .first()
+                    )
 
-            return serialize_budget(budget), 201
+                    if not parent_budget:
+                        return {
+                            "message": "Main club budget not found. Create it first."
+                        }, 400
+
+                    budget = Budget(
+                        club_id=club_id,
+                        committee_id=int(committee_id),
+                        parent_budget_id=parent_budget.id,
+                        title=data.get("title", "Committee Budget"),
+                        allocated_amount=float(data["allocated_amount"]),
+                        period_start=parent_budget.period_start,
+                        period_end=parent_budget.period_end,
+                        status=BudgetStatus.APPROVED,
+                        created_by=get_jwt_identity(),
+                    )
+
+                # Main club budget
+                else:
+                    required_dates = ["period_start", "period_end"]
+                    for field in required_dates:
+                        if field not in data:
+                            return {"message": f"Missing field: {field}"}, 400
+
+                    budget = Budget(
+                        club_id=club_id,
+                        title=data.get("title", "Main Club Budget"),
+                        allocated_amount=float(data["allocated_amount"]),
+                        period_start=datetime.fromisoformat(data["period_start"]),
+                        period_end=datetime.fromisoformat(data["period_end"]),
+                        status=BudgetStatus.APPROVED,
+                        created_by=get_jwt_identity(),
+                    )
+
+                session.add(budget)
+                session.commit()
+
+                return serialize_budget(budget), 201
+        except Exception as e:
+            return {'messge' : 'Uncaught Error'}, 500
 
 
 class BudgetUpdateResource(Resource):

@@ -13,38 +13,47 @@ student_api = Api(student_bp)
 @student_bp.route('/departments', methods=['GET'])
 @require_auth
 def get_departments():
-    with get_session() as session:
-        departments = session.query(Department).all()
-        return jsonify([
-            {
-                "id": dept.id,
-                "name": dept.name,
-                "code": dept.code,
-                "university_id": dept.university_id
-            } for dept in departments
-        ]), 200
+    try:
+        with get_session() as session:
+            departments = session.query(Department).all()
+            return jsonify([
+                {
+                    "id": dept.id,
+                    "name": dept.name,
+                    "code": dept.code,
+                    "university_id": dept.university_id
+                } for dept in departments
+            ]), 200
+    except Exception as e:
+            return {'messge' : 'Uncaught Error'}, 500
 
 @student_bp.route('/programs', methods=['GET'])
 @require_auth
 def get_programs():
-    with get_session() as session:
-        programs = session.query(Program).all()
-        return jsonify([
-            {
-                "id": prog.id,
-                "department_id": prog.department_id,
-                "name": prog.name
-            } for prog in programs
-        ]), 200
+    try:
+        with get_session() as session:
+            programs = session.query(Program).all()
+            return jsonify([
+                {
+                    "id": prog.id,
+                    "department_id": prog.department_id,
+                    "name": prog.name
+                } for prog in programs
+            ]), 200
+    except Exception as e:
+            return {'messge' : 'Uncaught Error'}, 500
 
 @student_bp.route('/interests', methods=['GET'])
 @require_auth
 def get_interests():
-    with get_session() as session:
-        interests = session.query(Interest).all()
-        return jsonify([
-            {
-                "id": interest.id,
-                "name": interest.name
-            } for interest in interests
-        ]), 200
+    try:
+        with get_session() as session:
+            interests = session.query(Interest).all()
+            return jsonify([
+                {
+                    "id": interest.id,
+                    "name": interest.name
+                } for interest in interests
+            ]), 200
+    except Exception as e:
+            return {'messge' : 'Uncaught Error'}, 500

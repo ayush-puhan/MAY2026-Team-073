@@ -57,18 +57,21 @@ class ClubResourcesResource(Resource):
         "president",
     )
     def get(self, club_id):
-        with get_session() as db:
+        try:
+            with get_session() as db:
 
-            resources = (
-                db.query(Document)
-                .filter(
-                    Document.club_id == club_id,
-                    Document.committee_id == None
+                resources = (
+                    db.query(Document)
+                    .filter(
+                        Document.club_id == club_id,
+                        Document.committee_id == None
+                    )
+                    .order_by(Document.created_at.desc())
+                    .all()
                 )
-                .order_by(Document.created_at.desc())
-                .all()
-            )
-            return [serialize_document(r) for r in resources], 200
+                return [serialize_document(r) for r in resources], 200
+        except Exception as e:
+            return {'messge' : 'Uncaught Error'}, 500
 
 
     @require_auth
@@ -77,45 +80,48 @@ class ClubResourcesResource(Resource):
         "secretary",
     )
     def post(self, club_id):
-        print("Current user:", getattr(g, "current_user", None))
-        print("Current user id:", getattr(getattr(g, "current_user", None), "id", None))
-
-        data = request.get_json()
-        
-        title = data.get("title")
-        file_url = data.get("file_url")
-        owner_id = g.current_user.id
-
-        if not title:
-            return {"message": "title is required"}, 400
-
-        if not file_url:
-            return {"message": "file_url is required"}, 400
-
-        doc_type = data.get("doc_type", "GENERAL")
-
         try:
-            document = Document(
-                owner_id=owner_id,
-                club_id=club_id,
-                committee_id=None,
-                event_id=None,
-                title=title,
-                file_url=file_url,
-                doc_type=DocumentType(doc_type.lower()),
-                created_at=datetime.utcnow(),
-            )
+            print("Current user:", getattr(g, "current_user", None))
+            print("Current user id:", getattr(getattr(g, "current_user", None), "id", None))
 
-        except ValueError:
-            return {"message": "Invalid document type"}, 400
+            data = request.get_json()
+            
+            title = data.get("title")
+            file_url = data.get("file_url")
+            owner_id = g.current_user.id
 
-        with get_session() as db:
+            if not title:
+                return {"message": "title is required"}, 400
 
-            db.add(document)
-            db.commit()
-            db.refresh(document)
+            if not file_url:
+                return {"message": "file_url is required"}, 400
 
-            return serialize_document(document), 201
+            doc_type = data.get("doc_type", "GENERAL")
+
+            try:
+                document = Document(
+                    owner_id=owner_id,
+                    club_id=club_id,
+                    committee_id=None,
+                    event_id=None,
+                    title=title,
+                    file_url=file_url,
+                    doc_type=DocumentType(doc_type.lower()),
+                    created_at=datetime.utcnow(),
+                )
+
+            except ValueError:
+                return {"message": "Invalid document type"}, 400
+
+            with get_session() as db:
+
+                db.add(document)
+                db.commit()
+                db.refresh(document)
+
+                return serialize_document(document), 201
+        except Exception as e:
+            return {'messge' : 'Uncaught Error'}, 500
 
 
 # =========================================================
@@ -127,27 +133,29 @@ class ClubResourceDeleteResource(Resource):
     @require_auth
     @require_club_role("president")
     def delete(self, club_id, id):
+        try:
+            with get_session() as db:
 
-        with get_session() as db:
-
-            document = (
-                db.query(Document)
-                .filter(
-                    Document.id == id,
-                    Document.club_id == club_id,
+                document = (
+                    db.query(Document)
+                    .filter(
+                        Document.id == id,
+                        Document.club_id == club_id,
+                    )
+                    .first()
                 )
-                .first()
-            )
 
-            if not document:
-                return {"message": "Resource not found"}, 404
+                if not document:
+                    return {"message": "Resource not found"}, 404
 
-            db.delete(document)
-            db.commit()
+                db.delete(document)
+                db.commit()
 
-            return {
-                "message": "Resource deleted successfully"
-            }, 200
+                return {
+                    "message": "Resource deleted successfully"
+                }, 200
+        except Exception as e:
+            return {'messge' : 'Uncaught Error'}, 500
 
 # =========================================================
 # Committee Resources
@@ -161,24 +169,26 @@ class CommitteeResourcesResource(Resource):
         "faculty_advisor",
     )
     def get(self, id):
+        try:
+            with get_session() as db:
 
-        with get_session() as db:
+                committee = (
+                    db.query(Committee)
+                    .filter(Committee.id == id)
+                    .first()
+                )
+                if not committee:
+                    return {"message": "Committee not found"}, 404
 
-            committee = (
-                db.query(Committee)
-                .filter(Committee.id == id)
-                .first()
-            )
-            if not committee:
-                return {"message": "Committee not found"}, 404
-
-            resources = (
-                db.query(Document)
-                .filter(Document.committee_id == id)
-                .order_by(Document.created_at.desc())
-                .all()
-            )
-            return [serialize_document(r) for r in resources], 200
+                resources = (
+                    db.query(Document)
+                    .filter(Document.committee_id == id)
+                    .order_by(Document.created_at.desc())
+                    .all()
+                )
+                return [serialize_document(r) for r in resources], 200
+        except Exception as e:
+            return {'messge' : 'Uncaught Error'}, 500
 
 
 # =========================================================

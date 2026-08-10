@@ -48,26 +48,28 @@ def serialize_certificate(document):
 class UserCertificatesResource(Resource):
 
     def get(self, user_id):
+        try:
+            with get_session() as db:
 
-        with get_session() as db:
-
-            certificates = (
-                db.query(Document)
-                .filter(
-                    Document.owner_id == user_id,
-                    Document.doc_type == DocumentType.CERTIFICATE
+                certificates = (
+                    db.query(Document)
+                    .filter(
+                        Document.owner_id == user_id,
+                        Document.doc_type == DocumentType.CERTIFICATE
+                    )
+                    .order_by(
+                        Document.created_at.desc()
+                    )
+                    .all()
                 )
-                .order_by(
-                    Document.created_at.desc()
-                )
-                .all()
-            )
 
 
-            return [
-                serialize_certificate(certificate)
-                for certificate in certificates
-            ], 200
+                return [
+                    serialize_certificate(certificate)
+                    for certificate in certificates
+                ], 200
+        except Exception as e:
+            return {'messge' : 'Uncaught Error'}, 500
 
 
 

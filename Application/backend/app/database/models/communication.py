@@ -43,3 +43,5 @@ class Document(Base):
 
     owner = relationship("User", back_populates="documents", foreign_keys=[owner_id])
     committee = relationship("Committee", foreign_keys=[committee_id])
+    club = relationship("Club", foreign_keys=[club_id])
+    event= relationship("Event", foreign_keys=[event_id])

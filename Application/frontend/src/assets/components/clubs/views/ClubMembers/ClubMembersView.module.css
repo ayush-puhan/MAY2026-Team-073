@@ -126,8 +126,8 @@
 
 .cardFooter {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  gap: 0.75rem;
   padding-top: 1rem;
   border-top: 1px solid var(--border);
   margin-top: auto;
@@ -142,10 +142,19 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  width: 100%;
+  min-height: 38px;
 }
 
 .roleSelectWrapper {
-  width: 160px;
+  flex: 1;
+  min-width: 0;
+}
+
+.protectedNote {
+  font-size: 0.8rem;
+  color: var(--muted-foreground);
+  font-style: italic;
 }
 
 .emptyState {
@@ -188,14 +197,5 @@
   }
   .grid {
     grid-template-columns: 1fr;
-  }
-  .cardFooter {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-  }
-  .actions {
-    width: 100%;
-    justify-content: space-between;
   }
 }

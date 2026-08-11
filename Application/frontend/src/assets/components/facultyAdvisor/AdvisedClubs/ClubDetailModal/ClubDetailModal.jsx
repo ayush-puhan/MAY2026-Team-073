@@ -1,20 +1,43 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Icon } from '@iconify/react';
 import { StatusBadge } from '../../../ui/StatusBadge/StatusBadge';
 import { facultyAdvisorApi } from '@api/facultyAdvisorApis/facultyAdvisor';
+import { clubBudgetApi } from '@api/clubBudgetApis/clubBudgetApi';
+import { useSession } from '../../../../../context/SessionContext';
+import { BudgetStep } from './BudgetStep/BudgetStep';
+import { MembersStep } from './MembersStep/MembersStep';
+import { CommitteesStep } from './CommitteesStep/CommitteesStep';
 import styles from './ClubDetailModal.module.css';
-import { uiIcons } from '../../../../icons/registry';
+import { uiIcons, dashboardIcons } from '../../../../icons/registry';
+
+const STEPS = [
+  { id: 'budget', label: 'Budget', icon: dashboardIcons.cashMultiple },
+  { id: 'members', label: 'Members', icon: dashboardIcons.accountGroupOutline },
+  { id: 'committees', label: 'Committees', icon: dashboardIcons.committeeTasks },
+];
 
 export const ClubDetailModal = ({ clubId, onClose }) => {
+  const { user } = useSession();
   const [club, setClub] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [currentStep, setCurrentStep] = useState(0);
+
+  const [editingBudget, setEditingBudget] = useState(false);
+  const [budgetAmount, setBudgetAmount] = useState('');
+  const [savingBudget, setSavingBudget] = useState(false);
+
+  const [memberSearch, setMemberSearch] = useState('');
+  const [committeeSearch, setCommitteeSearch] = useState('');
 
   const fetchClub = () => {
     setLoading(true);
     facultyAdvisorApi.getClubDetail(clubId).then((data) => {
       setClub(data);
+      if (data.mainBudget) {
+        setBudgetAmount(data.mainBudget.allocated_amount);
+      }
       setLoading(false);
     });
   };
@@ -25,21 +48,52 @@ export const ClubDetailModal = ({ clubId, onClose }) => {
     return () => { document.body.style.overflow = 'auto'; };
   }, [clubId]);
 
+  const handleSaveBudget = async (e) => {
+    e.preventDefault();
+    setSavingBudget(true);
+    try {
+      await clubBudgetApi.setClubBudget(clubId, budgetAmount, user.id);
+      setEditingBudget(false);
+      fetchClub();
+    } catch (err) {
+      console.error('[handleSaveBudget] error:', err);
+      alert('Failed to save budget: ' + (err?.message || 'Unknown error'));
+    } finally {
+      setSavingBudget(false);
+    }
+  };
+
+  const filteredMembers = useMemo(() => {
+    const members = club?.members || [];
+    if (!memberSearch) return members;
+    const q = memberSearch.toLowerCase();
+    return members.filter((m) => m.user_name?.toLowerCase().includes(q));
+  }, [club, memberSearch]);
+
+  const filteredCommittees = useMemo(() => {
+    const committees = club?.committees || [];
+    if (!committeeSearch) return committees;
+    const q = committeeSearch.toLowerCase();
+    return committees.filter((c) => c.name?.toLowerCase().includes(q));
+  }, [club, committeeSearch]);
+
   const content = (
     <AnimatePresence>
-      <div className={styles.overlay} onClick={onClose}>
+      <div className={styles.overlay}>
+        <motion.div
+          className={styles.backdrop}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={onClose}
+        />
         <motion.div
           className={styles.modal}
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          onClick={(e) => e.stopPropagation()}
+          initial={{ opacity: 0, y: 20, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 20, scale: 0.95 }}
+          transition={{ duration: 0.2 }}
         >
-          <button className={styles.closeBtn} onClick={onClose}>
-            <Icon icon={uiIcons.close} />
-          </button>
-
           {loading || !club ? (
             <div className={styles.loading}>
               <Icon icon={uiIcons.loading} className="animate-spin" width="28" />
@@ -47,44 +101,59 @@ export const ClubDetailModal = ({ clubId, onClose }) => {
           ) : (
             <>
               <div className={styles.header}>
-                <h3 className={styles.title}>{club.name}</h3>
-                <StatusBadge status={club.status} />
-              </div>
-              <p className={styles.description}>{club.description}</p>
-
-              <div className={styles.section}>
-                <h4 className={styles.sectionTitle}>Club Budget (Annual)</h4>
-                <div style={{ marginTop: '0.5rem', fontSize: '1.2rem', fontWeight: 600, color: club.mainBudget ? 'var(--text)' : 'var(--muted-foreground)' }}>
-                  {club.mainBudget ? `₹${parseFloat(club.mainBudget.allocated_amount).toFixed(2)}` : 'No budget allocated yet.'}
+                <div className={styles.headerInfo}>
+                  <div className={styles.headerTitleRow}>
+                    <h3>{club.name}</h3>
+                    <StatusBadge status={club.status} />
+                  </div>
+                  <p className={styles.description}>{club.description}</p>
                 </div>
+                <button className={styles.closeBtn} onClick={onClose}>
+                  <Icon icon={uiIcons.close} />
+                </button>
               </div>
 
-              <div className={styles.section}>
-                <h4 className={styles.sectionTitle}>Members ({club.members?.length || 0})</h4>
-                <div className={styles.memberList}>
-                  {(club.members || []).map((m) => (
-                    <div key={m.id} className={styles.memberRow}>
-                      <span>{m.user_name}</span>
-                      <span className={styles.memberRole}>{m.role_in_club}</span>
-                    </div>
-                  ))}
-                  {(!club.members || club.members.length === 0) && (
-                    <p className={styles.emptyText}>No approved members yet.</p>
+              <div className={styles.tabs}>
+                {STEPS.map((step, idx) => (
+                  <button
+                    key={step.id}
+                    className={`${styles.tabBtn} ${currentStep === idx ? styles.activeTab : ''}`}
+                    onClick={() => setCurrentStep(idx)}
+                  >
+                    <span className={styles.stepNumber}>{idx + 1}</span>
+                    <span>{step.label}</span>
+                  </button>
+                ))}
+              </div>
+
+              <div className={styles.content}>
+                <AnimatePresence mode="wait">
+                  {currentStep === 0 && (
+                    <BudgetStep
+                      club={club}
+                      editingBudget={editingBudget}
+                      setEditingBudget={setEditingBudget}
+                      budgetAmount={budgetAmount}
+                      setBudgetAmount={setBudgetAmount}
+                      savingBudget={savingBudget}
+                      onSaveBudget={handleSaveBudget}
+                    />
                   )}
-                </div>
-              </div>
-
-              <div className={styles.section}>
-                <h4 className={styles.sectionTitle}>Committees</h4>
-                {(club.committees || []).length === 0 ? (
-                  <p className={styles.emptyText}>No committees set up yet.</p>
-                ) : (
-                  club.committees.map((c) => (
-                    <div key={c.id} className={styles.memberRow}>
-                      <span>{c.name}</span>
-                    </div>
-                  ))
-                )}
+                  {currentStep === 1 && (
+                    <MembersStep
+                      club={club}
+                      filteredMembers={filteredMembers}
+                      onSearch={setMemberSearch}
+                    />
+                  )}
+                  {currentStep === 2 && (
+                    <CommitteesStep
+                      club={club}
+                      filteredCommittees={filteredCommittees}
+                      onSearch={setCommitteeSearch}
+                    />
+                  )}
+                </AnimatePresence>
               </div>
             </>
           )}

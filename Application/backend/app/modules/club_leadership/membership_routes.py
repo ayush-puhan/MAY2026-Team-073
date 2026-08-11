@@ -69,6 +69,8 @@ def serialize_membership(member):
 
                 "email": member.user.email,
 
+                "profile_photo_url": member.user.profile_photo_url,
+
                 "role": (
                     member.user.role.value.lower()
                     if member.user.role

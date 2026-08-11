@@ -73,6 +73,7 @@ const CalendarWorkspace = ({ events, loading, user, filters, setFilters }) => {
           events={events}
           startAccessor="start"
           endAccessor="end"
+          style={{ height: '100%' }}
           view={view}
           views={['month', 'week', 'day', 'agenda']}
           date={date}

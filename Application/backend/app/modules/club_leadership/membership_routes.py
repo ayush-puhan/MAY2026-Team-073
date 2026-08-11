@@ -345,7 +345,7 @@ class UpdateMemberRoleResource(Resource):
                 try:
 
                     membership.role_in_club = ClubMemberRole(
-                        new_role.upper()
+                        new_role
                     )
 
                 except ValueError:

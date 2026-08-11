@@ -8,9 +8,8 @@ from app.database.enums import MembershipStatus
 from app.database.models import ClubMembership
 from app.middleware.auth_middleware import require_auth
 
-memberships_bp = Blueprint("memberships", __name__)
-api = Api(memberships_bp)
-
+leave_club_bp = Blueprint('leave_club', __name__)
+api = Api(leave_club_bp)
 
 def _format_dt(dt):
     return dt.strftime("%Y-%m-%d %H:%M:%S") if dt else None

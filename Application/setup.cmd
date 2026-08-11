@@ -13,7 +13,7 @@ goto :eof
 
 :frontend
 echo Changing directory to frontend......
-cd backend
+cd frontend
 echo Dirctory changed to frontend!!
 echo Starting frontend development server...
 REM Using 'call' prevents the batch script from exiting after running npm

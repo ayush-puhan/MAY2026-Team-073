@@ -68,8 +68,8 @@ class ClubResourcesResource(Resource):
                 .order_by(Document.created_at.desc())
                 .all()
             )
-
             return [serialize_document(r) for r in resources], 200
+
 
     @require_auth
     @require_club_role(
@@ -149,13 +149,10 @@ class ClubResourceDeleteResource(Resource):
                 "message": "Resource deleted successfully"
             }, 200
 
-
 # =========================================================
 # Committee Resources
 # =========================================================
-
 class CommitteeResourcesResource(Resource):
-
     @require_auth
     @require_club_role(
         "member",
@@ -172,7 +169,6 @@ class CommitteeResourcesResource(Resource):
                 .filter(Committee.id == id)
                 .first()
             )
-
             if not committee:
                 return {"message": "Committee not found"}, 404
 
@@ -182,7 +178,6 @@ class CommitteeResourcesResource(Resource):
                 .order_by(Document.created_at.desc())
                 .all()
             )
-
             return [serialize_document(r) for r in resources], 200
 
 

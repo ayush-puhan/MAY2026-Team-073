@@ -150,7 +150,7 @@ from db_factory.factory import (
     UserFactory,ClubFactory,EventFactory,UniversityFactory,SupportTicketFactory,AuditLogFactory,DepartmentFactory,
     BudgetFactory,ExpenseFactory,ClubMembershipFactory,CommitteeFactory,ClubCreationRequestFactory,
     AnnouncementFactory,ClubJoinApplicationFactory,DocumentFactory,InterestFactory,
-    ClubInterestFactory,CommitteeFactory,CommitteeMembershipFactory
+    ClubInterestFactory,CommitteeFactory,CommitteeMembershipFactory,VolunteerAssignmentFactory
 )
 
 @pytest.fixture(autouse=True)
@@ -174,7 +174,8 @@ def factory_session(db_session):
         InterestFactory,
         ClubInterestFactory,
         CommitteeFactory,
-        CommitteeMembershipFactory
+        CommitteeMembershipFactory,
+        VolunteerAssignmentFactory
     ]
     for factory_cls in factories:
         factory_cls._meta.sqlalchemy_session = db_session

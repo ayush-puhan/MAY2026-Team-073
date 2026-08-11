@@ -7,13 +7,13 @@ from datetime import datetime, timedelta
 from app.database.models import (
     User,Club,University,Event,SupportTicket ,AuditLog,Department,Budget,Expense,ClubMembership,
     Committee, ClubCreationRequest,Announcement,ClubJoinApplication,Document,Interest,
-    ClubInterest,CommitteeMembership
+    ClubInterest,CommitteeMembership,VolunteerAssignment
 )
 
 from app.database.enums import (
     UserRole,AuthProvider,ClubStatus,EventStatus,TicketType,
     TicketPriority,ClubMemberRole,ClubRequestStatus,
-    TicketStatus, MembershipStatus,AnnouncementAudience,
+    TicketStatus, MembershipStatus,AnnouncementAudience,VolunteerTaskStatus,
     BudgetStatus,ExpenseStatus,ExpenseApprovalStatus,DocumentType,CommitteeRole
 )
 
@@ -271,3 +271,18 @@ class CommitteeMembershipFactory(BaseFactory):
     membership = None #factory.SubFactory(ClubMembershipFactory)
     role = CommitteeRole.MEMBER
     joined_at = factory.LazyFunction(datetime.utcnow)
+
+
+class VolunteerAssignmentFactory(BaseFactory):
+    class Meta:
+        model = VolunteerAssignment
+    event = None #factory.SubFactory(EventFactory)
+    assignee_membership = None #factory.SubFactory(ClubMembershipFactory)
+    assigner = None #factory.SubFactory(UserFactory)
+    task_description = factory.Faker("sentence")
+    status = VolunteerTaskStatus.ASSIGNED
+    due_at = factory.LazyFunction(
+        lambda: datetime.utcnow() + timedelta(days=7)
+    )
+    committee = None
+    created_at = factory.LazyFunction(datetime.utcnow)

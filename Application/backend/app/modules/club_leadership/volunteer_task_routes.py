@@ -101,48 +101,75 @@ class ClubTasksResource(Resource):
 
 
     def get(self, club_id):
-
-        user_id = request.args.get("user_id")
-
-
-        with get_session() as db:
+        try:
+            user_id = request.args.get("user_id")
 
 
-            # -----------------------------------------
-            # CASE 1:
-            # Member checking own tasks
-            # /clubs/2/tasks?user_id=1
-            # -----------------------------------------
-
-            if user_id:
+            with get_session() as db:
 
 
-                membership = (
-                    db.query(ClubMembership)
-                    .filter(
-                        ClubMembership.club_id == club_id,
-                        ClubMembership.user_id == int(user_id),
-                        ClubMembership.status ==
-                        MembershipStatus.APPROVED
+                # -----------------------------------------
+                # CASE 1:
+                # Member checking own tasks
+                # /clubs/2/tasks?user_id=1
+                # -----------------------------------------
+
+                if user_id:
+
+
+                    membership = (
+                        db.query(ClubMembership)
+                        .filter(
+                            ClubMembership.club_id == club_id,
+                            ClubMembership.user_id == int(user_id),
+                            ClubMembership.status ==
+                            MembershipStatus.APPROVED
+                        )
+                        .first()
                     )
-                    .first()
-                )
 
 
-                if not membership:
-                    return {
-                        "message":
-                        "Membership not found"
-                    },404
+                    if not membership:
+                        return {
+                            "message":
+                            "Membership not found"
+                        },404
 
+
+
+                    tasks = (
+                        db.query(VolunteerAssignment)
+                        .filter(
+                            VolunteerAssignment.assignee_membership_id
+                            ==
+                            membership.id
+                        )
+                        .all()
+                    )
+
+
+                    return [
+                        serialize_task(task)
+                        for task in tasks
+                    ],200
+
+
+
+                # -----------------------------------------
+                # CASE 2:
+                # Coordinator viewing all tasks
+                # /clubs/2/tasks
+                # -----------------------------------------
+
+
+                current_user = g.current_user
 
 
                 tasks = (
                     db.query(VolunteerAssignment)
+                    .join(Event)
                     .filter(
-                        VolunteerAssignment.assignee_membership_id
-                        ==
-                        membership.id
+                        Event.club_id == club_id
                     )
                     .all()
                 )
@@ -152,33 +179,8 @@ class ClubTasksResource(Resource):
                     serialize_task(task)
                     for task in tasks
                 ],200
-
-
-
-            # -----------------------------------------
-            # CASE 2:
-            # Coordinator viewing all tasks
-            # /clubs/2/tasks
-            # -----------------------------------------
-
-
-            current_user = g.current_user
-
-
-            tasks = (
-                db.query(VolunteerAssignment)
-                .join(Event)
-                .filter(
-                    Event.club_id == club_id
-                )
-                .all()
-            )
-
-
-            return [
-                serialize_task(task)
-                for task in tasks
-            ],200
+        except Exception as e:
+            return {'messge' : 'Uncaught Error'}, 500
 
 
 
@@ -199,154 +201,156 @@ class CreateVolunteerTaskResource(Resource):
         "president"
     )
     def post(self):
+        try:
+            data = request.get_json()
 
-        data = request.get_json()
+            print("REQUEST DATA:", data)
 
-        print("REQUEST DATA:", data)
-
-        if not data:
-            return {
-                "message": "Request body is required"
-            }, 400
-
-
-        required_fields = [
-            "event_id",
-            "assignee_membership_id",
-            "task_description"
-        ]
-
-        for field in required_fields:
-            if field not in data:
-                print("MISSING FIELD:", field)
-
+            if not data:
                 return {
-                    "message": f"{field} is required"
+                    "message": "Request body is required"
                 }, 400
 
 
-        with get_session() as db:
+            required_fields = [
+                "event_id",
+                "assignee_membership_id",
+                "task_description"
+            ]
 
-            event = (
-                db.query(Event)
-                .filter(
-                    Event.id == data["event_id"]
-                )
-                .first()
-            )
-
-
-            print("EVENT:", event)
-
-
-            if not event:
-                return {
-                    "message": "Event not found"
-                }, 404
-
-
-
-            membership = (
-                db.query(ClubMembership)
-                .filter(
-                    ClubMembership.id == data["assignee_membership_id"]
-                )
-                .first()
-            )
-
-
-            print(
-                "ASSIGNEE MEMBERSHIP:",
-                membership
-            )
-
-
-            if not membership:
-                return {
-                    "message":
-                    "Membership ID does not exist"
-                },400
-
-
-
-            print(
-                "MEMBERSHIP CLUB:",
-                membership.club_id
-            )
-
-            print(
-                "EVENT CLUB:",
-                event.club_id
-            )
-
-
-            if membership.club_id != event.club_id:
-
-                return {
-                    "message":
-                    "Assignee does not belong to event club"
-                },400
-
-
-
-            if membership.status != MembershipStatus.APPROVED:
-
-                return {
-                    "message":
-                    "Assignee membership is not approved"
-                },400
-
-
-
-            due_at = None
-
-            if data.get("due_at"):
-
-                try:
-                    due_at = datetime.fromisoformat(
-                        data["due_at"]
-                    )
-
-                except ValueError:
+            for field in required_fields:
+                if field not in data:
+                    print("MISSING FIELD:", field)
 
                     return {
+                        "message": f"{field} is required"
+                    }, 400
+
+
+            with get_session() as db:
+
+                event = (
+                    db.query(Event)
+                    .filter(
+                        Event.id == data["event_id"]
+                    )
+                    .first()
+                )
+
+
+                print("EVENT:", event)
+
+
+                if not event:
+                    return {
+                        "message": "Event not found"
+                    }, 404
+
+
+
+                membership = (
+                    db.query(ClubMembership)
+                    .filter(
+                        ClubMembership.id == data["assignee_membership_id"]
+                    )
+                    .first()
+                )
+
+
+                print(
+                    "ASSIGNEE MEMBERSHIP:",
+                    membership
+                )
+
+
+                if not membership:
+                    return {
                         "message":
-                        "Invalid due_at format"
+                        "Membership ID does not exist"
                     },400
 
 
 
-            task = VolunteerAssignment(
+                print(
+                    "MEMBERSHIP CLUB:",
+                    membership.club_id
+                )
 
-                event_id=data["event_id"],
-
-                assignee_membership_id=
-                data["assignee_membership_id"],
-
-                assigned_by=
-                g.current_user.id,
-
-                task_description=
-                data["task_description"],
-
-                due_at=due_at,
-
-                committee_id=
-                data.get("committee_id")
-            )
+                print(
+                    "EVENT CLUB:",
+                    event.club_id
+                )
 
 
-            db.add(task)
+                if membership.club_id != event.club_id:
 
-            db.commit()
-
-            db.refresh(task)
-
-
-            print("TASK CREATED:", task.id)
+                    return {
+                        "message":
+                        "Assignee does not belong to event club"
+                    },400
 
 
-            return serialize_task(task), 201
+
+                if membership.status != MembershipStatus.APPROVED:
+
+                    return {
+                        "message":
+                        "Assignee membership is not approved"
+                    },400
+
+
+
+                due_at = None
+
+                if data.get("due_at"):
+
+                    try:
+                        due_at = datetime.fromisoformat(
+                            data["due_at"]
+                        )
+
+                    except ValueError:
+
+                        return {
+                            "message":
+                            "Invalid due_at format"
+                        },400
+
+
+
+                task = VolunteerAssignment(
+
+                    event_id=data["event_id"],
+
+                    assignee_membership_id=
+                    data["assignee_membership_id"],
+
+                    assigned_by=
+                    g.current_user.id,
+
+                    task_description=
+                    data["task_description"],
+
+                    due_at=due_at,
+
+                    committee_id=
+                    data.get("committee_id")
+                )
+
+
+                db.add(task)
+
+                db.commit()
+
+                db.refresh(task)
+
+
+                print("TASK CREATED:", task.id)
+
+
+                return serialize_task(task), 201
+        except Exception as e:
+            return {'messge' : 'Uncaught Error'}, 500
 # -------------------------------------------------
 # UPDATE TASK STATUS
 # PATCH /api/volunteer-tasks/<id>/status
@@ -363,70 +367,72 @@ class VolunteerTaskStatusResource(Resource):
 
 
     def patch(self, id):
+        try:
+            data = request.get_json()
 
-        data = request.get_json()
-
-        new_status = data.get("status")
-
-
-        if not new_status:
-            return {
-                "message":
-                "status required"
-            },400
+            new_status = data.get("status")
 
 
-
-        with get_session() as db:
-
-            task = (
-                db.query(VolunteerAssignment)
-                .filter(
-                    VolunteerAssignment.id==id
-                )
-                .first()
-            )
-
-
-            if not task:
+            if not new_status:
                 return {
                     "message":
-                    "Task not found"
-                },404
-
-
-
-            membership = task.assignee_membership
-
-
-            if membership.user_id != g.current_user.id:
-
-                return {
-                    "message":
-                    "You can update only your task"
-                },403
-
-
-
-            try:
-
-                task.status = VolunteerTaskStatus(
-                    new_status
-                )
-
-            except ValueError:
-
-                return {
-                    "message":
-                    "Invalid status"
+                    "status required"
                 },400
 
 
 
-            db.commit()
+            with get_session() as db:
+
+                task = (
+                    db.query(VolunteerAssignment)
+                    .filter(
+                        VolunteerAssignment.id==id
+                    )
+                    .first()
+                )
 
 
-            return serialize_task(task),200
+                if not task:
+                    return {
+                        "message":
+                        "Task not found"
+                    },404
+
+
+
+                membership = task.assignee_membership
+
+
+                if membership.user_id != g.current_user.id:
+
+                    return {
+                        "message":
+                        "You can update only your task"
+                    },403
+
+
+
+                try:
+
+                    task.status = VolunteerTaskStatus(
+                        new_status
+                    )
+
+                except ValueError:
+
+                    return {
+                        "message":
+                        "Invalid status"
+                    },400
+
+
+
+                db.commit()
+
+
+                return serialize_task(task),200
+        except Exception as e:
+            return {'messge' : 'Uncaught Error'}, 500
 
 
 
@@ -444,42 +450,42 @@ class CheckOverdueTasksResource(Resource):
 
 
     def post(self):
+        try:
+            updated = 0
+            with get_session() as db:
 
-        updated = 0
+                tasks = (
+                    db.query(VolunteerAssignment)
+                    .filter(
+                        VolunteerAssignment.due_at
+                        < datetime.utcnow(),
 
-
-        with get_session() as db:
-
-            tasks = (
-                db.query(VolunteerAssignment)
-                .filter(
-                    VolunteerAssignment.due_at
-                    < datetime.utcnow(),
-
-                    VolunteerAssignment.status
-                    !=
-                    VolunteerTaskStatus.COMPLETED
-                )
-                .all()
-            )
-
-
-            for task in tasks:
-
-                task.status = (
-                    VolunteerTaskStatus.MISSED
+                        VolunteerAssignment.status
+                        !=
+                        VolunteerTaskStatus.COMPLETED
+                    )
+                    .all()
                 )
 
-                updated +=1
+
+                for task in tasks:
+
+                    task.status = (
+                        VolunteerTaskStatus.MISSED
+                    )
+
+                    updated +=1
 
 
 
-            db.commit()
+                db.commit()
 
 
-        return {
-            "updated":updated
-        },200
+            return {
+                "updated":updated
+            },200
+        except Exception as e:
+            return {'messge' : 'Uncaught Error'}, 500
 
 
 

@@ -46,37 +46,40 @@ class LeaveClubResource(Resource):
 
     @require_auth
     def post(self, membership_id):
-        with get_session() as db:
+        try:
+            with get_session() as db:
 
-            membership = (
-                db.query(ClubMembership)
-                .filter_by(id=membership_id)
-                .first()
-            )
+                membership = (
+                    db.query(ClubMembership)
+                    .filter_by(id=membership_id)
+                    .first()
+                )
 
-            if membership is None:
-                return {"message": "Membership not found."}, 404
+                if membership is None:
+                    return {"message": "Membership not found."}, 404
 
-            if membership.user_id != g.current_user.id:
+                if membership.user_id != g.current_user.id:
+                    return {
+                        "message": "You can only leave your own club membership."
+                    }, 403
+
+                if membership.status != MembershipStatus.APPROVED:
+                    return {
+                        "message": "Only approved members can leave a club."
+                    }, 400
+
+                membership.status = MembershipStatus.WITHDRAWN
+                membership.decided_at = datetime.utcnow()
+
+                db.commit()
+                db.refresh(membership)
+
                 return {
-                    "message": "You can only leave your own club membership."
-                }, 403
-
-            if membership.status != MembershipStatus.APPROVED:
-                return {
-                    "message": "Only approved members can leave a club."
-                }, 400
-
-            membership.status = MembershipStatus.WITHDRAWN
-            membership.decided_at = datetime.utcnow()
-
-            db.commit()
-            db.refresh(membership)
-
-            return {
-                "message": "Successfully left the club.",
-                "membership": serialize_membership(membership),
-            }, 200
+                    "message": "Successfully left the club.",
+                    "membership": serialize_membership(membership),
+                }, 200
+        except Exception as e:
+            return {'messge' : 'Uncaught Error'}, 500
 
 
 api.add_resource(

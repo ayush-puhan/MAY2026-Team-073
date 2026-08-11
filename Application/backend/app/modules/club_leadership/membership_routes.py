@@ -158,23 +158,25 @@ def serialize_user_club(member):
 class UserClubResource(Resource):
     @require_auth
     def get(self, user_id):
+        try:
+            with get_session() as db:
 
-        with get_session() as db:
-
-            memberships = (
-                db.query(ClubMembership)
-                .filter(
-                    ClubMembership.user_id == user_id,
-                    ClubMembership.status == MembershipStatus.APPROVED
+                memberships = (
+                    db.query(ClubMembership)
+                    .filter(
+                        ClubMembership.user_id == user_id,
+                        ClubMembership.status == MembershipStatus.APPROVED
+                    )
+                    .all()
                 )
-                .all()
-            )
 
 
-            return [
-                serialize_user_club(member)
-                for member in memberships
-            ], 200
+                return [
+                    serialize_user_club(member)
+                    for member in memberships
+                ], 200
+        except Exception as e:
+            return {'messge' : 'Uncaught Error'}, 500
 
 
 
@@ -191,35 +193,37 @@ class ClubMembersResource(Resource):
         # /clubs/<club_id>/members
         # /club_memberships?club_id=2
         # /club_memberships
-
-        if club_id is None:
-            club_id = request.args.get("club_id")
-
-
-        with get_session() as db:
-
-            query = (
-                db.query(ClubMembership)
-                .filter(
-                    ClubMembership.status == MembershipStatus.APPROVED
-                )
-            )
+        try:
+            if club_id is None:
+                club_id = request.args.get("club_id")
 
 
-            # If club_id is provided, filter that club only
-            if club_id:
-                query = query.filter(
-                    ClubMembership.club_id == int(club_id)
+            with get_session() as db:
+
+                query = (
+                    db.query(ClubMembership)
+                    .filter(
+                        ClubMembership.status == MembershipStatus.APPROVED
+                    )
                 )
 
 
-            members = query.all()
+                # If club_id is provided, filter that club only
+                if club_id:
+                    query = query.filter(
+                        ClubMembership.club_id == int(club_id)
+                    )
 
 
-            return [
-                serialize_membership(member)
-                for member in members
-            ], 200
+                members = query.all()
+
+
+                return [
+                    serialize_membership(member)
+                    for member in members
+                ], 200
+        except Exception as e:
+            return {'messge' : 'Uncaught Error'}, 500
 # -------------------------------------------------
 # GET /api/clubs/<club_id>/membership-requests
 # -------------------------------------------------
@@ -228,23 +232,25 @@ class ClubMembershipRequestsResource(Resource):
     @require_auth
     @require_role("student")
     def get(self, club_id):
+        try:
+            with get_session() as db:
 
-        with get_session() as db:
-
-            requests = (
-                db.query(ClubMembership)
-                .filter(
-                    ClubMembership.club_id == club_id,
-                    ClubMembership.status == MembershipStatus.PENDING
+                requests = (
+                    db.query(ClubMembership)
+                    .filter(
+                        ClubMembership.club_id == club_id,
+                        ClubMembership.status == MembershipStatus.PENDING
+                    )
+                    .all()
                 )
-                .all()
-            )
 
 
-            return [
-                serialize_membership(member)
-                for member in requests
-            ], 200
+                return [
+                    serialize_membership(member)
+                    for member in requests
+                ], 200
+        except Exception as e:
+            return {'messge' : 'Uncaught Error'}, 500
 
 
 
@@ -255,41 +261,43 @@ class ClubMembershipRequestsResource(Resource):
 class UserRoleInClubResource(Resource):
     @require_auth
     def get(self, club_id, user_id):
+        try:
+            with get_session() as db:
 
-        with get_session() as db:
-
-            membership = (
-                db.query(ClubMembership)
-                .filter(
-                    ClubMembership.club_id == club_id,
-                    ClubMembership.user_id == user_id,
-                    ClubMembership.status == MembershipStatus.APPROVED
+                membership = (
+                    db.query(ClubMembership)
+                    .filter(
+                        ClubMembership.club_id == club_id,
+                        ClubMembership.user_id == user_id,
+                        ClubMembership.status == MembershipStatus.APPROVED
+                    )
+                    .first()
                 )
-                .first()
-            )
 
 
-            if not membership:
+                if not membership:
+
+                    return {
+                        "message": "Membership not found."
+                    }, 404
+
+
 
                 return {
-                    "message": "Membership not found."
-                }, 404
 
+                    "club_id": club_id,
 
+                    "user_id": user_id,
 
-            return {
+                    "role_in_club": (
+                        membership.role_in_club.value.lower()
+                        if membership.role_in_club
+                        else None
+                    )
 
-                "club_id": club_id,
-
-                "user_id": user_id,
-
-                "role_in_club": (
-                    membership.role_in_club.value.lower()
-                    if membership.role_in_club
-                    else None
-                )
-
-            }, 200
+                }, 200
+        except Exception as e:
+            return {'messge' : 'Uncaught Error'}, 500
 
 # -------------------------------------------------
 # PATCH /api/memberships/<id>/role
@@ -300,61 +308,63 @@ class UpdateMemberRoleResource(Resource):
     @require_auth
     @require_club_role("president")
     def patch(self, id):
+        try:
+            data = request.get_json()
 
-        data = request.get_json()
-
-        if not data:
-            return {
-                "message": "Request body required."
-            }, 400
-
-
-        new_role = data.get("role_in_club")
-
-        if not new_role:
-            return {
-                "message": "role_in_club is required."
-            }, 400
-
-
-        with get_session() as db:
-
-            membership = (
-                db.query(ClubMembership)
-                .filter(
-                    ClubMembership.id == id
-                )
-                .first()
-            )
-
-
-            if not membership:
+            if not data:
                 return {
-                    "message": "Membership not found."
-                }, 404
-
-
-            try:
-
-                membership.role_in_club = ClubMemberRole(
-                    new_role.upper()
-                )
-
-            except ValueError:
-
-                return {
-                    "message": "Invalid club role."
+                    "message": "Request body required."
                 }, 400
 
 
-            db.commit()
-            db.refresh(membership)
+            new_role = data.get("role_in_club")
+
+            if not new_role:
+                return {
+                    "message": "role_in_club is required."
+                }, 400
 
 
-            return {
-                "message": "Member role updated successfully.",
-                "membership": serialize_membership(membership)
-            }, 200
+            with get_session() as db:
+
+                membership = (
+                    db.query(ClubMembership)
+                    .filter(
+                        ClubMembership.id == id
+                    )
+                    .first()
+                )
+
+
+                if not membership:
+                    return {
+                        "message": "Membership not found."
+                    }, 404
+
+
+                try:
+
+                    membership.role_in_club = ClubMemberRole(
+                        new_role.upper()
+                    )
+
+                except ValueError:
+
+                    return {
+                        "message": "Invalid club role."
+                    }, 400
+
+
+                db.commit()
+                db.refresh(membership)
+
+
+                return {
+                    "message": "Member role updated successfully.",
+                    "membership": serialize_membership(membership)
+                }, 200
+        except Exception as e:
+            return {'messge' : 'Uncaught Error'}, 500
 
 # -------------------------------------------------
 # Route Registration

@@ -94,43 +94,45 @@ class ClubApplicationsResource(Resource):
     @require_auth
     @require_club_role("president", "vice_president")
     def get(self, club_id):
+        try:
+            status = request.args.get("status")
 
-        status = request.args.get("status")
+            with get_session() as db:
 
-        with get_session() as db:
-
-            query = (
-                db.query(ClubJoinApplication)
-                .filter(
-                    ClubJoinApplication.club_id == club_id
-                )
-            )
-
-            if status:
-
-                try:
-
-                    query = query.filter(
-                        ClubJoinApplication.status ==
-                        MembershipStatus(status.lower())
+                query = (
+                    db.query(ClubJoinApplication)
+                    .filter(
+                        ClubJoinApplication.club_id == club_id
                     )
+                )
 
-                except ValueError:
+                if status:
 
-                    return {
-                        "message":
-                        "Invalid application status."
-                    }, 400
+                    try:
 
-            applications = query.all()
+                        query = query.filter(
+                            ClubJoinApplication.status ==
+                            MembershipStatus(status.lower())
+                        )
 
-            return [
+                    except ValueError:
 
-                serialize_application(application)
+                        return {
+                            "message":
+                            "Invalid application status."
+                        }, 400
 
-                for application in applications
+                applications = query.all()
 
-            ], 200
+                return [
+
+                    serialize_application(application)
+
+                    for application in applications
+
+                ], 200
+        except Exception as e:
+            return {'messge' : 'Uncaught Error'}, 500
 
 
 # -------------------------------------------------
@@ -140,28 +142,30 @@ class ClubApplicationsResource(Resource):
 class UserClubApplicationsResource(Resource):
     @require_auth
     def get(self, user_id):
+        try:
+            with get_session() as db:
 
-        with get_session() as db:
+                applications = (
 
-            applications = (
+                    db.query(ClubJoinApplication)
 
-                db.query(ClubJoinApplication)
+                    .filter(
+                        ClubJoinApplication.user_id == user_id
+                    )
 
-                .filter(
-                    ClubJoinApplication.user_id == user_id
+                    .all()
+
                 )
 
-                .all()
+                return [
 
-            )
+                    serialize_application(application)
 
-            return [
+                    for application in applications
 
-                serialize_application(application)
-
-                for application in applications
-
-            ], 200
+                ], 200
+        except Exception as e:
+            return {'messge' : 'Uncaught Error'}, 500
 
 
 # -------------------------------------------------
@@ -172,87 +176,89 @@ class ClubApplicationSubmissionResource(Resource):
     @require_auth
     @require_role("student")
     def post(self, club_id):
+        try:
+            data = request.get_json()
 
-        data = request.get_json()
+            if not data:
 
-        if not data:
-
-            return {
-                "message":
-                "Request body required."
-            }, 400
-
-
-        required = ["motivation"]
-
-        missing = [
-
-            field
-
-            for field in required
-
-            if not data.get(field)
-
-        ]
-
-        if missing:
-
-            return {
-
-                "message":
-
-                f"Missing fields: {', '.join(missing)}"
-
-            }, 400
+                return {
+                    "message":
+                    "Request body required."
+                }, 400
 
 
-        with get_session() as db:
+            required = ["motivation"]
 
-            application = ClubJoinApplication(
+            missing = [
 
-                user_id=g.current_user.id,
+                field
 
-                club_id=club_id,
+                for field in required
 
-                motivation=data["motivation"],
+                if not data.get(field)
 
-                contribution=data.get("contribution"),
+            ]
 
-                previous_experience=data.get(
-                    "previous_experience"
-                ),
+            if missing:
 
-                skills=data.get("skills"),
+                return {
 
-                portfolio_url=data.get(
-                    "portfolio_url"
-                ),
+                    "message":
 
-                resume_document_id=data.get(
-                    "resume_document_id"
-                ),
+                    f"Missing fields: {', '.join(missing)}"
 
-                weekly_availability=data.get(
-                    "weekly_availability"
+                }, 400
+
+
+            with get_session() as db:
+
+                application = ClubJoinApplication(
+
+                    user_id=g.current_user.id,
+
+                    club_id=club_id,
+
+                    motivation=data["motivation"],
+
+                    contribution=data.get("contribution"),
+
+                    previous_experience=data.get(
+                        "previous_experience"
+                    ),
+
+                    skills=data.get("skills"),
+
+                    portfolio_url=data.get(
+                        "portfolio_url"
+                    ),
+
+                    resume_document_id=data.get(
+                        "resume_document_id"
+                    ),
+
+                    weekly_availability=data.get(
+                        "weekly_availability"
+                    )
+
                 )
 
-            )
+                db.add(application)
 
-            db.add(application)
+                db.commit()
 
-            db.commit()
+                db.refresh(application)
 
-            db.refresh(application)
+                return {
 
-            return {
+                    "message":
+                    "Application submitted successfully.",
 
-                "message":
-                "Application submitted successfully.",
+                    "application":
+                    serialize_application(application)
 
-                "application":
-                serialize_application(application)
-
-            }, 201
+                }, 201
+        except Exception as e:
+            return {'messge' : 'Uncaught Error'}, 500
 
 
 # -------------------------------------------------
@@ -267,175 +273,177 @@ class ReviewApplicationResource(Resource):
         "vice_president"
     )
     def patch(self, application_id):
-
-        data = request.get_json()
-
-        if not data:
-            return {
-                "message": "Request body required."
-            }, 400
-
-
-        # Support frontend field name: decision
-        # Also support API field name: status
-        new_status = (
-            data.get("status")
-            or data.get("decision")
-        )
-
-
-        if not new_status:
-            return {
-                "message": "Status/decision is required."
-            }, 400
-
-
         try:
-            new_status = MembershipStatus(
-                new_status.lower()
+            data = request.get_json()
+
+            if not data:
+                return {
+                    "message": "Request body required."
+                }, 400
+
+
+            # Support frontend field name: decision
+            # Also support API field name: status
+            new_status = (
+                data.get("status")
+                or data.get("decision")
             )
 
-        except ValueError:
-            return {
-                "message": "Invalid application status."
-            }, 400
+
+            if not new_status:
+                return {
+                    "message": "Status/decision is required."
+                }, 400
 
 
-
-        with get_session() as db:
-
-            application = (
-                db.query(ClubJoinApplication)
-                .filter(
-                    ClubJoinApplication.id == application_id
+            try:
+                new_status = MembershipStatus(
+                    new_status.lower()
                 )
-                .first()
-            )
 
-
-            if not application:
+            except ValueError:
                 return {
-                    "message": "Application not found."
-                }, 404
-
-
-
-            if application.status != MembershipStatus.PENDING:
-
-                return {
-                    "message":
-                    "Application already reviewed."
+                    "message": "Invalid application status."
                 }, 400
 
 
 
-            club_id = application.club_id
+            with get_session() as db:
 
-
-            if not club_id:
-                return {
-                    "message":
-                    "Application has no club assigned."
-                }, 400
-
-
-
-            # -----------------------------
-            # APPROVE APPLICATION
-            # -----------------------------
-
-            if new_status == MembershipStatus.APPROVED:
-
-
-                existing_membership = (
-                    db.query(ClubMembership)
+                application = (
+                    db.query(ClubJoinApplication)
                     .filter(
-                        ClubMembership.user_id ==
-                        application.user_id,
-
-                        ClubMembership.club_id ==
-                        club_id
+                        ClubJoinApplication.id == application_id
                     )
                     .first()
                 )
 
 
-                if existing_membership:
+                if not application:
+                    return {
+                        "message": "Application not found."
+                    }, 404
+
+
+
+                if application.status != MembershipStatus.PENDING:
 
                     return {
                         "message":
-                        "User already has membership."
+                        "Application already reviewed."
                     }, 400
 
 
 
-                membership = ClubMembership(
+                club_id = application.club_id
 
-                    user_id=application.user_id,
 
-                    # Required field
-                    club_id=club_id,
+                if not club_id:
+                    return {
+                        "message":
+                        "Application has no club assigned."
+                    }, 400
 
-                    role_in_club=ClubMemberRole.MEMBER,
 
-                    status=MembershipStatus.APPROVED,
 
-                    applied_at=application.applied_at,
+                # -----------------------------
+                # APPROVE APPLICATION
+                # -----------------------------
 
-                    decided_at=datetime.utcnow(),
+                if new_status == MembershipStatus.APPROVED:
 
-                    approved_by=g.current_user.id
+
+                    existing_membership = (
+                        db.query(ClubMembership)
+                        .filter(
+                            ClubMembership.user_id ==
+                            application.user_id,
+
+                            ClubMembership.club_id ==
+                            club_id
+                        )
+                        .first()
+                    )
+
+
+                    if existing_membership:
+
+                        return {
+                            "message":
+                            "User already has membership."
+                        }, 400
+
+
+
+                    membership = ClubMembership(
+
+                        user_id=application.user_id,
+
+                        # Required field
+                        club_id=club_id,
+
+                        role_in_club=ClubMemberRole.MEMBER,
+
+                        status=MembershipStatus.APPROVED,
+
+                        applied_at=application.applied_at,
+
+                        decided_at=datetime.utcnow(),
+
+                        approved_by=g.current_user.id
+                    )
+
+
+                    db.add(membership)
+
+
+
+                # -----------------------------
+                # REJECT APPLICATION
+                # -----------------------------
+
+                elif new_status == MembershipStatus.REJECTED:
+
+                    application.review_comments = (
+                        data.get("review_comments")
+                    )
+
+
+
+                # -----------------------------
+                # UPDATE APPLICATION
+                # -----------------------------
+
+                application.status = new_status
+
+                application.reviewed_by = (
+                    g.current_user.id
                 )
-
-
-                db.add(membership)
-
-
-
-            # -----------------------------
-            # REJECT APPLICATION
-            # -----------------------------
-
-            elif new_status == MembershipStatus.REJECTED:
 
                 application.review_comments = (
                     data.get("review_comments")
                 )
 
-
-
-            # -----------------------------
-            # UPDATE APPLICATION
-            # -----------------------------
-
-            application.status = new_status
-
-            application.reviewed_by = (
-                g.current_user.id
-            )
-
-            application.review_comments = (
-                data.get("review_comments")
-            )
-
-            application.reviewed_at = datetime.utcnow()
+                application.reviewed_at = datetime.utcnow()
 
 
 
-            db.commit()
+                db.commit()
 
-            db.refresh(application)
+                db.refresh(application)
 
 
-            return {
+                return {
 
-                "message":
-                "Application reviewed successfully.",
+                    "message":
+                    "Application reviewed successfully.",
 
-                "application":
-                serialize_application(application)
+                    "application":
+                    serialize_application(application)
 
-            }, 200
+                }, 200
+        except Exception as e:
+            return {'messge' : 'Uncaught Error'}, 500
 
 
 # -------------------------------------------------

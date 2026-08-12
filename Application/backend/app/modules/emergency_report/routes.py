@@ -70,7 +70,7 @@ def make_emergency_report():
 
 @em_report.route("", methods=["GET"])
 @require_auth
-@require_role(UserRole.SYSTEM_ADMIN,UserRole.DEAN_STUDENT_WELFARE,UserRole.STUDENT_AFFAIRS_OFFICE)
+@require_role(UserRole.SYSTEM_ADMIN,UserRole.DEAN_STUDENT_WELFARE,UserRole.STUDENT_AFFAIRS_OFFICE, UserRole.FACULTY_ADVISOR)
 def get_emergency_reports():
     try:
         status = request.args.get("status")

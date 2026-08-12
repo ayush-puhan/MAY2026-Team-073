@@ -186,4 +186,34 @@ class ProfileResource(Resource):
             db.commit()
             return {"message": "User account permanently deleted."}, 200
 
+class UserListResource(Resource):
+
+    @require_auth
+    def get(self):
+        try:
+            with get_session() as session:
+
+                users = (
+                    session.query(User)
+                    .order_by(User.full_name.asc())
+                    .all()
+                )
+
+                return [
+                    {
+                        "id": user.id,
+                        "full_name": user.full_name,
+                        "email": user.email,
+                        "avatar": user.profile_photo_url,
+                    }
+                    for user in users
+                ], 200
+
+        except Exception as e:
+            return {
+                "message": f"Error: {e}"
+            }, 500
+
+
 user_api.add_resource(ProfileResource, '/profile')
+user_api.add_resource(UserListResource, '')

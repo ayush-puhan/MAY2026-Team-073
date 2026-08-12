@@ -144,9 +144,10 @@ export const Helpdesk = () => {
   };
 
   const handleRowClick = async (ticket) => {
+    console.log("Clicked ticket:", ticket);
     setSelectedTicket(ticket);
     try {
-      const resp = await api.get(`/ticket_responses?ticket_id=${ticket.id}`);
+      const resp = await api.get(`/ticket_responses?ticket_id=${ticket.ticket_id}`);
       setResponses(resp || []);
     } catch (error) {
       console.error("Failed to fetch responses", error);

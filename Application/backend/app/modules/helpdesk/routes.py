@@ -303,12 +303,17 @@ class SupportTicketResource(Resource):
                 return [
                     {
                         "id": ticket.id,
+                        "raised_by": ticket.raised_by,
+                        "club_id": ticket.club_id,
                         "title": ticket.title,
                         "description": ticket.description,
                         "ticket_type": ticket.ticket_type.value,
                         "priority": ticket.priority.value,
                         "status": ticket.status.value,
-                        "club_id": ticket.club_id,
+                        "assigned_agent_id": ticket.assigned_agent_id,
+                        "is_offensive": ticket.is_offensive,
+                        "resolution_rating": ticket.resolution_rating,
+                        "university_id": ticket.university_id,
                         "created_at": (
                             ticket.created_at.strftime("%Y-%m-%d %H:%M:%S")
                             if ticket.created_at else None
@@ -316,9 +321,13 @@ class SupportTicketResource(Resource):
                     }
                     for ticket in tickets
                 ], 200
+
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
-    
+            print("GET /support_tickets ERROR:", repr(e))
+            return {
+                "message": "Uncaught Error"
+            }, 500
+        
     @require_auth
     def post(self):
         try:
@@ -345,6 +354,8 @@ class SupportTicketResource(Resource):
                 }, 201
         except Exception as e:
             return {'messge' : 'Uncaught Error'}, 500
+
+        
 api.add_resource(
     AdminSupportResource,
     "",

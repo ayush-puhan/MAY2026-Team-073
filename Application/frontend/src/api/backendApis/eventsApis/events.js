@@ -52,31 +52,31 @@ export const eventsRealApi = {
 
   getEventSessions: async (eventId) => {
     const res = await api.get(`/events/${eventId}/sessions`);
-    return res.data;
+    return res;
   },
 
   createEventSessions: async (eventId, sessionsArray) => {
     const res = await api.post(`/events/${eventId}/sessions`, { sessions: sessionsArray });
-    return res.data;
+    return res;
   },
 
   deleteEventSessions: async (eventId) => {
     const res = await api.delete(`/events/${eventId}/sessions`);
-    return res.data;
+    return res;
   },
 
   getEventAttendance: async (eventId) => {
     const res = await api.get(`/events/${eventId}/attendance`);
-    return res.data;
+    return res;
   },
 
   checkInUser: async (eventId, userId, recordedBy) => {
     const res = await api.post(`/events/${eventId}/attendance`, { user_id: userId, recorded_by: recordedBy });
-    return res.data;
+    return res;
   },
 
   undoCheckIn: async (recordId) => {
     const res = await api.delete(`/attendance/${recordId}`);
-    return res.data;
+    return res;
   }
 };

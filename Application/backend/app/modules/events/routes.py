@@ -213,7 +213,7 @@ class EventDetailResource(Resource):
         except Exception as e:
             return {'message'  :  f"Error  :  {e}"}, 500
     @require_auth
-    @require_club_role("event_coordinator", "president")
+    @require_club_role("event_coordinator", "president", "vice_president", "secretary")
     def patch(self, event_id):
         try:
             data = _json_data()
@@ -268,6 +268,56 @@ class EventDetailResource(Resource):
 
 
 class EventRegistrationResource(Resource):
+
+    @require_auth
+    def get(self):
+        try:
+            event_id = request.args.get("event_id")
+
+            if not event_id:
+                return {"message": "event_id is required"}, 400
+
+            event_id = _int_or_400(event_id, "event_id")
+            if isinstance(event_id, tuple):
+                return event_id
+
+            with get_session() as session:
+                event, error = get_event_or_404(session, event_id)
+                if error:
+                    return error
+
+                registrations = (
+                    session.query(EventRegistration)
+                    .filter(
+                        EventRegistration.event_id == event.id
+                    )
+                    .order_by(EventRegistration.registered_at.desc())
+                    .all()
+                )
+
+                return [
+                    {
+                        "id": registration.id,
+                        "event_id": registration.event_id,
+                        "user_id": registration.user_id,
+                        "registered_at": (
+                            registration.registered_at.isoformat()
+                            if registration.registered_at
+                            else None
+                        ),
+                        "status": (
+                            registration.status.value
+                            if registration.status
+                            else None
+                        ),
+                        "qr_code_token": registration.qr_code_token,
+                    }
+                    for registration in registrations
+                ], 200
+
+        except Exception as e:
+            return {"message": f"Error: {e}"}, 500
+        
     @require_auth
     def post(self, event_id):
         try:
@@ -323,6 +373,61 @@ class EventRegistrationResource(Resource):
 
 
 class ExternalRegistrationResource(Resource):
+
+    @require_auth
+    def get(self):
+        try:
+            event_id = request.args.get("event_id")
+
+            if not event_id:
+                return {"message": "event_id is required"}, 400
+
+            event_id = _int_or_400(event_id, "event_id")
+            if isinstance(event_id, tuple):
+                return event_id
+
+            with get_session() as session:
+                event, error = get_event_or_404(session, event_id)
+                if error:
+                    return error
+
+                participants = (
+                    session.query(ExternalParticipant)
+                    .filter(
+                        ExternalParticipant.event_id == event.id
+                    )
+                    .order_by(
+                        ExternalParticipant.registered_at.desc()
+                    )
+                    .all()
+                )
+
+                return [
+                    {
+                        "id": participant.id,
+                        "event_id": participant.event_id,
+                        "user_id": participant.user_id,
+                        "full_name": participant.full_name,
+                        "email": participant.email,
+                        "affiliation": participant.affiliation,
+                        "participant_type": (
+                            participant.participant_type.value
+                            if participant.participant_type
+                            else None
+                        ),
+                        "registered_at": (
+                            participant.registered_at.isoformat()
+                            if participant.registered_at
+                            else None
+                        ),
+                    }
+                    for participant in participants
+                ], 200
+
+        except Exception as e:
+            return {"message": f"Error: {e}"}, 500
+
+    
     @require_auth
     @require_club_role("event_coordinator", "president")
     def post(self, event_id):
@@ -559,8 +664,8 @@ class AttendanceDeleteResource(Resource):
 
 api.add_resource(EventListResource, "/events")
 api.add_resource(EventDetailResource, "/events/<int:event_id>")
-api.add_resource(EventRegistrationResource, "/events/<int:event_id>/register")
-api.add_resource(ExternalRegistrationResource, "/events/<int:event_id>/register-external")
+api.add_resource(EventRegistrationResource,"/event_registrations", "/events/<int:event_id>/register")
+api.add_resource(ExternalRegistrationResource,"/external_participants", "/events/<int:event_id>/register-external")
 api.add_resource(UserEventsResource, "/users/<int:user_id>/events")
 api.add_resource(EventSessionsResource, "/events/<int:event_id>/sessions")
 api.add_resource(EventAttendanceResource, "/events/<int:event_id>/attendance")

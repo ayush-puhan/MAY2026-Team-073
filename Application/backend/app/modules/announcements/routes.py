@@ -70,15 +70,12 @@ class AnnouncementListResource(Resource):
             with get_session() as db:
 
                 club_id = data.get("club_id")
-                audience = AnnouncementAudience(
-                    data.get("target_audience", "all_members")
-                )
+                audience = AnnouncementAudience(data.get("target_audience", "all_members"))
 
                 # -------------------------------
                 # Club announcement
                 # -------------------------------
                 if club_id:
-
                     membership = (
                         db.query(ClubMembership)
                         .filter(
@@ -94,7 +91,10 @@ class AnnouncementListResource(Resource):
                         or membership.role_in_club
                         not in (
                             ClubMemberRole.PRESIDENT,
+                            ClubMemberRole.VICE_PRESIDENT,
                             ClubMemberRole.SECRETARY,
+                            ClubMemberRole.EVENT_COORDINATOR,
+                            ClubMemberRole.VOLUNTEER_COORDINATOR,
                         )
                     ):
                         return {

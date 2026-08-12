@@ -37,6 +37,17 @@ export const clubsApi = {
     const committees = await api.get(`/clubs/${clubId}/committees`);
     return committees;
   },
+  createCommittee: async (clubId, data, currentUserId) => {
+    const committee = await api.post(`/clubs/${clubId}/committees`,{name: data.name,description: data.description,},
+      {
+        headers: {
+          "X-User-Id": currentUserId,
+        },
+      }
+    );
+
+    return committee;
+  },
   getUserCertificates: async (userId) => {
     return await api.get(`/users/${userId}/certificates`);
   },
@@ -94,7 +105,7 @@ export const clubsApi = {
   },
 
   removeMember: async (membershipId, removedBy) => {
-    const res = await api.delete(`/memberships/${membershipId}`);
+    const res = await api.del(`/memberships/${membershipId}`);
     return res;
   },
 

@@ -26,7 +26,7 @@ from app.modules.club_leadership.club_resources import communication_bp
 from app.modules.club_leadership.club_budget import budget_bp
 from app.modules.club_leadership.transfer_presidency import transfer_presidency_bp
 from app.modules.emergency_report.routes import  em_report
-from app.modules.calendar.routes import calendar_bp
+from app.modules.calender.calender_routes import calendar_bp
 
 # ----------------------------------------------------
 # ClubConnect AI Module
@@ -84,9 +84,9 @@ def register_api_paths(app):
     # Emergency Report
     app.register_blueprint(em_report, url_prefix="/api/emergency-reports")
 
-    # Calendar
-    app.register_blueprint(calendar_bp, url_prefix="/api/calendar")
-
+    
     # AI Services (ClubConnect Assistant) - url_prefix already set on the blueprint itself
     app.register_blueprint(ai_bp)
 
+    # Calendar
+    app.register_blueprint(calendar_bp, url_prefix="/api")

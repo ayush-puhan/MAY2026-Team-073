@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Icon } from '@iconify/react';
 import { uiIcons } from '../../../icons/registry';
 import { api } from '../../../../api/api';
-import { eventsMockApi } from '../../../../api/mockbackendApis/eventsApis/events';
+import { eventsRealApi } from '../../../../api/backendApis/eventsApis/events';
 import { useToast } from '../../../../context/ToastContext';
 import { useSession } from '../../../../context/SessionContext';
 import { Button } from '../../ui/Button/Button';
@@ -46,7 +46,7 @@ const AttendanceManager = ({ eventId, clubId, onClose }) => {
       setRegistrations(combinedRegs);
 
       // Fetch attendance records
-      const records = await eventsMockApi.getEventAttendance(eventId);
+      const records = await eventsRealApi.getEventAttendance(eventId);
       setAttendanceRecords(records);
     } catch (err) {
       console.error(err);
@@ -58,7 +58,7 @@ const AttendanceManager = ({ eventId, clubId, onClose }) => {
 
   const handleCheckIn = async (userId) => {
     try {
-      await eventsMockApi.checkInUser(eventId, userId, currentUserId);
+      await eventsRealApi.checkInUser(eventId, userId, currentUserId);
       addToast('User checked in successfully', 'success');
       await fetchData(false); // Refresh without full loader
     } catch (err) {
@@ -69,7 +69,7 @@ const AttendanceManager = ({ eventId, clubId, onClose }) => {
 
   const handleUndoCheckIn = async (recordId) => {
     try {
-      await eventsMockApi.undoCheckIn(recordId);
+      await eventsRealApi.undoCheckIn(recordId);
       addToast('Check-in removed', 'success');
       await fetchData(false);
     } catch (err) {

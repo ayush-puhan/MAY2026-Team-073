@@ -78,6 +78,8 @@ class ClubResourcesResource(Resource):
     @require_club_role(
         "president",
         "secretary",
+        "event_coordinator",
+        "volunteer_coordinator"
     )
     def post(self, club_id):
         try:
@@ -131,29 +133,18 @@ class ClubResourcesResource(Resource):
 class ClubResourceDeleteResource(Resource):
 
     @require_auth
-    @require_club_role("president")
+    @require_club_role("president", "event_coordinator","volunteer_coordinator")
     def delete(self, club_id, id):
         try:
             with get_session() as db:
-
-                document = (
-                    db.query(Document)
-                    .filter(
-                        Document.id == id,
-                        Document.club_id == club_id,
-                    )
-                    .first()
-                )
-
+                document = (db.query(Document).filter(Document.id == id,Document.club_id == club_id,).first())
                 if not document:
                     return {"message": "Resource not found"}, 404
 
                 db.delete(document)
                 db.commit()
 
-                return {
-                    "message": "Resource deleted successfully"
-                }, 200
+                return {"message": "Resource deleted successfully"}, 200
         except Exception as e:
             return {'message'  :  f"ERROR  :  {e}"}, 500
 
@@ -162,30 +153,18 @@ class ClubResourceDeleteResource(Resource):
 # =========================================================
 class CommitteeResourcesResource(Resource):
     @require_auth
-    @require_club_role(
-        "member",
-        "secretary",
-        "president",
-        "faculty_advisor",
-    )
-    def get(self, id):
+    @require_club_role("member","secretary","president","faculty_advisor",)
+    def get(self, committeeId):
         try:
             with get_session() as db:
 
-                committee = (
-                    db.query(Committee)
-                    .filter(Committee.id == id)
-                    .first()
-                )
+                committee = (db.query(Committee).filter(Committee.id == committeeId).first())
+
                 if not committee:
                     return {"message": "Committee not found"}, 404
 
-                resources = (
-                    db.query(Document)
-                    .filter(Document.committee_id == id)
-                    .order_by(Document.created_at.desc())
-                    .all()
-                )
+                resources = (db.query(Document).filter(Document.committee_id == committeeId).order_by(Document.created_at.desc()).all())
+
                 return [serialize_document(r) for r in resources], 200
         except Exception as e:
             return {'message'  :  f"ERROR  :  {e}"}, 500
@@ -207,5 +186,5 @@ api.add_resource(
 
 api.add_resource(
     CommitteeResourcesResource,
-    "/committees/<int:id>/resources",
+    "/committees/<int:committeeId>/resources",
 )

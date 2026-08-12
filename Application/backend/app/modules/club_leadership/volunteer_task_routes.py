@@ -198,7 +198,8 @@ class CreateVolunteerTaskResource(Resource):
     @require_club_role(
         "event_coordinator",
         "volunteer_coordinator",
-        "president"
+        "president",
+        "vice_president",
     )
     def post(self):
         try:
@@ -366,12 +367,10 @@ class VolunteerTaskStatusResource(Resource):
     )
 
 
-    def patch(self, id):
+    def patch(self, taskId):
         try:
             data = request.get_json()
-
             new_status = data.get("status")
-
 
             if not new_status:
                 return {
@@ -386,7 +385,7 @@ class VolunteerTaskStatusResource(Resource):
                 task = (
                     db.query(VolunteerAssignment)
                     .filter(
-                        VolunteerAssignment.id==id
+                        VolunteerAssignment.id==taskId
                     )
                     .first()
                 )
@@ -505,7 +504,7 @@ api.add_resource(
 
 api.add_resource(
     VolunteerTaskStatusResource,
-    "/volunteer-tasks/<int:id>/status"
+    "/volunteer-tasks/<int:taskId>/status"
 )
 
 

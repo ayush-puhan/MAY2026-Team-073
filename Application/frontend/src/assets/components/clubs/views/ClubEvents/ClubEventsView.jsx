@@ -13,6 +13,7 @@ import { Input } from '../../../ui/Input/Input';
 import { EventSessionManager } from '../../../../components/events/EventSessionManager/EventSessionManager';
 import AttendanceManager from '../../../../components/events/AttendanceManager/AttendanceManager';
 import { uiIcons, dashboardIcons } from '../../../../icons/registry';
+import ParticipationManager from "../../../../components/events/ParticipationManager/ParticipationManager";
 
 const ClubEventsView = () => {
   const { club, userRole, currentUserId } = useOutletContext();
@@ -442,11 +443,10 @@ const ClubEventsView = () => {
                   />
                 )}
                 {manageTab === 'participation' && (
-                  <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--muted-foreground)' }}>
-                    <Icon icon="mdi:account-group-outline" style={{ fontSize: '3rem', marginBottom: '1rem', opacity: 0.5 }} />
-                    <h3>Participation Tracking</h3>
-                    <p>Participation and registration data will be displayed here.</p>
-                  </div>
+                  <ParticipationManager
+                    eventId={manageEventId}
+                    onClose={() => setManageEventId(null)}
+                  />
                 )}
               </div>
 

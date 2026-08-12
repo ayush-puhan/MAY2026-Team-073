@@ -5,7 +5,7 @@ from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity
 
 from app.database.session_manager import validate_stored_token
 from app.database.database import get_session
-from app.database.models import User, ClubMembership, Event, AttendanceRecord, VolunteerAssignment, Budget, Club
+from app.database.models import User, ClubMembership, Event, AttendanceRecord, VolunteerAssignment, Budget,ClubJoinApplication, Committee, Club
 from app.database.enums import MembershipStatus, UserRole
 
 
@@ -95,7 +95,8 @@ def resolve_club_id(db, kwargs):
         club_id = _to_int(value)
         if club_id is not None:
             return club_id
-
+        
+    # Check for event_id in kwargs or JSON body
     event_id = kwargs.get("event_id") or json_data.get("event_id")
     event_id = _to_int(event_id)
     if event_id is not None:
@@ -103,6 +104,8 @@ def resolve_club_id(db, kwargs):
         if not event:
             return {"message": "Event not found"}, 404
         return event.club_id
+    
+    # Check for budget_id in kwargs or JSON body
     budget_id = (
         kwargs.get("budget_id")
         or request.args.get("budget_id")
@@ -116,6 +119,8 @@ def resolve_club_id(db, kwargs):
         if not budget:
             return {"message": "Budget not found"}, 404
         return budget.club_id
+    
+    # Check for attendance record ID in kwargs
     record_id = kwargs.get("record_id")
     record_id = _to_int(record_id)
     if record_id is not None:
@@ -126,8 +131,9 @@ def resolve_club_id(db, kwargs):
         if not event:
             return {"message": "Event not found"}, 404
         return event.club_id
-
-    task_id = kwargs.get("id")
+    
+    # Check for volunteer task ID in kwargs
+    task_id = kwargs.get("taskId")
     task_id = _to_int(task_id)
     if task_id is not None:
         task = db.query(VolunteerAssignment).filter_by(id=task_id).first()
@@ -137,7 +143,46 @@ def resolve_club_id(db, kwargs):
         if not event:
             return {"message": "Event not found"}, 404
         return event.club_id
+    
+    # Check for membership ID in kwargs
+    membership_id = _to_int(kwargs.get("membershipId"))
 
+    if membership_id is not None:
+        membership = (
+            db.query(ClubMembership)
+            .filter_by(id=membership_id)
+            .first()
+        )
+
+        if membership:
+            return membership.club_id
+
+    # Check for application ID in kwargs
+
+    application_id = _to_int(kwargs.get("applicationId"))
+
+    if application_id is not None:
+        application = (
+            db.query(ClubJoinApplication)
+            .filter_by(id=application_id)
+            .first()
+        )
+
+        if application:
+            return application.club_id
+    # Check for committee ID in kwargs
+    committee_id = _to_int(kwargs.get("committeeId"))
+
+    if committee_id is not None:
+        committee = (
+            db.query(Committee)
+            .filter_by(id=committee_id)
+            .first()
+        )
+
+        if committee:
+            return committee.club_id
+        
     return None
 
 

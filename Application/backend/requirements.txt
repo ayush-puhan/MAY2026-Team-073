@@ -10,3 +10,30 @@ bcrypt>=4.1.2
 google-auth>=2.29.0
 google-auth-httplib2>=0.2.0
 python-dotenv>=1.0.1
+factory_boy>=3.3.0
+
+# ----------------------------------------------------
+# ClubConnect AI Module
+# Integrated by AI Backend
+# Module Owner: AI Assistant / RAG Pipeline
+# ----------------------------------------------------
+# ---------- AI / RAG ----------
+numpy==2.3.2
+scipy==1.16.1
+scikit-learn==1.7.1
+
+transformers==4.53.3
+torch==2.7.1
+sentence-transformers==5.0.0
+faiss-cpu==1.12.0
+
+# ---------- Gemini ----------
+google-genai==1.28.0
+
+# ---------- AI response cache / conversation memory (Phase 6A) ----------
+redis==5.0.8
+celery==5.4.0
+
+# ---------- Optional ----------
+huggingface-hub==0.34.4
+tokenizers==0.21.4

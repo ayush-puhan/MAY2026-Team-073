@@ -177,7 +177,7 @@ const ClubMembersView = ({
                     )}
                     
                     {canRemove && (
-                      <Button 
+                      <Button
                         variant="ghost"
                         color="error"
                         size="sm"
@@ -187,6 +187,12 @@ const ClubMembersView = ({
                       >
                         Remove
                       </Button>
+                    )}
+
+                    {!canEditRole && !canRemove && (
+                      <span className={styles.protectedNote}>
+                        {isCurrentUser ? 'This is you' : 'Protected role'}
+                      </span>
                     )}
                   </div>
                 </div>

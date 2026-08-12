@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Icon } from '@iconify/react';
-import { clubsApi } from '../../../../../api/mockbackendApis/clubsApis/clubs';
+import { clubsApi } from '../../../../../api/backendApis/clubsApis/clubs';
 import styles from './FacultyClubProposals.module.css';
 import { useSession } from '../../../../../context/SessionContext';
 import { dashboardIcons } from '../../../../icons/registry';

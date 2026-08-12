@@ -174,43 +174,63 @@ export const facultyAdvisorApi = {
   },
 
   setClubBudget: async (clubId, amount, facultyId) => {
-    // 1. check if a main budget exists
-    const budgets = await api.get(`/budgets?club_id=${toId(clubId)}`);
+    console.log('[setClubBudget] called with', { clubId, amount, facultyId });
+
+    const parsedClubId = toId(clubId);
+    const parsedFacultyId = toId(facultyId);
+    const parsedAmount = parseFloat(amount);
+
+    if (!parsedClubId || !parsedFacultyId || Number.isNaN(parsedAmount)) {
+      const err = new Error('Invalid arguments to setClubBudget');
+      console.error('[setClubBudget] invalid args', { parsedClubId, parsedFacultyId, parsedAmount });
+      throw err;
+    }
+
+    console.log('[setClubBudget] fetching budgets for club', parsedClubId);
+    const budgets = await api.get(`/budgets?club_id=${parsedClubId}`);
+    console.log('[setClubBudget] budgets response', budgets);
+
     const mainBudget = budgets.find(b => !b.committee_id && !b.parent_budget_id);
-    
+
     if (mainBudget) {
-      // update
+      console.log('[setClubBudget] updating existing mainBudget', mainBudget.id);
       const updated = await api.patch(`/budgets/${mainBudget.id}`, {
-        allocated_amount: parseFloat(amount),
+        allocated_amount: parsedAmount,
         updated_at: istNow()
       });
+      console.log('[setClubBudget] update response', updated);
+
       await logAudit({
-        userId: toId(facultyId),
+        userId: parsedFacultyId,
         action: 'UPDATE',
         entityType: 'Budget',
         entityId: mainBudget.id,
         details: `Faculty Advisor updated club budget to ${amount}`,
       });
+
       return updated;
     } else {
-      // create
+      console.log('[setClubBudget] creating new main budget for club', parsedClubId);
       const created = await api.post('/budgets', {
-        club_id: toId(clubId),
+        club_id: parsedClubId,
         title: 'Main Club Budget',
-        allocated_amount: parseFloat(amount),
+        allocated_amount: parsedAmount,
         status: 'approved',
-        created_by: toId(facultyId),
+        created_by: parsedFacultyId,
         created_at: istNow(),
         period_start: istNow(),
         period_end: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString()
       });
+      console.log('[setClubBudget] create response', created);
+
       await logAudit({
-        userId: toId(facultyId),
+        userId: parsedFacultyId,
         action: 'CREATE',
         entityType: 'Budget',
         entityId: created.id,
         details: `Faculty Advisor created club budget: ${amount}`,
       });
+
       return created;
     }
   }

@@ -43,11 +43,12 @@ export const ADMIN_NAV = [
 
 export const UNIVERSITY_ADMIN_NAV = [
   { name: 'Dashboard', path: '/university-admin-dashboard', icon: dashboardIcons.dashboard },
+  { name: 'All Clubs',        path: '/university-admin-dashboard/clubs', icon: dashboardIcons.accountGroupOutline },
   { name: 'Events',           path: '/university-admin-dashboard/events', icon: dashboardIcons.eventMgmt },
   { name: 'Club Approvals',   path: '/university-admin-dashboard/approvals', icon: dashboardIcons.clubApprovals },
   { name: 'Student Reports',  path: '/university-admin-dashboard/reports', icon: dashboardIcons.studentReports },
   
-  { name: 'Emergency Reports', path: '/university-admin-dashboard/emergencies', icon: dashboardIcons.studentReports },
+  { name: 'Emergency Reports', path: '/university-admin-dashboard/emergencies', icon: dashboardIcons.emergencyAlert },
   ...getGlobalBottomNav('/university-admin-dashboard')
 ];
 
@@ -55,7 +56,7 @@ export const FACULTY_ADVISOR_NAV = [
   { name: 'Dashboard', path: '/faculty-advisor-dashboard', icon: dashboardIcons.dashboard },
   { name: 'Advised Clubs',    path: '/faculty-advisor-dashboard/clubs', icon: dashboardIcons.advisedClubs },
   { name: 'Event Approvals',  path: '/faculty-advisor-dashboard/events', icon: dashboardIcons.eventApprovals },
-  { name: 'Student Reports',  path: '/faculty-advisor-dashboard/reports', icon: dashboardIcons.studentReports },
+  { name: 'Expense Approvals',  path: '/faculty-advisor-dashboard/reports', icon: dashboardIcons.studentReports },
   ...getGlobalBottomNav('/faculty-advisor-dashboard')
 ];
 

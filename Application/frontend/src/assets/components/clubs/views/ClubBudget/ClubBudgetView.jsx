@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useOutletContext, Navigate } from 'react-router-dom';
 import { Icon } from '@iconify/react';
-import { clubsApi } from '../../../../../api/mockbackendApis/clubsApis/clubs';
+import { clubsApi } from '../../../../../api/backendApis/clubsApis/clubs';
 import { canManageBudget, canApproveExpenses, canViewBudget } from '../../../../../utils/clubPermissions';
 import layoutStyles from '../../../ui/ContextLayout/ContextLayout.module.css';
 import styles from './ClubBudgetView.module.css';
@@ -75,11 +75,12 @@ const ClubBudgetView = () => {
     }
 
     try {
-      await clubsApi.createExpense(mainBudget.id, {
+      await clubsApi.createExpense({
+        budget_id: mainBudget.id,
         description: newDesc,
         amount: parseFloat(newAmount),
         category: newCategory
-      }, currentUserId);
+      });
       setShowExpenseForm(false);
       setNewDesc('');
       setNewAmount('');
@@ -100,7 +101,16 @@ const ClubBudgetView = () => {
     }
 
     try {
-      await clubsApi.allocateCommitteeBudget(club.id, allocCommittee, allocTitle, parseFloat(allocAmount), currentUserId, mainBudget.id);
+      await clubsApi.allocateCommitteeBudget(
+        club.id,
+        allocCommittee,
+        {
+          title: allocTitle,
+          allocated_amount: parseFloat(allocAmount),
+          created_by: currentUserId,
+          parent_budget_id: mainBudget.id,
+        }
+      );
       setShowAllocateForm(false);
       setAllocCommittee('');
       setAllocAmount('');

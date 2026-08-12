@@ -1,4 +1,4 @@
-import os
+import os,pathlib
 from datetime import timedelta
 
 class Config:
@@ -16,6 +16,29 @@ class Config:
     GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID")
     GMAIL_ADDRESS = os.environ.get("GMAIL_ADDRESS")
     GMAIL_APP_PASSWORD = os.environ.get("GMAIL_APP_PASSWORD")
+
+    BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+    UPLOAD_FOLDER = "uploads"
+    UNI_BANNER_UPLOAD_DIR = os.path.join(BASE_DIR,UPLOAD_FOLDER,"university_banner") 
+
+    # ----------------------------------------------------
+    # ClubConnect AI Module
+    # Integrated by AI Backend
+    # Module Owner: AI Assistant / RAG Pipeline
+    # ----------------------------------------------------
+    # Gemini is the only LLM provider wired up through the current roadmap;
+    # Groq/OpenRouter fallback providers are explicitly deferred to a later
+    # phase and are not referenced anywhere yet.
+    GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
+    GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
+
+    # Directory holding the always-injected System Documents and the
+    # on-demand RAG Documents used by the AI module's prompt builder /
+    # retriever.
+    KNOWLEDGE_BASE_DIR = os.environ.get(
+        "KNOWLEDGE_BASE_DIR",
+        os.path.join(BASE_DIR, "modules", "ai_services", "knowledge_base"),
+    )
 
 class DevelopmentConfig(Config):
     """Configuration for local development."""

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Icon } from '@iconify/react';
 import styles from './ClubResourcesView.module.css';
 import layoutStyles from '../../../ui/ContextLayout/ContextLayout.module.css';
-import { clubsApi } from '../../../../../api/mockbackendApis/clubsApis/clubs';
+import { clubsApi } from '../../../../../api/backendApis/clubsApis/clubs';
 import { canManageResources } from '../../../../../utils/clubPermissions';
 import { useToast } from '../../../../../context/ToastContext';
 import { useSession } from '../../../../../context/SessionContext';

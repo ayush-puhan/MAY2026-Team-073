@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
 import { Icon } from '@iconify/react';
-import { clubsApi } from '../../../../../api/mockbackendApis/clubsApis/clubs';
+import { clubsApi } from '../../../../../api/backendApis/clubsApis/clubs';
 import styles from './LeaveClubView.module.css';
 import layoutStyles from '../../../ui/ContextLayout/ContextLayout.module.css';
 import { Input } from '../../../ui/Input/Input';
@@ -9,21 +9,22 @@ import { Button } from '../../../ui/Button/Button';
 import { uiIcons } from '../../../../icons/registry';
 
 const LeaveClubView = () => {
-  const { club, currentMembershipId, currentUserId } = useOutletContext();
+  const { club, currentUserId } = useOutletContext();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [confirmText, setConfirmText] = useState('');
 
   const handleLeave = async () => {
     if (confirmText !== club.name) return;
-    
+
     setLoading(true);
     try {
-      await clubsApi.leaveClub(currentMembershipId, currentUserId);
+      console.log(club);
+      await clubsApi.leaveClub(club.membership_id);
       alert(`You have left ${club.name}.`);
-      navigate('/clubs/mine'); // redirect back to user's clubs
+      navigate('/clubs/mine');
     } catch (err) {
-      alert("Failed to leave club");
+      alert('Failed to leave club');
       setLoading(false);
     }
   };
@@ -45,7 +46,7 @@ const LeaveClubView = () => {
               <div className={styles.warningText}>
                 <h3>Are you absolutely sure?</h3>
                 <p>
-                  Leaving the club means you will lose access to the club dashboard, member directory, internal events, and volunteer tasks. 
+                  Leaving the club means you will lose access to the club dashboard, member directory, internal events, and volunteer tasks.
                   Any incomplete tasks assigned to you will be unassigned.
                 </p>
                 <p>
@@ -58,16 +59,16 @@ const LeaveClubView = () => {
               <label>
                 Please type <strong>{club.name}</strong> to confirm.
               </label>
-              <Input 
-                type="text" 
-                value={confirmText} 
-                onChange={e => setConfirmText(e.target.value)} 
+              <Input
+                type="text"
+                value={confirmText}
+                onChange={e => setConfirmText(e.target.value)}
                 placeholder={club.name}
               />
-              
-              <Button 
-                variant="danger" 
-                onClick={handleLeave} 
+
+              <Button
+                variant="danger"
+                onClick={handleLeave}
                 disabled={confirmText !== club.name || loading}
                 style={{ marginTop: '1rem' }}
               >

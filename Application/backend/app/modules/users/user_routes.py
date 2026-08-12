@@ -8,6 +8,12 @@ from app.database.models.auth import User
 from app.database.models.academics import StudentProfile
 from app.database.models.interests import UserInterest
 from app.middleware.auth_middleware import require_auth
+# ----------------------------------------------------
+# ClubConnect AI Module
+# Integrated by AI Backend
+# Module Owner: AI Assistant / RAG Pipeline
+# ----------------------------------------------------
+from app.modules.ai_services.cache import invalidate_user_cache
 
 users_bp = Blueprint('users', __name__)
 user_api = Api(users_bp)
@@ -156,6 +162,11 @@ class ProfileResource(Resource):
             from sqlalchemy.exc import IntegrityError
             try:
                 db.commit()
+                # Phase 6A (AI module): profile changed, so this user's
+                # cached AI responses (e.g. "Profile & Account" answers)
+                # could be stale - invalidate only this user's entries,
+                # never a full cache flush.
+                invalidate_user_cache(user.id)
                 return {"message": "Profile updated successfully"}, 200
             except IntegrityError as e:
                 db.rollback()

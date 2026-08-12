@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { Icon } from '@iconify/react';
-import { announcementsApi } from '../../../../../api/mockbackendApis/announcementsApis/announcements';
+import { announcementsApi } from '../../../../../api/backendApis/announcementsApis/announcements';
 import { canPostAnnouncement } from '../../../../../utils/clubPermissions';
 import { useSession } from '../../../../../context/SessionContext';
 import { useToast } from '../../../../../context/ToastContext';
@@ -38,8 +38,12 @@ export const ClubAnnouncementsView = () => {
   const handlePublish = async ({ title, body, club_id, target_role, target_committee }) => {
     try {
       let audience = 'all_members';
-      if (target_role !== 'ALL' || target_committee !== 'ALL') {
-        audience = 'targeted';
+
+      if (target_committee !== 'ALL') {
+        audience = 'committee';
+      }
+      else if (target_role !== 'ALL') {
+        audience = 'leadership';
       }
 
       const payload = {

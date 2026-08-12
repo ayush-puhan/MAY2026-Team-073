@@ -1450,7 +1450,7 @@ export const clubsApi = {
   // ── Resources / Documents ──
   getClubResources: async (clubId) => {
     const documents = await api.get('/documents');
-    return documents.filter(d => String(d.club_id) === String(clubId) && !d.committee_id);
+    return documents.data.filter(d => String(d.club_id) === String(clubId) && !d.committee_id);
   },
 
   getCommitteeResources: async (clubId, committeeId) => {

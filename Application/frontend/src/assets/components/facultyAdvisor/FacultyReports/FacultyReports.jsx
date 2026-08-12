@@ -29,9 +29,9 @@ export const FacultyReports = () => {
 
   const filtered = expenses.filter((e) => e.approval_status === activeTab);
   const tabs = [
-    { value: 'pending', label: 'Pending', count: expenses.filter((e) => e.approval_status === 'pending').length },
-    { value: 'approved', label: 'Approved', count: expenses.filter((e) => e.approval_status === 'approved').length },
-    { value: 'rejected', label: 'Rejected', count: expenses.filter((e) => e.approval_status === 'rejected').length },
+    { id: 'pending', label: 'Pending', count: expenses.filter((e) => e.approval_status === 'pending').length },
+    { id: 'approved', label: 'Approved', count: expenses.filter((e) => e.approval_status === 'approved').length },
+    { id: 'rejected', label: 'Rejected', count: expenses.filter((e) => e.approval_status === 'rejected').length },
   ];
 
   const decide = async (id, approval_status) => {
@@ -62,7 +62,7 @@ export const FacultyReports = () => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h2 className={styles.title}>Financial Oversight</h2>
+        <h2 className={styles.title}>Expense Approvals</h2>
         <p className={styles.subtitle}>Review budgets and expenses submitted by your advised clubs.</p>
       </div>
 
@@ -73,7 +73,7 @@ export const FacultyReports = () => {
           { header: 'Description', accessor: 'description' },
           { header: 'Budget', accessor: 'budget_title' },
           { header: 'Category', accessor: 'category' },
-          { header: 'Amount', cell: (row) => `â‚¹${row.amount}` },
+          { header: 'Amount', cell: (row) => `₹${row.amount}` },
           { header: 'Status', cell: (row) => <StatusBadge status={row.approval_status} /> },
           {
             header: '',

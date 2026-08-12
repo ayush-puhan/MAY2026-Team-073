@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Icon } from '@iconify/react';
 import { StatCard } from '../../ui/StatCard/StatCard';
 import { EventCard } from '../../ui/EventCard/EventCard';
@@ -9,6 +10,7 @@ import styles from './FacultyDashboardHome.module.css';
 import { uiIcons, dashboardIcons } from '../../../icons/registry';
 
 export const FacultyDashboardHome = () => {
+  const navigate = useNavigate();
   const { user } = useSession();
   const [stats, setStats] = useState(null);
   const [pendingEvents, setPendingEvents] = useState([]);
@@ -20,7 +22,7 @@ export const FacultyDashboardHome = () => {
       try {
         const [statsData, events] = await Promise.all([
           facultyAdvisorApi.getStats(user.id),
-          facultyAdvisorApi.getEvents(user.id, 'pending'),
+          facultyAdvisorApi.getEvents(user.id, 'pending_approval'),
         ]);
         if (isMounted) {
           setStats(statsData);
@@ -49,10 +51,10 @@ export const FacultyDashboardHome = () => {
       </div>
 
       <div className={styles.statsGrid}>
-        <StatCard title="Advised Clubs" value={stats.advisedClubs} icon={dashboardIcons.accountGroupOutline} color="var(--primary)" />
-        <StatCard title="Total Members" value={stats.totalMembers} icon={dashboardIcons.accountMultipleOutline} color="var(--sky)" />
-        <StatCard title="Pending Event Approvals" value={stats.pendingEvents} icon={dashboardIcons.calendarCheckOutline} color="var(--campus-orange)" />
-        <StatCard title="Pending Expense Approvals" value={stats.pendingExpenses} icon={dashboardIcons.cashMultiple} color="var(--achievement)" />
+        <StatCard title="Advised Clubs" value={stats.advisedClubs} icon={dashboardIcons.accountGroupOutline} color="var(--primary)" onClick={() => navigate('/faculty-advisor-dashboard/clubs')} />
+        <StatCard title="Total Members" value={stats.totalMembers} icon={dashboardIcons.accountMultipleOutline} color="var(--sky)" onClick={() => navigate('/faculty-advisor-dashboard/clubs')} />
+        <StatCard title="Pending Event Approvals" value={stats.pendingEvents} icon={dashboardIcons.calendarCheckOutline} color="var(--campus-orange)" onClick={() => navigate('/faculty-advisor-dashboard/events')} />
+        <StatCard title="Pending Expense Approvals" value={stats.pendingExpenses} icon={dashboardIcons.cashMultiple} color="var(--achievement)" onClick={() => navigate('/faculty-advisor-dashboard/reports')} />
       </div>
 
       <div className={styles.section}>

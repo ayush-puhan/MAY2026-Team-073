@@ -9,6 +9,7 @@ import { EventApprovals } from '../../../assets/components/facultyAdvisor/EventA
 import { FacultyReports } from '../../../assets/components/facultyAdvisor/FacultyReports/FacultyReports';
 import { AnnouncementCenter } from '../../../assets/components/announcements/AnnouncementCenter/AnnouncementCenter';
 import { GlobalCalendar } from '../../../assets/components/calendar/GlobalCalendar/GlobalCalendar';
+import { Helpdesk } from '../../../assets/components/student/Helpdesk/Helpdesk';
 import styles from './FacultyAdvisorDashboard.module.css';
 
 export const FacultyAdvisorDashboard = () => {
@@ -19,7 +20,7 @@ export const FacultyAdvisorDashboard = () => {
 
   return (
     <DashboardLayout title="Faculty Advisor Dashboard" user={user} sidebarLinks={sidebarLinks}>
-      <div style={{ width: '100%' }}>
+      <div style={{ width: '100%', height: '100%' }}>
         <Routes>
           <Route path="/" element={<FacultyDashboardHome />} />
           <Route path="clubs/*" element={<AdvisedClubs />} />
@@ -27,6 +28,7 @@ export const FacultyAdvisorDashboard = () => {
           <Route path="reports/*" element={<FacultyReports />} />
           <Route path="announcements/*" element={<AnnouncementCenter />} />
           <Route path="calendar/*" element={<GlobalCalendar />} />
+          <Route path="helpdesk/*" element={<Helpdesk />} />
           
           <Route path="*" element={<Navigate to="" replace />} />
         </Routes>

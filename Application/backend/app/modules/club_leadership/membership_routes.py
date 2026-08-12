@@ -3,8 +3,8 @@ from flask_restful import Api, Resource
 
 from app.database import get_session
 from app.database.models.clubs import ClubMembership
-from app.database.enums import MembershipStatus, ClubMemberRole
-
+from app.database.enums import ClubMemberRole, MembershipStatus
+from app.middleware.auth_middleware import require_auth, require_role, require_club_role
 
 membership_bp = Blueprint(
     "club_memberships",
@@ -14,59 +14,141 @@ membership_bp = Blueprint(
 api = Api(membership_bp)
 
 
+# -------------------------------------------------
+# Serializers
+# -------------------------------------------------
 
-def serialize_membership(membership):
+def serialize_membership(member):
     """
-    Convert ClubMembership object into JSON.
+    Response format:
+    GET /api/clubs/<club_id>/members
+    GET /api/clubs/<club_id>/membership-requests
     """
 
     return {
-        "id": membership.id,
 
-        "user_id": membership.user_id,
+        "id": member.id,
 
-        "club_id": membership.club_id,
+        "user_id": member.user_id,
 
-        # "club_name": (
-        #     membership.club.name
-        #     if membership.club
-        #     else None
-        # ),
-
-        "user_name": (
-            membership.user.full_name
-            if membership.user
-            else None
-        ),
+        "club_id": member.club_id,
 
         "role_in_club": (
-            membership.role_in_club.value.lower()
-            if membership.role_in_club
+            member.role_in_club.value.lower()
+            if member.role_in_club
             else None
         ),
 
         "status": (
-            membership.status.value.lower()
-            if membership.status
+            member.status.value.lower()
+            if member.status
             else None
         ),
 
         "applied_at": (
-            membership.applied_at.isoformat()
-            if membership.applied_at
+            member.applied_at.isoformat()
+            if member.applied_at
             else None
         ),
 
         "decided_at": (
-            membership.decided_at.isoformat()
-            if membership.decided_at
+            member.decided_at.isoformat()
+            if member.decided_at
             else None
         ),
 
-        "approved_by": membership.approved_by,
+        "approved_by": member.approved_by,
 
-        "rejection_reason":
-            membership.rejection_reason
+        "rejection_reason": member.rejection_reason,
+
+        "user": (
+            {
+                "id": member.user.id,
+
+                "full_name": member.user.full_name,
+
+                "email": member.user.email,
+
+                "profile_photo_url": member.user.profile_photo_url,
+
+                "role": (
+                    member.user.role.value.lower()
+                    if member.user.role
+                    else None
+                )
+            }
+            if member.user
+            else None
+        )
+    }
+
+
+
+def serialize_user_club(member):
+    """
+    Response format:
+    GET /api/users/<user_id>/clubs
+    """
+
+    club = member.club
+
+
+    # derived member count
+    member_count = 0
+
+    with get_session() as db:
+
+        member_count = (
+            db.query(ClubMembership)
+            .filter(
+                ClubMembership.club_id == club.id,
+                ClubMembership.status == MembershipStatus.APPROVED
+            )
+            .count()
+        )
+
+
+    return {
+
+        "id": club.id,
+
+        "name": club.name,
+
+        "slug": club.slug,
+
+        "category": club.category,
+
+        "description": club.description,
+
+        "logo_url": club.logo_url,
+
+        "banner": club.banner,
+
+        "status": (
+            club.status.value.lower()
+            if club.status
+            else None
+        ),
+
+        "role_in_club": (
+            member.role_in_club.value.lower()
+            if member.role_in_club
+            else None
+        ),
+
+        "membership_id": member.id,
+
+        "members": member_count,
+
+        "university": (
+            {
+                "id": club.university.id,
+
+                "name": club.university.name
+            }
+            if club.university
+            else None
+        )
     }
 
 
@@ -76,174 +158,222 @@ def serialize_membership(membership):
 # -------------------------------------------------
 
 class UserClubResource(Resource):
-
+    @require_auth
     def get(self, user_id):
+        try:
+            with get_session() as db:
 
-        with get_session() as db:
-
-            memberships = (
-                db.query(ClubMembership)
-                .filter(
-                    ClubMembership.user_id == user_id
+                memberships = (
+                    db.query(ClubMembership)
+                    .filter(
+                        ClubMembership.user_id == user_id,
+                        ClubMembership.status == MembershipStatus.APPROVED
+                    )
+                    .all()
                 )
-                .all()
-            )
 
 
-            if not memberships:
+                return [
+                    serialize_user_club(member)
+                    for member in memberships
+                ], 200
+        except Exception as e:
+            return {'message'  :  f"Error  :  {e}"}, 500
+
+
+
+# -------------------------------------------------
+# GET /api/clubs/<club_id>/members
+# -------------------------------------------------
+
+class ClubMembersResource(Resource):
+
+    @require_auth
+    def get(self, club_id=None):
+
+        # Support:
+        # /clubs/<club_id>/members
+        # /club_memberships?club_id=2
+        # /club_memberships
+        try:
+            if club_id is None:
+                club_id = request.args.get("club_id")
+
+
+            with get_session() as db:
+
+                query = (
+                    db.query(ClubMembership)
+                    .filter(
+                        ClubMembership.status == MembershipStatus.APPROVED
+                    )
+                )
+
+
+                # If club_id is provided, filter that club only
+                if club_id:
+                    query = query.filter(
+                        ClubMembership.club_id == int(club_id)
+                    )
+
+
+                members = query.all()
+
+
+                return [
+                    serialize_membership(member)
+                    for member in members
+                ], 200
+        except Exception as e:
+            return {'message'  :  f"Error  :  {e}"}, 500
+# -------------------------------------------------
+# GET /api/clubs/<club_id>/membership-requests
+# -------------------------------------------------
+
+class ClubMembershipRequestsResource(Resource):
+    @require_auth
+    @require_role("student")
+    def get(self, club_id):
+        try:
+            with get_session() as db:
+
+                requests = (
+                    db.query(ClubMembership)
+                    .filter(
+                        ClubMembership.club_id == club_id,
+                        ClubMembership.status == MembershipStatus.PENDING
+                    )
+                    .all()
+                )
+
+
+                return [
+                    serialize_membership(member)
+                    for member in requests
+                ], 200
+        except Exception as e:
+            return {'message'  :  f"Error  :  {e}"}, 500
+
+
+
+# -------------------------------------------------
+# GET /api/clubs/<club_id>/members/<user_id>/role
+# -------------------------------------------------
+
+class UserRoleInClubResource(Resource):
+    @require_auth
+    def get(self, club_id, user_id):
+        try:
+            with get_session() as db:
+
+                membership = (
+                    db.query(ClubMembership)
+                    .filter(
+                        ClubMembership.club_id == club_id,
+                        ClubMembership.user_id == user_id,
+                        ClubMembership.status == MembershipStatus.APPROVED
+                    )
+                    .first()
+                )
+
+
+                if not membership:
+
+                    return {
+                        "message": "Membership not found."
+                    }, 404
+
+
 
                 return {
-                    "message":
-                    "No clubs found for this user."
+
+                    "club_id": club_id,
+
+                    "user_id": user_id,
+
+                    "role_in_club": (
+                        membership.role_in_club.value.lower()
+                        if membership.role_in_club
+                        else None
+                    )
+
                 }, 200
-
-
-
-            return [
-                serialize_membership(membership)
-                for membership in memberships
-            ], 200
-
-
-
+        except Exception as e:
+            return {'message'  :  f"Error  :  {e}"}, 500
 
 # -------------------------------------------------
-# GET /api/club_memberships
-#
-# Filters:
-#
-# /club_memberships
-#
-# /club_memberships?club_id=1
-#
-# /club_memberships?user_id=5
-#
-# /club_memberships?status=pending
-#
-# /club_memberships?role=president
-#
+# PATCH /api/memberships/<id>/role
 # -------------------------------------------------
 
+class UpdateMemberRoleResource(Resource):
 
-class ClubMembershipResource(Resource):
+    @require_auth
+    @require_club_role("president")
+    def patch(self, id):
+        try:
+            data = request.get_json()
 
-    def get(self):
-
-        club_id = request.args.get(
-            "club_id"
-        )
-
-        user_id = request.args.get(
-            "user_id"
-        )
-
-        status = request.args.get(
-            "status"
-        )
-
-        role = request.args.get(
-            "role"
-        )
+            if not data:
+                return {
+                    "message": "Request body required."
+                }, 400
 
 
-        with get_session() as db:
+            new_role = data.get("role_in_club")
+
+            if not new_role:
+                return {
+                    "message": "role_in_club is required."
+                }, 400
 
 
-            query = db.query(
-                ClubMembership
-            )
+            with get_session() as db:
 
-
-
-            if club_id:
-
-                query = query.filter(
-                    ClubMembership.club_id
-                    ==
-                    int(club_id)
+                membership = (
+                    db.query(ClubMembership)
+                    .filter(
+                        ClubMembership.id == id
+                    )
+                    .first()
                 )
 
 
+                if not membership:
+                    return {
+                        "message": "Membership not found."
+                    }, 404
 
-            if user_id:
-
-                query = query.filter(
-                    ClubMembership.user_id
-                    ==
-                    int(user_id)
-                )
-
-
-
-            if status:
 
                 try:
 
-                    query = query.filter(
-                        ClubMembership.status
-                        ==
-                        MembershipStatus(
-                            status.lower()
-                        )
+                    membership.role_in_club = ClubMemberRole(
+                        new_role
                     )
 
                 except ValueError:
 
                     return {
-                        "message":
-                        "Invalid membership status."
+                        "message": "Invalid club role."
                     }, 400
 
 
+                db.commit()
+                db.refresh(membership)
 
 
-            if role:
-
-                try:
-
-                    query = query.filter(
-                        ClubMembership.role_in_club
-                        ==
-                        ClubMemberRole(
-                            role.lower()
-                        )
-                    )
-
-
-                except ValueError:
-
-                    return {
-                        "message":
-                        "Invalid club role."
-                    }, 400
-
-
-
-
-            memberships = query.all()
-
-
-
-            return [
-                serialize_membership(membership)
-                for membership in memberships
-            ], 200
-
-
-
-
+                return {
+                    "message": "Member role updated successfully.",
+                    "membership": serialize_membership(membership)
+                }, 200
+        except Exception as e:
+            return {'message'  :  f"Error  :  {e}"}, 500
 
 # -------------------------------------------------
 # Route Registration
 # -------------------------------------------------
 
-api.add_resource(
-    UserClubResource,
-    "/users/<int:user_id>/clubs"
-)
-
-
-api.add_resource(
-    ClubMembershipResource,
-    "/club_memberships"
-)
+api.add_resource(UserClubResource,"/users/<int:user_id>/clubs")
+api.add_resource(ClubMembersResource,"/clubs/<int:club_id>/members","/club_memberships")
+api.add_resource(ClubMembershipRequestsResource,"/clubs/<int:club_id>/membership-requests")
+api.add_resource(UserRoleInClubResource,"/clubs/<int:club_id>/members/<int:user_id>/role")
+api.add_resource(UpdateMemberRoleResource,"/memberships/<int:id>/role")

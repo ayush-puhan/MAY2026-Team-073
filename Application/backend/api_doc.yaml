@@ -1,0 +1,3128 @@
+openapi: 3.0.3
+info:
+  title: All platform APIs
+  version: 1.0.0
+  description: |
+    API documentation for ClubConnect application
+
+servers:
+  - url: http://127.0.0.1:5000/api
+
+tags:
+  - name: Authentication
+  - name: User Profile
+  - name: Student
+  - name: University
+  - name: Admin
+  - name: Announcements
+  - name: Clubs
+  - name: Calendar
+  - name: Event Sessions
+  - name: Club Members
+  - name: Membership
+  - name: Volunteer Tasks
+  - name: Club Applications
+  - name: Club Interests
+  - name: Club Creation
+  - name: Events
+  - name: Event Registration
+  - name: Event Attendance
+  - name: Notifications
+  - name: Emergency
+  - name: Faculty Advisor
+  - name: Rewards
+  - name: University Admin
+
+paths:
+
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Login
+      description: Authenticate user using email and password.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      responses:
+        "200":
+          description: Successful login
+          content:
+            application/json:
+              schema: {}
+
+  /auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: Register User
+      description: Register a new user account.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        "201":
+          description: User registered
+          content:
+            application/json:
+              schema: {}
+
+  /auth/verify-otp:
+    post:
+      tags:
+        - Authentication
+      summary: Verify OTP
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - otp_code
+              properties:
+                email:
+                  type: string
+                  format: email
+                otp_code:
+                  type: string
+      responses:
+        "200":
+          description: OTP verified
+          content:
+            application/json:
+              schema: {}
+
+  /auth/resend-otp:
+    post:
+      tags:
+        - Authentication
+      summary: Resend OTP
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  format: email
+      responses:
+        "200":
+          description: OTP resent
+          content:
+            application/json:
+              schema: {}
+
+  /auth/google:
+    post:
+      tags:
+        - Authentication
+      summary: Google Login
+      description: Authenticate using Google ID token.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - token
+              properties:
+                token:
+                  type: string
+      responses:
+        "200":
+          description: Google authentication successful
+          content:
+            application/json:
+              schema: {}
+
+  /auth/verify-email:
+    post:
+      tags:
+        - Authentication
+      summary: Verify Email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - otp
+              properties:
+                email:
+                  type: string
+                  format: email
+                otp:
+                  type: string
+      responses:
+        "200":
+          description: Email verified
+          content:
+            application/json:
+              schema: {}
+
+  /auth/forgot-password:
+    post:
+      tags:
+        - Authentication
+      summary: Forgot Password
+      description: Send password reset email or OTP.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  format: email
+      responses:
+        "200":
+          description: Password reset initiated
+          content:
+            application/json:
+              schema: {}
+
+  /auth/reset-password:
+    post:
+      tags:
+        - Authentication
+      summary: Reset Password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - token
+                - new_password
+              properties:
+                token:
+                  type: string
+                new_password:
+                  type: string
+                  format: password
+      responses:
+        "200":
+          description: Password reset successful
+          content:
+            application/json:
+              schema: {}
+
+  /auth/set-password:
+    post:
+      tags:
+        - Authentication
+      summary: Set Password
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - new_password
+              properties:
+                new_password:
+                  type: string
+                  format: password
+      responses:
+        "200":
+          description: Password updated
+          content:
+            application/json:
+              schema: {}
+
+  /users/profile:
+    get:
+      tags:
+        - User Profile
+      summary: Get User Profile
+      security:
+        - bearerAuth: []
+      description: Returns the authenticated user's complete profile.
+      responses:
+        "200":
+          description: User profile
+          content:
+            application/json:
+              schema: {}
+
+    patch:
+      tags:
+        - User Profile
+      summary: Update User Profile
+      security:
+        - bearerAuth: []
+      description: |
+        Updates user profile including nested student profile and interests.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                full_name:
+                  type: string
+                phone:
+                  type: string
+                department_id:
+                  type: integer
+                profile_photo_url:
+                  type: string
+                student_profile:
+                  type: object
+                  properties:
+                    program_id:
+                      type: integer
+                    academic_year:
+                      type: integer
+                    semester:
+                      type: integer
+                    batch:
+                      type: string
+                    section:
+                      type: string
+                interests:
+                  type: array
+                  items:
+                    type: integer
+      responses:
+        "200":
+          description: Profile updated
+          content:
+            application/json:
+              schema: {}
+
+    delete:
+      tags:
+        - User Profile
+      summary: Delete Account
+      security:
+        - bearerAuth: []
+      description: Delete the authenticated user's account.
+      responses:
+        "200":
+          description: Account deleted
+          content:
+            application/json:
+              schema: {}
+
+  /student/departments:
+    get:
+      tags:
+        - Student
+      summary: Get Departments
+      responses:
+        "200":
+          description: List of departments
+          content:
+            application/json:
+              schema: {}
+
+  /student/programs:
+    get:
+      tags:
+        - Student
+      summary: Get Programs
+      responses:
+        "200":
+          description: List of programs
+          content:
+            application/json:
+              schema: {}
+
+  /student/interests:
+    get:
+      tags:
+        - Student
+      summary: Get Interests
+      responses:
+        "200":
+          description: List of interests
+          content:
+            application/json:
+              schema: {}
+
+  /universities/domains:
+    get:
+      tags:
+        - University
+      summary: Get Valid University Email Domains
+      responses:
+        "200":
+          description: List of valid domains
+          content:
+            application/json:
+              schema: {}
+
+  /admin/stats:
+    get:
+      tags:
+        - Admin
+      summary: Get Dashboard Statistics
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Dashboard statistics
+          content:
+            application/json:
+              schema: {}
+
+  /admin/users/recent:
+    get:
+      tags:
+        - Admin
+      summary: Get Recently Registered Users
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Recent users
+          content:
+            application/json:
+              schema: {}
+
+  /admin/support/recent:
+    get:
+      tags:
+        - Admin
+      summary: Get Recent Support Tickets
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Recent support tickets
+          content:
+            application/json:
+              schema: {}
+
+  /admin/audit-logs:
+    get:
+      tags:
+        - Admin
+      summary: Get Audit Logs
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+          description: Maximum number of audit log entries.
+      responses:
+        "200":
+          description: Audit logs
+          content:
+            application/json:
+              schema: {}
+
+    post:
+      tags:
+        - Admin
+      summary: Create Audit Log Entry
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - action
+                - entity_type
+                - entity_id
+              properties:
+                action:
+                  type: string
+                entity_type:
+                  type: string
+                entity_id:
+                  type: integer
+                details:
+                  type: object
+                  additionalProperties: true
+      responses:
+        "201":
+          description: Audit log created
+          content:
+            application/json:
+              schema: {}
+
+  /admin/users:
+    get:
+      tags:
+        - Admin
+      summary: Get All Users
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: role
+          required: false
+          schema:
+            type: string
+          description: Filter users by role.
+      responses:
+        "200":
+          description: User list
+          content:
+            application/json:
+              schema: {}
+
+    post:
+      tags:
+        - Admin
+      summary: Create User
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        "201":
+          description: User created
+          content:
+            application/json:
+              schema: {}
+
+  /admin/users/{id}:
+    get:
+      tags:
+        - Admin
+      summary: Get User By ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: User details
+          content:
+            application/json:
+              schema: {}
+
+    delete:
+      tags:
+        - Admin
+      summary: Delete User
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: User deleted
+          content:
+            application/json:
+              schema: {}
+
+  /admin/users/{id}/status:
+    patch:
+      tags:
+        - Admin
+      summary: Update User Status
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+              properties:
+                status:
+                  type: string
+      responses:
+        "200":
+          description: User status updated
+          content:
+            application/json:
+              schema: {}
+
+  /admin/users/{userId}/role:
+    patch:
+      tags:
+        - Admin
+      summary: Assign User Role
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - role
+              properties:
+                role:
+                  type: string
+      responses:
+        "200":
+          description: Role assigned
+          content:
+            application/json:
+              schema: {}
+
+  /admin/roles:
+    get:
+      tags:
+        - Admin
+      summary: Get Available Roles
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Available roles
+          content:
+            application/json:
+              schema: {}
+
+  /admin/analytics:
+    get:
+      tags:
+        - Admin
+      summary: Get Analytics
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: range
+          required: false
+          schema:
+            type: string
+            default: month
+            enum:
+              - day
+              - week
+              - month
+              - year
+      responses:
+        "200":
+          description: Analytics data
+          content:
+            application/json:
+              schema: {}
+
+  /admin/universities:
+    get:
+      tags:
+        - Admin
+      summary: Get Universities
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Universities
+          content:
+            application/json:
+              schema: {}
+
+    post:
+      tags:
+        - Admin
+      summary: Create University
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        "201":
+          description: University created
+          content:
+            application/json:
+              schema: {}
+
+  /admin/universities/{id}:
+    patch:
+      tags:
+        - Admin
+      summary: Update University Settings
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        "200":
+          description: University updated
+          content:
+            application/json:
+              schema: {}
+
+  /admin/support:
+    get:
+      tags:
+        - Admin
+      summary: Get Support Tickets
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Support tickets
+          content:
+            application/json:
+              schema: {}
+
+  /admin/support/{id}:
+    get:
+      tags:
+        - Admin
+      summary: Get Support Ticket By ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Support ticket details
+          content:
+            application/json:
+              schema: {}
+
+    patch:
+      tags:
+        - Admin
+      summary: Update Support Ticket
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        "200":
+          description: Support ticket updated
+          content:
+            application/json:
+              schema: {}
+
+  /admin/support/{id}/respond:
+    post:
+      tags:
+        - Admin
+      summary: Respond to Support Ticket
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - message
+              properties:
+                message:
+                  type: string
+      responses:
+        "200":
+          description: Response submitted
+          content:
+            application/json:
+              schema: {}
+
+  /announcements:
+    get:
+      tags:
+        - Announcements
+      summary: Get Announcements
+      description: |
+        Returns announcements. Optionally filter by club or retrieve
+        university announcements.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: club_id
+          required: false
+          schema:
+            type: integer
+          description: Filter announcements by club ID.
+        - in: query
+          name: type
+          required: false
+          schema:
+            type: string
+            enum:
+              - university
+          description: Retrieve university-wide announcements.
+      responses:
+        "200":
+          description: Announcements retrieved
+          content:
+            application/json:
+              schema: {}
+
+    post:
+      tags:
+        - Announcements
+      summary: Create Announcement
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        "201":
+          description: Announcement created
+          content:
+            application/json:
+              schema: {}
+
+  /calendar/events:
+    get:
+      tags:
+        - Calendar
+      summary: Get Calendar Events
+      description: |
+        Returns calendar event sessions visible to the authenticated user.
+        Supports filtering by university, club, and public visibility.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: show_public
+          required: false
+          schema:
+            type: boolean
+          description: Include public events.
+        - in: query
+          name: university_id
+          required: false
+          schema:
+            type: integer
+          description: Filter by university.
+        - in: query
+          name: club_id
+          required: false
+          schema:
+            type: integer
+          description: Filter by club.
+      responses:
+        "200":
+          description: Calendar events retrieved
+          content:
+            application/json:
+              schema: {}
+
+  /events/{eventId}/sessions:
+    get:
+      tags:
+        - Event Sessions
+      summary: Get Event Sessions
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: eventId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Event sessions
+          content:
+            application/json:
+              schema: {}
+
+    post:
+      tags:
+        - Event Sessions
+      summary: Create Event Session
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: eventId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        "201":
+          description: Event session created
+          content:
+            application/json:
+              schema: {}
+
+  /event-sessions/{sessionId}:
+    patch:
+      tags:
+        - Event Sessions
+      summary: Update Event Session
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: sessionId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        "200":
+          description: Event session updated
+          content:
+            application/json:
+              schema: {}
+
+    delete:
+      tags:
+        - Event Sessions
+      summary: Delete Event Session
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: sessionId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Event session deleted
+          content:
+            application/json:
+              schema: {}
+
+  /calendar/sync-google:
+    post:
+      tags:
+        - Calendar
+      summary: Sync Calendar to Google Calendar
+      description: Synchronizes the authenticated user's calendar events with Google Calendar.
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Calendar synchronized
+          content:
+            application/json:
+              schema: {}
+
+  /clubs:
+    get:
+      tags:
+        - Clubs
+      summary: Get Clubs
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: university_id
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Clubs retrieved
+          content:
+            application/json:
+              schema: {}
+
+  /clubs/{clubId}:
+    get:
+      tags:
+        - Clubs
+      summary: Get Club By ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: clubId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Club details
+          content:
+            application/json:
+              schema: {}
+
+  /users/{userId}/clubs:
+    get:
+      tags:
+        - Clubs
+      summary: Get User Clubs
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: User clubs
+          content:
+            application/json:
+              schema: {}
+
+  /clubs/{clubId}/members:
+    get:
+      tags:
+        - Club Members
+      summary: Get Club Members
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: clubId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Club members
+          content:
+            application/json:
+              schema: {}
+
+  /clubs/{clubId}/members/{userId}/role:
+    get:
+      tags:
+        - Club Members
+      summary: Get User Role in Club
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: clubId
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: User role
+          content:
+            application/json:
+              schema: {}
+
+  /clubs/{clubId}/membership-requests:
+    get:
+      tags:
+        - Membership
+      summary: Get Membership Requests
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: clubId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Membership requests
+          content:
+            application/json:
+              schema: {}
+
+  /clubs/{clubId}/join:
+    post:
+      tags:
+        - Membership
+      summary: Join Club
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: clubId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                role_in_club:
+                  type: string
+                reason:
+                  type: string
+      responses:
+        "201":
+          description: Join request submitted
+          content:
+            application/json:
+              schema: {}
+
+  /memberships/{membershipId}/approve:
+    patch:
+      tags:
+        - Membership
+      summary: Approve Membership
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: membershipId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Membership approved
+          content:
+            application/json:
+              schema: {}
+
+  /memberships/{membershipId}/reject:
+    patch:
+      tags:
+        - Membership
+      summary: Reject Membership
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: membershipId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+      responses:
+        "200":
+          description: Membership rejected
+          content:
+            application/json:
+              schema: {}
+
+  /memberships/{membershipId}/role:
+    patch:
+      tags:
+        - Membership
+      summary: Update Member Role
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: membershipId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                role:
+                  type: string
+      responses:
+        "200":
+          description: Role updated
+          content:
+            application/json:
+              schema: {}
+
+  /memberships/{membershipId}:
+    delete:
+      tags:
+        - Membership
+      summary: Remove Member
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: membershipId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Member removed
+          content:
+            application/json:
+              schema: {}
+
+  /memberships/{membershipId}/leave:
+    post:
+      tags:
+        - Membership
+      summary: Leave Club
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: membershipId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Left club
+          content:
+            application/json:
+              schema: {}
+
+  /clubs/{clubId}/tasks:
+    get:
+      tags:
+        - Volunteer Tasks
+      summary: Get Club Tasks
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: clubId
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: user_id
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Volunteer tasks
+          content:
+            application/json:
+              schema: {}
+
+  /volunteer-tasks:
+    post:
+      tags:
+        - Volunteer Tasks
+      summary: Create Volunteer Task
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                event_id:
+                  type: integer
+                assignee_membership_id:
+                  type: integer
+                task_description:
+                  type: string
+                due_at:
+                  type: string
+                  format: date-time
+      responses:
+        "201":
+          description: Task created
+          content:
+            application/json:
+              schema: {}
+
+  /volunteer-tasks/{taskId}/status:
+    patch:
+      tags:
+        - Volunteer Tasks
+      summary: Update Task Status
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: taskId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+      responses:
+        "200":
+          description: Task updated
+          content:
+            application/json:
+              schema: {}
+
+  /volunteer-tasks/check-overdue:
+    post:
+      tags:
+        - Volunteer Tasks
+      summary: Check Overdue Tasks
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Overdue tasks checked
+          content:
+            application/json:
+              schema: {}
+
+  /clubs/{clubId}/announcements:
+    get:
+      tags:
+        - Announcements
+      summary: Get Club Announcements
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: clubId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Club announcements
+          content:
+            application/json:
+              schema: {}
+
+  /clubs/{clubId}/settings:
+    patch:
+      tags:
+        - Clubs
+      summary: Update Club Settings
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: clubId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        "200":
+          description: Settings updated
+          content:
+            application/json:
+              schema: {}
+
+  /clubs/{clubId}/applications:
+    get:
+      tags:
+        - Club Applications
+      summary: Get Club Applications
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: clubId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Applications
+          content:
+            application/json:
+              schema: {}
+
+    post:
+      tags:
+        - Club Applications
+      summary: Submit Club Application
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: clubId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        "201":
+          description: Application submitted
+          content:
+            application/json:
+              schema: {}
+
+  /club-applications/{applicationId}/review:
+    patch:
+      tags:
+        - Club Applications
+      summary: Review Club Application
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: applicationId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                decision:
+                  type: string
+                reviewer_id:
+                  type: integer
+                review_comments:
+                  type: string
+      responses:
+        "200":
+          description: Application reviewed
+          content:
+            application/json:
+              schema: {}
+
+  /users/{userId}/club-applications:
+    get:
+      tags:
+        - Club Applications
+      summary: Get User Club Applications
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: User applications
+          content:
+            application/json:
+              schema: {}
+
+  /clubs/{clubId}/interests:
+    get:
+      tags:
+        - Club Interests
+      summary: Get Club Interests
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: clubId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Club interests
+          content:
+            application/json:
+              schema: {}
+
+    post:
+      tags:
+        - Club Interests
+      summary: Set Club Interests
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: clubId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                interests:
+                  type: array
+                  items:
+                    type: integer
+      responses:
+        "200":
+          description: Interests updated
+          content:
+            application/json:
+              schema: {}
+
+  /club-creation-requests:
+    get:
+      tags:
+        - Club Creation
+      summary: Get Club Creation Requests
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: faculty_advisor_id
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Club creation requests
+          content:
+            application/json:
+              schema: {}
+
+    post:
+      tags:
+        - Club Creation
+      summary: Submit Club Creation Request
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        "201":
+          description: Request submitted
+          content:
+            application/json:
+              schema: {}
+
+  /club-creation-requests/{requestId}/approve:
+    patch:
+      tags:
+        - Club Creation
+      summary: Approve Club Creation Request
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: requestId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                admin_id:
+                  type: integer
+      responses:
+        "200":
+          description: Request approved
+          content:
+            application/json:
+              schema: {}
+
+  /club-creation-requests/{requestId}/reject:
+    patch:
+      tags:
+        - Club Creation
+      summary: Reject Club Creation Request
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: requestId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rejector_id:
+                  type: integer
+      responses:
+        "200":
+          description: Request rejected
+          content:
+            application/json:
+              schema: {}
+
+  /events:
+    post:
+      tags:
+        - Events
+      summary: Create Event
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        "201":
+          description: Event created
+          content:
+            application/json:
+              schema: {}
+    
+    get:
+      tags:
+        - Events
+      summary: Get All Events
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Events retrieved
+          content:
+            application/json:
+              schema: {}
+
+  /emergency-reports:
+    post:
+      tags:
+        - Emergency
+      summary: Submit Emergency Report
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        "201":
+          description: Emergency report submitted
+          content:
+            application/json:
+              schema: {}
+
+    get:
+      tags:
+        - Emergency
+      summary: Get Emergency Reports
+      description: Retrieve emergency reports with optional filtering.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: status
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: severity
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: university_id
+          required: false
+          schema:
+            type: integer
+        - in: query
+          name: club_id
+          required: false
+          schema:
+            type: integer
+        - in: query
+          name: reported_by
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Emergency reports retrieved
+          content:
+            application/json:
+              schema: {}
+
+  /emergency-reports/{reportId}/status:
+    patch:
+      tags:
+        - Emergency
+      summary: Update Emergency Status
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: reportId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+                - handled_by
+              properties:
+                status:
+                  type: string
+                handled_by:
+                  type: integer
+      responses:
+        "200":
+          description: Emergency status updated
+          content:
+            application/json:
+              schema: {}
+
+  /emergency-reports/active:
+    get:
+      tags:
+        - Emergency
+      summary: Get Active Emergencies
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Active emergency reports
+          content:
+            application/json:
+              schema: {}
+    
+  /events/{eventId}:
+    get:
+      tags:
+        - Events
+      summary: Get Event By ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: eventId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Event details
+          content:
+            application/json:
+              schema: {}
+
+  /events/{eventId}/register:
+    post:
+      tags:
+        - Event Registration
+      summary: Register for Event
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: eventId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "201":
+          description: Registration successful
+          content:
+            application/json:
+              schema: {}
+
+    delete:
+      tags:
+        - Event Registration
+      summary: Unregister from Event
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: eventId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Registration removed
+          content:
+            application/json:
+              schema: {}
+
+  /events/{eventId}/register-external:
+    post:
+      tags:
+        - Event Registration
+      summary: Register External Participant
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: eventId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        "201":
+          description: External registration successful
+          content:
+            application/json:
+              schema: {}
+
+  /notifications:
+    get:
+      tags:
+        - Notifications
+      summary: Get User Notifications
+      description: Retrieve notifications for a specific user.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: user_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Notifications retrieved
+          content:
+            application/json:
+              schema: {}
+    post:
+      tags:
+        - Notifications
+      summary: Create Notification
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                title:
+                  type: string
+                body:
+                  type: string
+                channel:
+                  type: string
+                related_entity_type:
+                  type: string
+                related_entity_id:
+                  type: integer
+      responses:
+        "201":
+          description: Notification created
+          content:
+            application/json:
+              schema: {}
+
+  /users/{userId}/events:
+    get:
+      tags:
+        - Event Registration
+      summary: Get User Events
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: User events
+          content:
+            application/json:
+              schema: {}
+
+  /users/{userId}/external-events:
+    get:
+      tags:
+        - Event Registration
+      summary: Get User External Events
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: External events
+          content:
+            application/json:
+              schema: {}
+
+  /events/{eventId}/attendance:
+    get:
+      tags:
+        - Event Attendance
+      summary: Get Event Attendance
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: eventId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Attendance records
+          content:
+            application/json:
+              schema: {}
+
+    post:
+      tags:
+        - Event Attendance
+      summary: Check In User
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: eventId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: integer
+                recorded_by:
+                  type: integer
+      responses:
+        "201":
+          description: User checked in
+          content:
+            application/json:
+              schema: {}
+
+  /attendance/{recordId}:
+    delete:
+      tags:
+        - Event Attendance
+      summary: Undo Event Check-In
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: recordId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Check-in removed
+          content:
+            application/json:
+              schema: {}
+
+  /faculty/{userId}/stats:
+    get:
+      tags:
+        - Faculty Advisor
+      summary: Get Faculty Dashboard Statistics
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Faculty statistics
+          content:
+            application/json:
+              schema: {}
+
+  /faculty/{userId}/clubs:
+    get:
+      tags:
+        - Faculty Advisor
+      summary: Get Advised Clubs
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Advised clubs
+          content:
+            application/json:
+              schema: {}
+
+  /faculty/clubs/{clubId}:
+    get:
+      tags:
+        - Faculty Advisor
+      summary: Get Club Details
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: clubId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Club details
+          content:
+            application/json:
+              schema: {}
+
+  /faculty/{userId}/events:
+    get:
+      tags:
+        - Faculty Advisor
+      summary: Get Events Requiring Review
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: status
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Faculty events
+          content:
+            application/json:
+              schema: {}
+
+  /faculty/events/{eventId}/decision:
+    patch:
+      tags:
+        - Faculty Advisor
+      summary: Approve or Reject Event
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: eventId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        "200":
+          description: Event decision recorded
+          content:
+            application/json:
+              schema: {}
+
+  /faculty/{userId}/expenses:
+    get:
+      tags:
+        - Faculty Advisor
+      summary: Get Expense Requests
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: status
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Expense requests
+          content:
+            application/json:
+              schema: {}
+
+  /faculty/expenses/{expenseId}/decision:
+    patch:
+      tags:
+        - Faculty Advisor
+      summary: Approve or Reject Expense
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: expenseId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        "200":
+          description: Expense decision recorded
+          content:
+            application/json:
+              schema: {}
+
+  /faculty/{userId}/announcements:
+    get:
+      tags:
+        - Faculty Advisor
+      summary: Get Faculty Announcements
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Faculty announcements
+          content:
+            application/json:
+              schema: {}
+
+  /faculty/announcements:
+    post:
+      tags:
+        - Faculty Advisor
+      summary: Post Faculty Announcement
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        "201":
+          description: Announcement created
+          content:
+            application/json:
+              schema: {}
+
+  /notifications/{id}/read:
+    patch:
+      tags:
+        - Notifications
+      summary: Mark Notification as Read
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                is_read:
+                  type: boolean
+      responses:
+        "200":
+          description: Notification marked as read
+          content:
+            application/json:
+              schema: {}
+
+  /notifications/read-all:
+    post:
+      tags:
+        - Notifications
+      summary: Mark All Notifications as Read
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - user_id
+              properties:
+                user_id:
+                  type: integer
+      responses:
+        "200":
+          description: All notifications marked as read
+          content:
+            application/json:
+              schema: {}
+
+  /notifications/email:
+    post:
+      tags:
+        - Notifications
+      summary: Send Email Notification
+      description: Sends an email notification through the configured email provider.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: integer
+                type:
+                  type: string
+                subject:
+                  type: string
+                body:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                related_entity_type:
+                  type: string
+                related_entity_id:
+                  type: integer
+      responses:
+        "200":
+          description: Email notification sent
+          content:
+            application/json:
+              schema: {}
+
+  /rewards/tasks:
+    get:
+      tags:
+        - Rewards
+      summary: Get Reward Tasks
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Reward tasks retrieved
+          content:
+            application/json:
+              schema: {}
+
+  /rewards/tasks/completions/{userId}:
+    get:
+      tags:
+        - Rewards
+      summary: Get User Task Completions
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Task completion records
+          content:
+            application/json:
+              schema: {}
+
+  /rewards/tasks/complete:
+    post:
+      tags:
+        - Rewards
+      summary: Complete Reward Task
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - user_id
+                - task_id
+              properties:
+                user_id:
+                  type: integer
+                task_id:
+                  type: integer
+      responses:
+        "200":
+          description: Task completed successfully
+          content:
+            application/json:
+              schema: {}
+
+  /rewards/points/{userId}:
+    get:
+      tags:
+        - Rewards
+      summary: Get User Reward Points
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: User reward points
+          content:
+            application/json:
+              schema: {}
+
+  /rewards/ledger/{userId}:
+    get:
+      tags:
+        - Rewards
+      summary: Get Reward Points History
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Reward points history
+          content:
+            application/json:
+              schema: {}
+
+  /rewards/store/items:
+    get:
+      tags:
+        - Rewards
+      summary: Get Reward Store Items
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Reward store items
+          content:
+            application/json:
+              schema: {}
+
+  /rewards/store/redeem:
+    post:
+      tags:
+        - Rewards
+      summary: Redeem Reward Item
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - user_id
+                - item_id
+              properties:
+                user_id:
+                  type: integer
+                item_id:
+                  type: integer
+      responses:
+        "200":
+          description: Reward redeemed
+          content:
+            application/json:
+              schema: {}
+
+  /rewards/redemptions/{userId}:
+    get:
+      tags:
+        - Rewards
+      summary: Get User Redemption History
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Redemption history
+          content:
+            application/json:
+              schema: {}
+
+  /university-admin/stats:
+    get:
+      tags:
+        - University Admin
+      summary: Get University Admin Dashboard Statistics
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Dashboard statistics
+          content:
+            application/json:
+              schema: {}
+
+  /university-admin/club-requests:
+    get:
+      tags:
+        - University Admin
+      summary: Get Club Creation Requests
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: status
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Club creation requests
+          content:
+            application/json:
+              schema: {}
+
+  /university-admin/club-requests/{id}/decision:
+    patch:
+      tags:
+        - University Admin
+      summary: Approve or Reject Club Creation Request
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        "200":
+          description: Decision recorded
+          content:
+            application/json:
+              schema: {}
+
+  /university-admin/clubs/pending-activation:
+    get:
+      tags:
+        - University Admin
+      summary: Get Pending Club Activations
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Pending club activations
+          content:
+            application/json:
+              schema: {}
+
+  /university-admin/clubs/{clubId}/activate:
+    patch:
+      tags:
+        - University Admin
+      summary: Activate Club
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: clubId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - faculty_advisor_id
+              properties:
+                faculty_advisor_id:
+                  type: integer
+      responses:
+        "200":
+          description: Club activated
+          content:
+            application/json:
+              schema: {}
+
+  /university-admin/faculty-advisors:
+    get:
+      tags:
+        - University Admin
+      summary: Get Faculty Advisors
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Faculty advisors
+          content:
+            application/json:
+              schema: {}
+
+  /university-admin/clubs:
+    get:
+      tags:
+        - University Admin
+      summary: Get All Clubs
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Clubs
+          content:
+            application/json:
+              schema: {}
+
+  /university-admin/events:
+    get:
+      tags:
+        - University Admin
+      summary: Get All Events
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Events
+          content:
+            application/json:
+              schema: {}
+
+  /university-admin/analytics:
+    get:
+      tags:
+        - University Admin
+      summary: Get University Analytics
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Analytics
+          content:
+            application/json:
+              schema: {}
+
+  /university-admin/announcements:
+    get:
+      tags:
+        - University Admin
+      summary: Get University Announcements
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Announcements
+          content:
+            application/json:
+              schema: {}
+
+    post:
+      tags:
+        - University Admin
+      summary: Post University Announcement
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        "201":
+          description: Announcement created
+          content:
+            application/json:
+              schema: {}
+
+components:
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+
+
+
+
+
+# =============================================================================
+# AI Services section — paste into the team's master api_doc.yaml
+# =============================================================================
+# 1. Add this tag to the top-level `tags:` list:
+#      - name: AI Assistant
+# 2. Paste everything under `paths:` below (from `/ai/health` through
+#    `/ai/content`) into the master file's existing `paths:` block.
+# 3. `components.securitySchemes.bearerAuth` already exists in the master
+#    file — no changes needed there.
+#
+# Base path note: the master file's `servers[0].url` is
+# `http://127.0.0.1:5000/api`, and every path below is written relative to
+# that (e.g. `/ai/chat` = `http://127.0.0.1:5000/api/ai/chat`), matching the
+# `/auth/...`, `/admin/...` etc. convention already used for every other tag.
+# The AI blueprint itself is mounted at `/api/ai` in main.py/app/api.py.
+# =============================================================================
+
+paths:
+
+  /ai/health:
+    get:
+      tags:
+        - AI Assistant
+      summary: AI Services Health Check
+      description: |
+        Unauthenticated scaffold/config check. Confirms the Gemini API key
+        is configured and the knowledge base directory (System + RAG
+        documents) is wired up correctly. Intended for a startup/smoke
+        check (e.g. before showing the AI chat widget in the UI) — if
+        `gemini_api_key_configured` is `false`, every other AI endpoint
+        below will return `503` for any request that needs Gemini
+        (effectively all of them).
+      responses:
+        "200":
+          description: AI services scaffold status
+          content:
+            application/json:
+              schema: {}
+
+  /ai/chat:
+    post:
+      tags:
+        - AI Assistant
+      summary: AI Assistant Chat
+      description: |
+        Main conversational endpoint for the ClubConnect Assistant.
+        Stateless per call — there is no server-side thread; short-term
+        conversation memory (last 5 exchanges) is Redis-backed and applied
+        automatically per user, not managed by the frontend.
+
+        Pipeline: intent detection (keyword pre-filter, with a Gemini
+        fallback for ambiguous messages) → authorization check against the
+        caller's platform role and club-scoped role(s) → (if authorized)
+        scoped SQL context + RAG context → Redis cache check → prompt
+        assembly → Gemini call → cache write.
+
+        Authorization is intent-level, not row-level: an authorized
+        request still only ever sees data scoped to the caller's own
+        account/club(s) via the SQL context builder. An unauthorized
+        request (recognized intent, but this user's role doesn't grant
+        it) still returns `200` with a plain-language decline — this is
+        **not** modeled as a 403; see `authorized` in the response body.
+
+        `Emergency Reporting` is reachable by every role regardless of
+        authorization rules (safety-first design) but never attaches SQL
+        context — the response instead directs the user to the in-app
+        Emergency Report action and appends a literal `escalate: true`
+        marker.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - message
+              properties:
+                message:
+                  type: string
+                  description: >-
+                    Non-empty after trimming whitespace. Free-text user
+                    question.
+      responses:
+        "200":
+          description: >-
+            Assistant response. Includes `authorized` (bool),
+            `detected_intent`, `response`, `sql_context` (nullable),
+            `rag_context` (array, may be empty), `cache_hit` (bool, present
+            only on the authorized/successful path), and `user_context`.
+          content:
+            application/json:
+              schema: {}
+        "400":
+          description: Missing or empty `message` field.
+          content:
+            application/json:
+              schema: {}
+        "401":
+          description: Missing, invalid, expired, or revoked bearer token.
+          content:
+            application/json:
+              schema: {}
+        "503":
+          description: >-
+            Gemini isn't configured, or the Gemini request itself failed.
+            Body shape: `{"status": "ai_unavailable", "message": "..."}`.
+          content:
+            application/json:
+              schema: {}
+
+  /ai/reports:
+    post:
+      tags:
+        - AI Assistant
+      summary: AI Report Generation
+      description: |
+        Generates a short AI-written narrative report over a
+        backend-computed data pull. Not a chat turn — no intent
+        detection, no RAG, no conversation memory, and responses are
+        never cached (Phase 6A caching only applies to `/ai/chat`).
+
+        Nine report types are supported (`report_type`), each with its
+        own access rule and data scope — see the "Report types and
+        access" notes below. An unrecognized `report_type` is a client
+        input error (`400`), distinct from a recognized-but-unauthorized
+        type (`200` with `"authorized": false`).
+
+        **Report types and access (exact catalog keys — do not alias):**
+          - `student_activity` — every role, caller's own data
+            (memberships + attendance + rewards + open support tickets).
+          - `attendance` — every role, caller's own event
+            registrations/attendance.
+          - `membership` — every role, caller's own club memberships.
+          - `reward` — every role, caller's own points ledger/redemptions.
+          - `support_ticket` — every role, caller's own tickets.
+          - `volunteer` — every role, caller's own volunteer assignments.
+          - `club_activity` — every role may call it; scope is derived
+            from the caller (admin-tier: platform-wide/university-scoped;
+            faculty advisor: their advised clubs; club officer: their led
+            club(s)); a caller with no qualifying club gets an honest
+            empty result, not a 403.
+          - `budget` — club **treasurer** (any club, including a
+            platform-role `student` who holds a club-scoped `TREASURER`
+            role — intentional, verified against `club_memberships`),
+            **faculty advisor**, or admin-tier (`system_admin`,
+            `student_affairs_office`, `dean_student_welfare`). Treasurer/
+            faculty get only their own club(s)'s figures; an admin-tier
+            caller with no club of their own gets a platform-wide
+            aggregate instead.
+          - `emergency_summary` — admin-tier only
+            (`system_admin`/`student_affairs_office`/
+            `dean_student_welfare`). Aggregate counts/breakdowns only —
+            never individual reporter identity or free-text description.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - report_type
+              properties:
+                report_type:
+                  type: string
+                  enum:
+                    - student_activity
+                    - attendance
+                    - membership
+                    - reward
+                    - support_ticket
+                    - volunteer
+                    - club_activity
+                    - budget
+                    - emergency_summary
+      responses:
+        "200":
+          description: >-
+            `{"status", "report_type", "label", "authorized", "data",
+            "summary"}`. When `authorized` is `false`, `data`/`summary`
+            are both `null` — this is a role limitation, not an error.
+          content:
+            application/json:
+              schema: {}
+        "400":
+          description: >-
+            Unrecognized `report_type`.
+            `{"status": "error", "message": "Unsupported report type.",
+            "supported_report_types": [...]}`.
+          content:
+            application/json:
+              schema: {}
+        "401":
+          description: Missing, invalid, expired, or revoked bearer token.
+          content:
+            application/json:
+              schema: {}
+        "503":
+          description: >-
+            Gemini isn't configured, or the Gemini request itself failed.
+            Body: `{"status": "ai_unavailable", "message": "...",
+            "report_type": "<echoed>"}`.
+          content:
+            application/json:
+              schema: {}
+
+  /ai/analytics/financial:
+    post:
+      tags:
+        - AI Assistant
+      summary: Financial Analytics
+      description: |
+        Backend-computed budget/expense analytics (per-club utilization
+        percentage + bar-chart-ready series) with an AI-written plain-
+        language explanation. No prediction/forecasting — Gemini only
+        interprets numbers the backend already computed.
+
+        **Access:** club treasurer (any club — including a `student`
+        platform role who holds a club-scoped `TREASURER` role),
+        faculty advisor, or admin-tier
+        (`system_admin`/`student_affairs_office`/`dean_student_welfare`).
+        A caller without one of these does **not** get a 403 — the
+        endpoint returns `200` with `"authorized": false`.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              description: No request body fields — scope is derived entirely from the caller's identity and club roles.
+      responses:
+        "200":
+          description: >-
+            Authorized: `{"status", "authorized": true, "summary",
+            "analytics": {"clubs": [...], "total_pending_approvals"},
+            "chart"}`. Not authorized: `{"status", "authorized": false,
+            "message"}`.
+          content:
+            application/json:
+              schema: {}
+        "401":
+          description: Missing, invalid, expired, or revoked bearer token.
+          content:
+            application/json:
+              schema: {}
+        "503":
+          description: >-
+            `{"status": "ai_unavailable", "message": "...",
+            "analytics_type": "financial"}`.
+          content:
+            application/json:
+              schema: {}
+
+  /ai/analytics/performance:
+    post:
+      tags:
+        - AI Assistant
+      summary: Performance Analytics
+      description: |
+        Role-orthogonal — every authenticated role gets a response,
+        auto-scoped to what's appropriate for them (no allowed/denied
+        state, no request body fields):
+          - Admin-tier (`system_admin`/`student_affairs_office`/
+            `dean_student_welfare`) → `scope: "platform"`.
+          - Faculty advisor → `scope: "advised_clubs"`.
+          - Club officer (any officer-tier `role_in_club`) →
+            `scope: "led_clubs"`.
+          - Everyone else (plain student/member) →
+            `scope: "personal"`.
+        Treat `scope` as informational text for a UI label, not a fixed
+        enum to switch on.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              description: No request body fields.
+      responses:
+        "200":
+          description: >-
+            `{"status", "authorized": true, "scope", "summary",
+            "analytics", "chart"}`.
+          content:
+            application/json:
+              schema: {}
+        "401":
+          description: Missing, invalid, expired, or revoked bearer token.
+          content:
+            application/json:
+              schema: {}
+        "503":
+          description: >-
+            `{"status": "ai_unavailable", "message": "...",
+            "analytics_type": "performance"}`.
+          content:
+            application/json:
+              schema: {}
+
+  /ai/content:
+    post:
+      tags:
+        - AI Assistant
+      summary: AI Content Generation
+      description: |
+        Drafts short, professional platform copy. Every authenticated
+        role may use every content type (intentional — not role-gated).
+        Never persisted, never sent/emailed — draft text only; the
+        frontend is responsible for placing it wherever it's meant to go.
+
+        Behavior when `details` is omitted or empty: the draft is still
+        generated (generic, non-specific copy for that content type)
+        rather than the request being rejected — Gemini is instructed not
+        to invent names/dates/facts not present in `details`, so an empty
+        `details` field produces a deliberately generic draft, not an
+        error.
+
+        Valid `content_type` values (exact keys): `announcement`,
+        `event_description`, `club_description`, `invitation`,
+        `volunteer_recruitment`, `reminder`, `approval_comment`,
+        `rejection_message`, `budget_justification`,
+        `certificate_description`.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - content_type
+              properties:
+                content_type:
+                  type: string
+                  enum:
+                    - announcement
+                    - event_description
+                    - club_description
+                    - invitation
+                    - volunteer_recruitment
+                    - reminder
+                    - approval_comment
+                    - rejection_message
+                    - budget_justification
+                    - certificate_description
+                details:
+                  type: string
+                  description: >-
+                    Optional free text supplying the specifics for the
+                    draft (event name, date, amount, reason, etc.).
+                    Defaults to an empty string when omitted.
+      responses:
+        "200":
+          description: >-
+            `{"status", "content_type", "label", "draft"}`.
+          content:
+            application/json:
+              schema: {}
+        "400":
+          description: >-
+            Missing `content_type`
+            (`{"message": "A 'content_type' field is required."}`) or an
+            unrecognized `content_type`
+            (`{"message": "Unknown content_type: '<value>'."}`).
+            Validated before any Gemini call — never a 503 for this case.
+          content:
+            application/json:
+              schema: {}
+        "401":
+          description: Missing, invalid, expired, or revoked bearer token.
+          content:
+            application/json:
+              schema: {}
+        "503":
+          description: >-
+            `{"status": "ai_unavailable", "message": "...",
+            "content_type": "<echoed>"}`.
+          content:
+            application/json:
+              schema: {}

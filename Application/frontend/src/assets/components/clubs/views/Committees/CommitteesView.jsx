@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
 import { Icon } from '@iconify/react';
-import { clubsApi } from '../../../../../api/mockbackendApis/clubsApis/clubs';
+import { clubsApi } from '../../../../../api/backendApis/clubsApis/clubs';
 import { canManageCommittees, hasCommitteePermission } from '../../../../../utils/clubPermissions';
 import { useToast } from '../../../../../context/ToastContext';
 import layoutStyles from '../../../ui/ContextLayout/ContextLayout.module.css';

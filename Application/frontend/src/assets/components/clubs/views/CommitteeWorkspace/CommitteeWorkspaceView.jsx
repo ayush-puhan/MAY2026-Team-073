@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useOutletContext, useParams, useNavigate } from 'react-router-dom';
 import { Icon } from '@iconify/react';
-import { clubsApi } from '../../../../../api/mockbackendApis/clubsApis/clubs';
+import { clubsApi } from '../../../../../api/backendApis/clubsApis/clubs';
 import { hasCommitteePermission, canManageCommittees } from '../../../../../utils/clubPermissions';
 import layoutStyles from '../../../ui/ContextLayout/ContextLayout.module.css';
 import styles from './CommitteeWorkspaceView.module.css';

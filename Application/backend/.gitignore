@@ -5,6 +5,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 *.so
+.vscode
 
 # =========================
 # Virtual Environments
@@ -52,3 +53,4 @@ __pypackages__/
 htmlcov/
 .tox/
 .coverage
+*.cmd

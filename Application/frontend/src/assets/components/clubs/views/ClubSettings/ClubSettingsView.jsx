@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useOutletContext, Navigate } from 'react-router-dom';
 import { Icon } from '@iconify/react';
-import { clubsApi } from '../../../../../api/mockbackendApis/clubsApis/clubs';
+import { clubsApi } from '../../../../../api/backendApis/clubsApis/clubs';
 import layoutStyles from '../../../ui/ContextLayout/ContextLayout.module.css';
 import styles from './ClubSettingsView.module.css';
 import { Input } from '../../../ui/Input/Input';

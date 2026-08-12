@@ -1,0 +1,619 @@
+from flask import Blueprint, jsonify, request
+from flask_jwt_extended import get_jwt_identity
+from datetime import datetime, timedelta
+import bcrypt
+from sqlalchemy import func
+from app.database.database import get_session
+from app.database.models import (
+    User,
+    Club,
+    Event,
+    SupportTicket,
+    AuditLog,
+    Department,
+    UniversityDomain, University
+ )
+from app.database.enums import UserRole, TicketStatus
+
+
+from app.utils.email import send_email
+from app.utils.helpers import save_base64_image,delete_uploaded_file
+from app.middleware.auth_middleware import require_auth ,require_role
+
+system_admin_bp = Blueprint('system_admin', __name__)
+
+@system_admin_bp.route('/stats',methods=['GET'])
+@require_auth
+@require_role(UserRole.SYSTEM_ADMIN)
+def get_admin_stats():
+    """
+        This end point will give the complete club related
+        information in system admin dashboard.
+    """
+    try:
+        with get_session() as db:
+            now = datetime.utcnow()
+            last_30 = now - timedelta(days=30)
+            previous_30 = last_30 - timedelta(days=30)
+
+            total_users = db.query(func.count(User.id)).scalar()
+            active_users = db.query(func.count(User.id)).filter(
+                User.is_active == True
+            ).scalar()
+
+            total_clubs = db.query(func.count(Club.id)).scalar()
+
+            total_events = db.query(func.count(Event.id)).scalar()
+
+            open_tickets = db.query(func.count(SupportTicket.id)).filter(
+                SupportTicket.status == TicketStatus.OPEN
+            ).scalar()
+
+            # ---------- User Trend ----------
+            current_users = db.query(func.count(User.id)).filter(
+                User.created_at >= last_30
+            ).scalar()
+
+            previous_users = db.query(func.count(User.id)).filter(
+                User.created_at >= previous_30,
+                User.created_at < last_30
+            ).scalar()
+
+            user_trend = (
+                ((current_users - previous_users) / previous_users) * 100
+                if previous_users else 100.0
+            )
+
+            # ---------- Event Trend ----------
+            current_events = db.query(func.count(Event.id)).filter(
+                Event.created_at >= last_30
+            ).scalar()
+
+            previous_events = db.query(func.count(Event.id)).filter(
+                Event.created_at >= previous_30,
+                Event.created_at < last_30
+            ).scalar()
+
+            events_trend = (
+                ((current_events - previous_events) / previous_events) * 100
+                if previous_events else 100.0
+            )
+
+            # ---------- Ticket Trend ----------
+            current_tickets = db.query(func.count(SupportTicket.id)).filter(
+                SupportTicket.created_at >= last_30,
+                SupportTicket.status == TicketStatus.OPEN
+            ).scalar()
+
+            previous_tickets = db.query(func.count(SupportTicket.id)).filter(
+                SupportTicket.created_at >= previous_30,
+                SupportTicket.created_at < last_30,
+                SupportTicket.status == TicketStatus.OPEN
+            ).scalar()
+
+            tickets_trend = (
+                ((current_tickets - previous_tickets) / previous_tickets) * 100
+                if previous_tickets else 100.0
+            )
+
+    except Exception as e:
+        return {"message" : f"Error : {e}"}, 500
+    
+    return jsonify({
+        "totalUsers": total_users,
+        "activeUsers": active_users,
+        "totalClubs": total_clubs,
+        "totalEvents": total_events,
+        "openTickets": open_tickets,
+        "userTrend": round(user_trend, 2),
+        "eventsTrend": round(events_trend, 2),
+        "ticketsTrend": round(tickets_trend, 2)
+    }), 200
+
+@system_admin_bp.route("/analytics", methods=["GET"])
+@require_auth
+@require_role(UserRole.SYSTEM_ADMIN)
+def get_platform_analytics():
+    """
+        This endpoint is for analytics view for system admin.
+        It will show admin some visualization chart about some 
+        key metric of club functions.
+    """
+    try:
+        time_range = request.args.get("range", "month")
+        with get_session() as db:
+            if time_range == "year":
+                rows = (
+                    db.query(
+                        func.strftime("%Y", User.created_at).label("period"),
+                        func.count(User.id)
+                    )
+                    .group_by("period")
+                    .order_by("period")
+                    .all()
+                )
+            elif time_range == "week":
+                rows = (
+                    db.query(
+                        func.strftime("%Y-W%W", User.created_at).label("period"),
+                        func.count(User.id)
+                    )
+                    .group_by("period")
+                    .order_by("period")
+                    .all()
+                )
+            else:# month
+                rows = (
+                    db.query(
+                        func.strftime("%Y-%m", User.created_at).label("period"),
+                        func.count(User.id)
+                    )
+                    .group_by("period")
+                    .order_by("period")
+                    .all()
+                )
+
+            growth = {
+                period: count
+                for period, count in rows
+            }
+
+            return jsonify({
+                "growth": growth
+            }), 200
+
+    except Exception as e:
+        return jsonify({
+            "message": str(e)
+        }), 500
+
+
+
+@system_admin_bp.route('/audit-logs',methods=['GET'])
+@require_auth
+@require_role(UserRole.SYSTEM_ADMIN)
+def get_admin_audit_logs():
+    """
+        This gives admin access to all audit related information in 
+        a single focused UI.
+    """
+    try:
+        limit = request.args.get("limit", default=10, type=int)
+        with get_session() as db:
+            audit_logs = db.query(AuditLog).limit(limit).all()
+    except Exception as e:
+        return {"message" : f"Error : {e}"}, 500
+    
+    return jsonify([
+        {
+            "id": audit.id,
+            "user_id": audit.user_id,
+            "university_id": audit.university_id,
+            "action": audit.action,
+            "entity_type": audit.entity_type,
+            "entity_id": audit.entity_id,
+            "details": audit.details
+        } for audit in audit_logs
+    ]), 200
+
+@system_admin_bp.route("/audit-logs", methods=["POST"])
+@require_auth
+@require_role(UserRole.SYSTEM_ADMIN)
+def create_audit_log():
+    """
+        This allow admin to create auditlog.
+        It must be global api where all role can access it whenever
+        they create any resources or login or logout.
+    """
+    try:
+        data = request.get_json()
+        required_fields = ["action", "entity_type", "entity_id"]
+        for field in required_fields:
+            if not data.get(field):
+                return jsonify({
+                    "message": f"{field} is required."
+                }), 400
+
+        with get_session() as db:
+            user_id = get_jwt_identity()
+            user = db.query(User).filter_by(id=user_id).first()
+            audit = AuditLog(
+                user_id=user_id,
+                university_id=user.university_id,
+                action=data["action"],
+                entity_type=data["entity_type"],
+                entity_id=data["entity_id"],
+                details=data.get("details")
+            )
+            db.add(audit)
+            db.commit()
+            db.flush()
+            return jsonify({
+                "message": "Audit log created successfully.",
+                "audit_log_id": audit.id
+            }), 201
+
+    except Exception as e:
+        return jsonify({
+            "message": str(e)
+        }), 500
+    
+@system_admin_bp.route('/users',methods=['POST'])
+@require_auth
+@require_role(UserRole.SYSTEM_ADMIN)
+def admin_user_create_user():
+    """
+        Allow admin to create users directly manualy.
+        The created User will be inactive.Admin must activate it 
+        through different api call if required.
+    """
+    try : 
+        data = request.get_json()
+        full_name = data.get('full_name')
+        email = data.get('email')
+        role = data.get('role')
+        university_id = data.get('university_id') or None
+
+        password = f"Password@123"
+        has_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
+        with get_session() as db:
+            existing_user = db.query(User).filter_by(email=email).first()
+            if existing_user:
+                if existing_user.is_active:
+                    return {"message": "User with this email already exists."}, 400
+                else:
+                    # User exists but not active (abandoned OTP registration), allow overwrite
+                    user_to_update = existing_user
+                    user_to_update.full_name = full_name
+                    user_to_update.password_hash = has_password
+                    user_to_update.role = role 
+                    user_to_update.university_id = university_id
+            else:
+                user_to_update = User(
+                    email=email,
+                    full_name=full_name,
+                    password_hash=has_password,
+                    role=role,
+                    university_id = university_id
+                )
+                db.add(user_to_update)
+            db.commit()
+    except Exception as e:
+        print(e)
+        return { "message" : f"DATABASE Error : {e}"}, 500
+    
+    # Send password email in background
+    try:
+        import threading
+        subject = "Don't Reply : New Accout Created"
+        html = f"<p>your email : {email}</p><br><p> password : {password}</p>"
+        threading.Thread(target=send_email, args=(email,subject, html)).start()
+    except Exception as e:
+        print(f"Background email error: {e}")
+        return { "message" : f"Email Error : {e}"}, 500
+    return {"message": "User created successfully", "email": email,"password":password}, 201
+    
+
+@system_admin_bp.route('/users',methods=['GET'])
+@require_auth
+@require_role(UserRole.SYSTEM_ADMIN)
+def admin_user_get_all_users():
+    """
+        Fcilitate admin to get all the users of the system and
+        their status active or inactive.
+    """
+    try : 
+        with get_session() as db:
+            users = db.query(User).outerjoin(User.department).outerjoin(User.university).all()   
+            result = [
+                {
+                    "id" : user.id,
+                    "full_name" : user.full_name,
+                    "email" : user.email,
+                    "role" : user.role,
+                    "is_active" : user.is_active,
+                    "created_at" : user.created_at,
+                    "university_name" : user.university.name if user.university else None,
+                    "department" : user.department.name if user.department else None,
+                    "roll_number" : user.roll_number
+
+                } for user in users
+            ]              
+    except Exception as e:
+        print(e)
+        return { "message" : f"error : {e}"}, 500
+    
+    return jsonify(result)
+
+@system_admin_bp.route('/users/<int:id>',methods=['GET'])
+@require_auth
+@require_role(UserRole.SYSTEM_ADMIN)
+def admin_user_get_by_id(id):
+    """
+        Allow admin to get user information based on user id.
+    """
+    try : 
+        with get_session() as db:
+            user = db.query(User).filter_by(id=id).outerjoin(User.department).outerjoin(User.university).first()
+            if not user:
+                return {"message": "ERROR : User not found."}, 404   
+            result = {
+                    "id" : user.id,
+                    "full_name" : user.full_name,
+                    "email" : user.email,
+                    "role" : user.role,
+                    "is_active" : user.is_active,
+                    "created_at" : user.created_at,
+                    "university_name" : user.university.name if user.university else None,
+                    "department" : user.department.name if user.department else None,
+                    "roll_number" : user.roll_number
+            }          
+    except Exception as e:
+        print(e)
+        return { "message" : f"error : {e}"}, 500
+    
+    return jsonify(result)
+
+
+@system_admin_bp.route('/users/<int:id>/status',methods=['PATCH'])
+@require_auth
+@require_role(UserRole.SYSTEM_ADMIN)
+def admin_user_change_status_by_id(id):
+    """
+        Alter the status is_active filed of users. 
+    """
+    try : 
+        data = request.get_json()
+        with get_session() as db:
+            if "status" not in data:
+                return {"message": "status is required."}, 400
+            user = db.query(User).filter_by(id=id).first()   
+            if not user:
+                return {"message": "User not found."}, 404
+            user.is_active = data['status']
+            db.commit() 
+    except Exception as e:
+        return { "message" : f"error : {e}"}, 500
+    
+    return { "message" : "Status Changed."}, 200
+    
+
+
+@system_admin_bp.route('/users/<int:id>',methods=['DELETE'])
+@require_auth
+@require_role(UserRole.SYSTEM_ADMIN)
+def admin_user_delete_by_id(id):
+    """
+        Admin can delete users Soft delete, 
+        making is_active true and deleted_at = deleteed time.
+    """
+    try : 
+        with get_session() as db:
+            user = db.query(User).filter_by(id=id).first()  
+            if not user:
+                return {'message' : 'No user found with the provided id'}, 404
+            user.is_active = False 
+            user.deleted_at = datetime.utcnow()
+            db.commit() 
+    except Exception as e:
+        return { "message" : f"error : {e}"}, 500
+    
+    return { "message" : "User deleted."}, 200
+
+
+@system_admin_bp.route('/users/<int:id>/role',methods=['PATCH'])
+@require_auth
+@require_role(UserRole.SYSTEM_ADMIN)
+def admin_user_change_role_by_id(id):
+    """
+        Admin can alter or assign new role to users.
+    """
+    try : 
+        data = request.get_json()
+        print(data)
+        with get_session() as db:
+            if "role" not in data:
+                return {"message": "role is required."}, 400
+            user = db.query(User).filter_by(id=id).first()   
+            if not user:
+                return {'message' : 'No user found with the provided id'}, 404
+            user.role = data['role']
+            db.commit() 
+    except Exception as e:
+        return { "message" : f"error : {e}"}, 500
+    
+    return { "message" : "Status Changed."}, 200
+
+
+
+@system_admin_bp.route('/universities', methods=['GET'])
+@require_auth
+@require_role(UserRole.SYSTEM_ADMIN)
+def admin_get_universities():
+    """
+        Admin can access all the university associated with theapplication in 
+        the university section of admin dashboard.
+    """
+    try:
+        with get_session() as db:
+            universities = db.query(University).all()
+            result = [{
+                "id": university.id,
+                "name": university.name,
+                "short_name": university.short_name,
+                "logo_url": university.logo_url,
+                "domain": university.domain,
+                "address": university.address,
+                "website": university.website,
+                "banner": university.banner,
+                "is_active": university.is_active
+            } for university in universities]
+    except Exception as e:
+        print(e)
+        return { "message" : f"error : {e}"}, 500
+    return jsonify(result)
+    
+    
+@system_admin_bp.route('/universities', methods=['POST'])
+@require_auth
+@require_role(UserRole.SYSTEM_ADMIN)
+def admin_create_university():
+    """
+        System admin create new university. 
+        And automatically required domain for entered university will be created 
+        in UniversityDomain table.
+    """
+    try:
+        data = request.get_json()
+        #print(data)
+        name = data.get('name')
+        domain = data.get('domain')
+        banner_img_data = data.get('banner') #optional
+        allowed_domains = data.get('allowed_domains') #optional
+        is_active = data.get('is_active')
+
+        bnner_img_file_url = None
+        if banner_img_data:
+            bnner_img_file_url = save_base64_image(banner_img_data)
+            pass
+        with get_session() as db:
+            created_at = datetime.utcnow()
+            new_university = University(
+                name=name,
+                domain=domain,
+                banner=bnner_img_file_url,
+                is_active=is_active,
+                created_at=created_at
+            )
+            db.add(new_university)
+            db.flush()
+            if allowed_domains:
+                for domain in allowed_domains:
+                    created_at = created_at
+                    university_domain = UniversityDomain(university_id=new_university.id,domain=domain['domain'],created_at=created_at)
+                    db.add(university_domain)
+            db.commit()
+
+    except Exception as e:
+        return { 'message' : f"Error : {e}"}, 500
+    
+    return { 'message' : "University created successfully"}, 200
+
+
+@system_admin_bp.route('/universities/<int:id>', methods=['PATCH'])
+@require_auth
+@require_role(UserRole.SYSTEM_ADMIN)
+def admin_update_universitiy_by_id(id):
+    """
+        Update University details by university id. 
+    """
+    try:
+        data = request.get_json()
+        name = data.get('name')
+        domain = data.get('domain')
+        banner_img_data = data.get('banner') #optional
+        allowed_domains = data.get('allowed_domains') #optional
+        is_active = data.get('is_active')
+
+        bnner_img_file_url = None
+        if banner_img_data and banner_img_data.startswith("data:image/"):
+            bnner_img_file_url = save_base64_image(banner_img_data)
+            
+        with get_session() as db:
+            university = db.query(University).filter_by(id=id).first()
+            if not university:
+                return { 'message' : "University Not found."}, 404
+            university.name = name
+            university.domain = domain
+            university.is_active = is_active
+            university.updated_at = datetime.utcnow()
+            if bnner_img_file_url:
+                if university.banner:
+                    delete_uploaded_file(university.banner)
+                university.banner = bnner_img_file_url
+            if allowed_domains:
+                for domain in allowed_domains:
+                    created_at = university.updated_at
+                    university_domain = UniversityDomain(university_id=id,domain=domain['domain'],created_at=created_at)
+                    db.add(university_domain)
+            db.commit()
+    except Exception as e:
+        print(e)
+        return { 'message' : f"Error : {e}"}, 500
+
+    return { 'message' : "University updated successfully"}, 200
+
+
+
+@system_admin_bp.route('/users/recent', methods=['GET'])
+@require_auth
+@require_role(UserRole.SYSTEM_ADMIN)
+def admin_support_get_tickets():
+    """
+     Get five recent newly created users.
+    """
+    try : 
+        with get_session() as db:
+            recent_users = (db.query(User).outerjoin(User.department).outerjoin(User.university)
+                            .order_by(User.created_at.desc())
+                            .limit(5)
+                            .all())   
+            result = [
+                {
+                    "id" : user.id,
+                    "full_name" : user.full_name,
+                    "email" : user.email,
+                    "role" : user.role,
+                    "is_active" : user.is_active,
+                    "created_at" : user.created_at,
+                    "university_name" : user.university.name if user.university else None,
+                    "department" : user.department.name if user.department else None,
+                    "roll_number" : user.roll_number
+
+                } for user in recent_users
+            ]              
+    except Exception as e:
+        print(e)
+        return { "message" : f"error : {e}"}, 500
+    
+    return jsonify(result)
+
+            
+@system_admin_bp.route('/support/recent', methods=['GET'])
+@require_auth
+@require_role(UserRole.SYSTEM_ADMIN)
+def admin_support_get_recent_ticket_by_id():
+    """
+        Get 5 recent support ticket .
+    """
+    try : 
+        with get_session() as db:
+            recent_tkts = (db.query(SupportTicket)
+                            .order_by(SupportTicket.created_at.desc())
+                            .limit(5)
+                            .all())   
+            result = [
+                {
+                    "id": tkt.id,
+                    "raised_by": tkt.raised_by,
+                    "club_id": tkt.club_id,
+                    "title": tkt.title,
+                    "description": tkt.description,
+                    "ticket_type": tkt.ticket_type,
+                    "priority": tkt.priority,
+                    "status": tkt.status,
+                    "assigned_agent_id": tkt.assigned_agent_id,
+                    "is_offensive": tkt.is_offensive,
+                    "resolution_rating": tkt.resolution_rating,
+                    "university_id": tkt.university_id,
+                    "created_at": tkt.created_at 
+
+                } for tkt in recent_tkts
+            ]              
+    except Exception as e:
+        print(e)
+        return { "message" : f"error : {e}"}, 500
+    
+    return jsonify(result), 200
+

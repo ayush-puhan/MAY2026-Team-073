@@ -74,30 +74,10 @@ export const AnnouncementComposerModal = ({ onClose, onSubmit, clubOptions, user
               label="Club"
               options={clubOptions}
               value={clubId}
-              onChange={setClubId}
+              onChange={(e) => setClubId(e.target.value)}
               placeholder="Select a club"
             />
           )}
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-            <Dropdown
-              label="Target Role"
-              options={roleOptions}
-              value={targetRole}
-              onChange={setTargetRole}
-            />
-            {committees.length > 0 && (
-              <Dropdown
-                label="Target Committee"
-                options={[
-                  { value: 'ALL', label: 'All Committees' },
-                  ...committees.map(c => ({ value: c.id, label: c.name }))
-                ]}
-                value={targetCommittee}
-                onChange={setTargetCommittee}
-              />
-            )}
-          </div>
 
           <Input label="Title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Announcement title" />
 

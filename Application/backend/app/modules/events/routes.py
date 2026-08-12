@@ -21,8 +21,14 @@ from app.database.models import (
     EventRegistration,
     AttendanceRecord,
     ExternalParticipant,
+    Club,
 )
+from sqlalchemy import or_
 from app.middleware.auth_middleware import require_auth, require_club_role
+from app.modules.notification_system.dispatcher import (
+    dispatch_event_posted,
+    dispatch_event_registration
+)
 
 
 event_bp = Blueprint("events", __name__)
@@ -135,14 +141,39 @@ class EventListResource(Resource):
     def get(self):
         try:
             club_id = request.args.get("club_id")
+            status = request.args.get("status")
 
             with get_session() as session:
-                query = session.query(Event)
+                query = session.query(Event).join(Club, Event.club_id == Club.id)
+
                 if club_id:
                     parsed = _int_or_400(club_id, "club_id")
                     if isinstance(parsed, tuple):
                         return parsed
                     query = query.filter(Event.club_id == parsed)
+                else:
+                    # Scope: user's university events + public events from all universities
+                    user_university_id = g.current_user.university_id
+                    query = query.filter(
+                        or_(
+                            Club.university_id == user_university_id,
+                            Event.is_public == True,
+                        )
+                    )
+
+                if status:
+                    from app.database.enums import EventStatus
+                    if status.lower() == 'upcoming':
+                        # Upcoming means not COMPLETED and not CANCELLED
+                        query = query.filter(
+                            Event.status.notin_([EventStatus.COMPLETED, EventStatus.CANCELLED])
+                        )
+                    else:
+                        try:
+                            # Try to match exact enum if they pass exact string
+                            query = query.filter(Event.status == EventStatus[status.upper()])
+                        except KeyError:
+                            pass # If invalid status, maybe ignore or return error. We'll ignore and return all scoped.
 
                 events = query.all()
                 return [serialize_event(event) for event in events], 200
@@ -189,6 +220,8 @@ class EventListResource(Resource):
                 session.add(event)
                 session.commit()
                 session.refresh(event)
+                
+                dispatch_event_posted(event)
 
                 return serialize_event(event), 201
         except Exception as e:
@@ -269,6 +302,47 @@ class EventDetailResource(Resource):
 
 class EventRegistrationResource(Resource):
     @require_auth
+    def get(self, event_id):
+        try:
+            with get_session() as session:
+                event, error = get_event_or_404(session, event_id)
+                if error:
+                    return error
+
+                # Check if the user is authorized (event coordinator, president, or uni admin)
+                # For simplicity, we just check if they are in the club or is uni admin
+                # Actually, let's just return the list of users who are registered
+                registrations = (
+                    session.query(EventRegistration)
+                    .filter_by(event_id=event_id)
+                    .all()
+                )
+                
+                result = []
+                for reg in registrations:
+                    user = reg.user
+                    if not user:
+                        continue
+                    result.append({
+                        "id": reg.id,
+                        "event_id": reg.event_id,
+                        "user_id": reg.user_id,
+                        "registered_at": reg.registered_at.isoformat() if reg.registered_at else None,
+                        "user": {
+                            "id": user.id,
+                            "email": user.email,
+                            "first_name": user.full_name.split()[0] if user.full_name else "",
+                            "last_name": " ".join(user.full_name.split()[1:]) if user.full_name and len(user.full_name.split()) > 1 else "",
+                            "avatar_url": getattr(user, "avatar_url", None)
+                        }
+                    })
+                return result, 200
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            return {'message': f"Error: {e}"}, 500
+
+    @require_auth
     def post(self, event_id):
         try:
             with get_session() as session:
@@ -287,6 +361,8 @@ class EventRegistrationResource(Resource):
                 registration = EventRegistration(event_id=event.id, user_id=g.current_user.id)
                 session.add(registration)
                 session.commit()
+                
+                dispatch_event_registration(g.current_user.id, event.id)
 
                 return {"message": "Registered successfully", "id": registration.id}, 201
         except Exception as e:
@@ -324,7 +400,37 @@ class EventRegistrationResource(Resource):
 
 class ExternalRegistrationResource(Resource):
     @require_auth
-    @require_club_role("event_coordinator", "president")
+    def get(self, event_id):
+        try:
+            with get_session() as session:
+                event, error = get_event_or_404(session, event_id)
+                if error:
+                    return error
+
+                participants = (
+                    session.query(ExternalParticipant)
+                    .filter_by(event_id=event_id)
+                    .all()
+                )
+                
+                result = []
+                for p in participants:
+                    result.append({
+                        "id": p.id,
+                        "event_id": p.event_id,
+                        "name": p.full_name,
+                        "email": p.email,
+                        "organization": p.affiliation,
+                        "participant_type": p.participant_type.value if p.participant_type else "guest",
+                        "registered_at": p.registered_at.isoformat() if p.registered_at else None
+                    })
+                return result, 200
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            return {'message': f"Error: {e}"}, 500
+
+    @require_auth
     def post(self, event_id):
         try:
             data = _json_data()
@@ -349,6 +455,13 @@ class ExternalRegistrationResource(Resource):
 
                 session.add(participant)
                 session.commit()
+                
+                dispatch_event_registration(
+                    user_id=g.current_user.id,
+                    event_id=event.id,
+                    is_external=True,
+                    external_email=data.get("email")
+                )
 
                 return {"message": "External participant registered", "id": participant.id}, 201
         except Exception as e:
@@ -452,6 +565,60 @@ class EventSessionsResource(Resource):
                 return {"message": "Sessions deleted"}, 200
         except Exception as e:
             return {'message'  :  f"Error  :  {e}"}, 500
+
+
+class EventSessionDetailResource(Resource):
+    @require_auth
+    @require_club_role("event_coordinator", "president")
+    def put(self, session_id):
+        try:
+            data = _json_data()
+            with get_session() as session:
+                session_obj = session.query(EventSession).filter_by(id=session_id).first()
+                if not session_obj:
+                    return {"message": "Session not found"}, 404
+
+                event, error = get_event_or_404(session, session_obj.event_id)
+                if error:
+                    return error
+
+                if "title" in data:
+                    session_obj.title = data["title"]
+                if "description" in data:
+                    session_obj.description = data["description"]
+                if "venue" in data:
+                    session_obj.venue = data["venue"]
+                if "start_at" in data:
+                    session_obj.start_at = _parse_iso(data["start_at"], "start_at")
+                if "end_at" in data:
+                    session_obj.end_at = _parse_iso(data["end_at"], "end_at")
+                if "session_order" in data:
+                    session_obj.session_order = data["session_order"]
+
+                session.commit()
+                return {"message": "Session updated successfully"}, 200
+        except Exception as e:
+            return {'message': f"Error: {e}"}, 500
+
+    @require_auth
+    @require_club_role("event_coordinator", "president")
+    def delete(self, session_id):
+        try:
+            with get_session() as session:
+                session_obj = session.query(EventSession).filter_by(id=session_id).first()
+                if not session_obj:
+                    return {"message": "Session not found"}, 404
+                    
+                event, error = get_event_or_404(session, session_obj.event_id)
+                if error:
+                    return error
+
+                session.delete(session_obj)
+                session.commit()
+
+                return {"message": "Session deleted successfully"}, 200
+        except Exception as e:
+            return {'message': f"Error: {e}"}, 500
 
 
 # ============================================================
@@ -563,5 +730,6 @@ api.add_resource(EventRegistrationResource, "/events/<int:event_id>/register")
 api.add_resource(ExternalRegistrationResource, "/events/<int:event_id>/register-external")
 api.add_resource(UserEventsResource, "/users/<int:user_id>/events")
 api.add_resource(EventSessionsResource, "/events/<int:event_id>/sessions")
+api.add_resource(EventSessionDetailResource, "/sessions/<int:session_id>")
 api.add_resource(EventAttendanceResource, "/events/<int:event_id>/attendance")
 api.add_resource(AttendanceDeleteResource, "/attendance/<int:record_id>")

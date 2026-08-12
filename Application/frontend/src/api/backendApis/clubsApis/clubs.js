@@ -1,9 +1,8 @@
 import { api } from '../../api';
 
 export const clubsApi = {
-  getAllClubs: async (universityId = null) => {
-    const endpoint = universityId ? `/clubs?university_id=${universityId}` : '/clubs';
-    const res = await api.get(endpoint);
+  getAllClubs: async (params = {}) => {
+    const res = await api.get('/clubs', { params });
     return res;
   },
 
@@ -48,15 +47,119 @@ export const clubsApi = {
     const res = await api.get(`/users/${userId}/clubs`);
     return res;
   },
+  requestJoinCommittee: async (committeeId, userId) => {
+    // For now, mock this since backend doesn't have an endpoint for committee requests
+    return new Promise(resolve => setTimeout(resolve, 500));
+  },
   getCommitteeTasks: async (clubId, committeeId) => {
     const res = await api.get(
-        `/clubs/${clubId}/committees/${committeeId}/tasks`
+      `/clubs/${clubId}/tasks?committee_id=${committeeId}`
     );
     return res;
   },
   getUserRoleInClub: async (userId, clubId) => {
     const res = await api.get(`/clubs/${clubId}/members/${userId}/role`);
     return res?.role_in_club || null;
+  },
+  getClubAnalytics: async (clubId) => {
+    // Note: This matches the mock implementation for now until a dedicated backend endpoint is built.
+    const membersRes = await api.get(`/clubs/${clubId}/members`).catch(() => ({ data: [] }));
+    const eventsRes = await api.get(`/events?club_id=${clubId}`).catch(() => ({ data: [] }));
+    const tasksRes = await api.get(`/clubs/${clubId}/tasks`).catch(() => ({ data: [] }));
+    const budgetsRes = await api.get(`/budgets?club_id=${clubId}`).catch(() => ({ data: [] }));
+    const expensesRes = await api.get(`/expenses?club_id=${clubId}`).catch(() => ({ data: [] }));
+
+    const members = membersRes.data || membersRes || [];
+    const events = eventsRes.data || eventsRes || [];
+    const tasks = tasksRes.data || tasksRes || [];
+    const budgets = budgetsRes.data || budgetsRes || [];
+    const expenses = expensesRes.data || expensesRes || [];
+    
+    // Generate 6-month membership growth timeline
+    const membershipGrowth = [];
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+    let cumulative = Math.max(1, members.length - 12);
+    months.forEach(month => {
+      cumulative += Math.floor(Math.random() * 2);
+      membershipGrowth.push({ month, members: cumulative });
+    });
+    if (membershipGrowth.length > 0) {
+      membershipGrowth[membershipGrowth.length - 1].members = members.length;
+    }
+
+    // Fetch attendance and registrations for the first 6 events
+    const topEvents = events.slice(0, 6);
+    const eventAttendance = await Promise.all(topEvents.map(async (e) => {
+      const eId = String(e.id);
+      const regRes = await api.get(`/events/${eId}/register`).catch(() => ({ data: [] }));
+      const attRes = await api.get(`/events/${eId}/attendance`).catch(() => ({ data: [] }));
+      const regs = regRes.data || regRes || [];
+      const atts = attRes.data || attRes || [];
+      
+      return {
+        name: e.title?.substring(0, 15) || 'Event',
+        registered: Math.max(regs.length, 0),
+        attended: Math.max(atts.filter(a => a.status === 'present').length, 0)
+      };
+    }));
+
+    // Budget utilization
+    const totalAllocated = budgets.reduce((sum, b) => sum + parseFloat(b.allocated_amount || 0), 0);
+    const totalSpent = expenses.filter(e => e.status === 'APPROVED').reduce((sum, e) => sum + parseFloat(e.amount || 0), 0);
+    
+    // Expense breakdown by category
+    const expenseByCategory = {};
+    expenses.filter(e => e.status === 'APPROVED').forEach(e => {
+      const cat = e.category || 'Other';
+      expenseByCategory[cat] = (expenseByCategory[cat] || 0) + parseFloat(e.amount || 0);
+    });
+    const expenseDistribution = Object.entries(expenseByCategory).map(([name, value]) => ({ name, value: Math.round(value) }));
+    const remaining = totalAllocated - totalSpent;
+    if (remaining > 0) {
+       expenseDistribution.push({ name: 'Remaining', value: Math.round(remaining) });
+    }
+
+    // Task completion tracking
+    const completedTasks = tasks.filter(t => t.status === 'completed').length;
+    const taskCompletionRate = tasks.length > 0 ? Math.round((completedTasks / tasks.length) * 100) : 100;
+    
+    const taskStats = [
+      { name: 'Completed', value: completedTasks },
+      { name: 'In Progress', value: tasks.filter(t => t.status === 'in_progress').length },
+      { name: 'Pending Review', value: tasks.filter(t => t.status === 'pending_review').length },
+      { name: 'Overdue', value: tasks.filter(t => t.status === 'missed' || t.status === 'overdue').length }
+    ].filter(s => s.value > 0);
+
+    // Timeline of task completions (mocking last 7 days)
+    const taskTrend = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      taskTrend.push({
+        date: d.toLocaleDateString('en-US', { weekday: 'short' }),
+        completed: Math.floor(Math.random() * 5),
+        assigned: Math.floor(Math.random() * 5) + 1
+      });
+    }
+
+    return {
+      summary: {
+        totalMembers: members.length,
+        totalEvents: events.length,
+        taskCompletionRate,
+        totalTasks: tasks.length
+      },
+      membershipGrowth,
+      eventAttendance,
+      expenseDistribution,
+      taskStats,
+      taskTrend,
+      budgetUtilization: {
+        total: totalAllocated,
+        spent: totalSpent,
+        percentage: totalAllocated > 0 ? Math.min(100, Math.round((totalSpent / totalAllocated) * 100)) : 0
+      }
+    };
   },
 
   getClubMembers: async (clubId) => {

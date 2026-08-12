@@ -401,13 +401,13 @@ def make_faculty_announcements():
     try:
         data = request.get_json()
         club_id = data.get('club_id')
-        posted_by = data.get('posted_by')
+        posted_by = int(get_jwt_identity())
         title = data.get('title')
         body = data.get('body')
         target_audience = data.get('target_audience')
         created_at = data.get('created_at')
-        if not club_id and not posted_by and not title and not body and not target_audience and not created_at:
-            return {"message" : "Request field can not be empty."}, 400
+        if not club_id or not title or not body or not target_audience:
+            return {"message": "club_id, title, body, and target_audience are required."}, 400
         with get_session() as db:
             new_ann = Announcement(
                 club_id=club_id,
@@ -419,7 +419,7 @@ def make_faculty_announcements():
             db.add(new_ann)
             db.commit()
             result = {
-                'messge' : "Announcement published successfully"
+                'message' : "Announcement published successfully"
             }
     except Exception as e :
         msg = {"message" : f"Error : {e}"}

@@ -54,28 +54,42 @@ export const AnnouncementCenter = () => {
   const load = async () => {
     setLoading(true);
     try {
-      const allClubs = await announcementsApi.getClubs();
-      setClubs(allClubs);
+      // Only fetch clubs relevant to the user, not all clubs
+      let relevantClubs = [];
+      if (isSysAdmin) {
+        // System admin doesn't need clubs for announcements
+        relevantClubs = [];
+      } else if (isUniAdmin) {
+        // Uni admins see their university's clubs
+        const allClubs = await announcementsApi.getClubs();
+        relevantClubs = allClubs.filter(c => String(c.university_id) === String(user.university_id));
+      } else if (isFaculty) {
+        const allClubs = await announcementsApi.getClubs();
+        relevantClubs = allClubs.filter(c => String(c.faculty_advisor_id) === String(user.id));
+      } else {
+        // Students: derive clubs from memberships
+        const memberships = user?.club_memberships || [];
+        const memberClubIds = memberships.map(m => m.club_id);
+        if (memberClubIds.length > 0) {
+          const allClubs = await announcementsApi.getClubs();
+          relevantClubs = allClubs.filter(c => memberClubIds.includes(c.id));
+        }
+      }
+      setClubs(relevantClubs);
 
+      // Fetch announcements — backend now handles privacy filtering
       let data = [];
       if (isSysAdmin) {
         const allAnnouncements = await announcementsApi.getAnnouncements();
-        data = allAnnouncements.filter(a => a.posted_by_role === 'system_admin');
+        data = allAnnouncements;
       } else if (isUniAdmin) {
-        const allAnnouncements = await announcementsApi.getAnnouncements();
-        // Uni admins see their uni's club announcements, their uni-wide announcements, and system admin announcements
-        data = allAnnouncements.filter(a => {
-          if (a.posted_by_role === 'system_admin') return true; // see system updates
-          if (a.club_id) {
-            const club = allClubs.find(c => String(c.id) === String(a.club_id));
-            return club && String(club.university_id) === String(user.university_id);
-          }
-          return true; // university-wide mock fallback
-        });
+        // Backend now filters to only return user-relevant announcements
+        const uniData = await announcementsApi.getAnnouncements('university');
+        const perClubData = await Promise.all(relevantClubs.map(c => announcementsApi.getAnnouncements(c.id)));
+        data = [...uniData, ...perClubData.flat()];
       } else if (isFaculty) {
         const uniData = await announcementsApi.getAnnouncements('university');
-        const advisedClubs = allClubs.filter(c => String(c.faculty_advisor_id) === String(user.id));
-        const perClubData = await Promise.all(advisedClubs.map(c => announcementsApi.getAnnouncements(c.id)));
+        const perClubData = await Promise.all(relevantClubs.map(c => announcementsApi.getAnnouncements(c.id)));
         data = [...uniData, ...perClubData.flat()];
       } else {
         const uniData = await announcementsApi.getAnnouncements('university');
@@ -86,7 +100,7 @@ export const AnnouncementCenter = () => {
       
       data = data.map(a => ({
         ...a,
-        club_name: a.club_id ? allClubs.find(c => String(c.id) === String(a.club_id))?.name || 'Unknown Club' : (a.posted_by_role === 'system_admin' ? 'System-Wide' : 'University-Wide')
+        club_name: a.club_id ? relevantClubs.find(c => String(c.id) === String(a.club_id))?.name || 'Club' : (a.target_audience === 'system_wide' ? 'System-Wide' : 'University-Wide')
       }));
 
       const uniqueData = Array.from(new Map(data.map(item => [item.id, item])).values());
@@ -103,15 +117,13 @@ export const AnnouncementCenter = () => {
 
   useEffect(() => { load(); }, []);
 
-  const handlePublish = async ({ title, body, club_id, target_role, target_committee }) => {
+  const handlePublish = async ({ title, body, club_id }) => {
     try {
       let audience = 'all_members';
       if (isSysAdmin) {
         audience = 'system_wide';
       } else if (!club_id || club_id === 'university') {
         audience = 'university_wide';
-      } else if (target_role !== 'ALL' || target_committee !== 'ALL') {
-        audience = 'targeted';
       }
 
       const payload = {
@@ -121,11 +133,6 @@ export const AnnouncementCenter = () => {
         body,
         target_audience: audience
       };
-      
-      if (audience === 'targeted') {
-        payload.target_role = target_role;
-        payload.target_committee = target_committee;
-      }
       
       if (club_id && club_id !== 'university') {
         payload.club_id = club_id;

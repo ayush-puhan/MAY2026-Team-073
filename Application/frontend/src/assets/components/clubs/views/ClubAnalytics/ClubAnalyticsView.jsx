@@ -5,7 +5,7 @@ import {
   AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from 'recharts';
-import { clubsApi } from '../../../../../api/backendApis/clubsApis/clubs';
+import { clubsApi } from '../../../../../api';
 import { canViewBudget, canManageTasks } from '../../../../../utils/clubPermissions';
 import styles from './ClubAnalyticsView.module.css';
 import { rewardsIcons, uiIcons, landingIcons } from '../../../../icons/registry';

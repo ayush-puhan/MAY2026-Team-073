@@ -1,7 +1,9 @@
-from flask import Blueprint, request,g
+from flask import Blueprint, request, g
+from sqlalchemy import or_
 from flask_restful import Api, Resource
 
 from app.database.database import get_session
+from app.modules.notification_system.dispatcher import dispatch_announcement_notifications
 from app.database.models import Announcement, ClubMembership
 from app.database.enums import AnnouncementAudience,ClubMemberRole,MembershipStatus, UserRole
 from app.middleware.auth_middleware import require_auth
@@ -34,6 +36,18 @@ class AnnouncementListResource(Resource):
                 query = db.query(Announcement)
 
                 if club_id:
+                    if g.current_user.role not in (UserRole.SYSTEM_ADMIN, UserRole.DEAN_STUDENT_WELFARE, UserRole.STUDENT_AFFAIRS_OFFICE):
+                        membership = (
+                            db.query(ClubMembership)
+                            .filter(
+                                ClubMembership.user_id == g.current_user.id,
+                                ClubMembership.club_id == int(club_id),
+                                ClubMembership.status == MembershipStatus.APPROVED
+                            )
+                            .first()
+                        )
+                        if not membership:
+                            return {'message': 'You are not a member of this club.'}, 403
                     query = query.filter(
                         Announcement.club_id == int(club_id)
                     )
@@ -51,6 +65,22 @@ class AnnouncementListResource(Resource):
                     query = query.filter(
                         Announcement.target_audience ==
                         AnnouncementAudience.SYSTEM_WIDE
+                    )
+                else:
+                    user_club_ids = (
+                        db.query(ClubMembership.club_id)
+                        .filter(
+                            ClubMembership.user_id == g.current_user.id,
+                            ClubMembership.status == MembershipStatus.APPROVED
+                        )
+                        .subquery()
+                    )
+                    query = query.filter(
+                        or_(
+                            Announcement.target_audience == AnnouncementAudience.SYSTEM_WIDE,
+                            Announcement.target_audience == AnnouncementAudience.UNIVERSITY_WIDE,
+                            Announcement.club_id.in_(user_club_ids)
+                        )
                     )
 
                 announcements = (
@@ -95,10 +125,13 @@ class AnnouncementListResource(Resource):
                         not in (
                             ClubMemberRole.PRESIDENT,
                             ClubMemberRole.SECRETARY,
+                            ClubMemberRole.EVENT_COORDINATOR,
+                            ClubMemberRole.VOLUNTEER_COORDINATOR,
+                            ClubMemberRole.VICE_PRESIDENT,
                         )
                     ):
                         return {
-                            "message": "Only club President or Secretary can post announcements."
+                            "message": "Only club leadership can post announcements."
                         }, 403
 
                 # --------------------------------
@@ -133,6 +166,9 @@ class AnnouncementListResource(Resource):
                 db.add(announcement)
                 db.commit()
                 db.refresh(announcement)
+                
+                # Trigger async notifications
+                dispatch_announcement_notifications(announcement)
 
                 return serialize_announcement(announcement), 201
         except Exception as e:

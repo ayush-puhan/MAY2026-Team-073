@@ -173,30 +173,18 @@ export const ClubDashboard = ({ club, userRole, membersCount = 0, pendingCount =
             </section>
           )}
 
-          {/*
-          <section className={styles.section}>
-            <div className={styles.sectionHeader}>
-              <h2>Recent Activity</h2>
-            </div>
-            <div className={styles.activityFeed}>
-              {recentActivity.length > 0 ? recentActivity.map(a => (
-                <div key={a.id} className={styles.activityItem}>
-                  <div className={styles.activityDot} style={{ backgroundColor: a.color }} />
-                  <div className={styles.activityContent}>
-                    <p>{a.text}</p>
-                    <span className={styles.activityTime}>{a.time}</span>
-                  </div>
-                </div>
-              )) : (
-                <EmptyState 
-                  icon={uiIcons.timelineTextOutline} 
-                  title="No recent activity" 
-                  description={`No recent activity in ${club.name}`} 
-                />
-              )}
-            </div>
-          </section>
-          */}
+          {quickActions.length === 0 && (
+            <section className={styles.section}>
+              <div className={styles.sectionHeader}>
+                <h2>About this club</h2>
+              </div>
+              <div className={styles.card} style={{ backgroundColor: 'var(--surface)', padding: '1.5rem', borderRadius: 'var(--radius)', border: '1px solid var(--border)' }}>
+                <p style={{ color: 'var(--muted-foreground)', lineHeight: '1.6' }}>
+                  {club.description || "No description provided for this club."}
+                </p>
+              </div>
+            </section>
+          )}
         </div>
 
         <div className={styles.sideColumn}>

@@ -28,11 +28,11 @@ class NotificationListResource(Resource):
                     Notification.user_id == g.current_user.id
                 )
 
-                if is_read is not None:
+                if is_read is not None and is_read.lower() != "all":
                     query = query.filter(
                         Notification.is_read == (is_read.lower() == "true")
                     )
-                else:
+                elif is_read is None:
                     # Default: return only unread notifications
                     query = query.filter(
                         Notification.is_read == False

@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Icon } from '@iconify/react';
 import { uiIcons } from '../../../icons/registry';
-import { api } from '../../../../api/api';
-import { eventsMockApi } from '../../../../api/mockbackendApis/eventsApis/events';
+import { eventsApi } from '../../../../api';
 import { useToast } from '../../../../context/ToastContext';
 import { useSession } from '../../../../context/SessionContext';
 import { Button } from '../../ui/Button/Button';
@@ -25,29 +24,35 @@ const AttendanceManager = ({ eventId, clubId, onClose }) => {
   const fetchData = async (showLoader = true) => {
     try {
       if (showLoader) setLoading(true);
-      // Fetch registrations and users
-      const [regs, users, externalRegs] = await Promise.all([
-        api.get(`/event_registrations?event_id=${eventId}`),
-        api.get('/users'),
-        api.get(`/external_participants?event_id=${eventId}`)
+      // Fetch registrations
+      const [regsRaw, externalRegsRaw] = await Promise.all([
+        eventsApi.getEventRegistrations(eventId),
+        eventsApi.getExternalParticipants(eventId)
       ]);
       
-      const userMap = users.reduce((acc, user) => {
-        acc[user.id] = user;
-        return acc;
-      }, {});
-      
+      const regs = Array.isArray(regsRaw) ? regsRaw : [];
+      const externalRegs = Array.isArray(externalRegsRaw) ? externalRegsRaw : [];
+
+      // Normalize user objects — backend may return first_name/last_name instead of full_name
+      const normalizeUser = (u) => {
+        if (!u) return u;
+        if (!u.full_name && (u.first_name || u.last_name)) {
+          u.full_name = `${u.first_name || ''} ${u.last_name || ''}`.trim();
+        }
+        return u;
+      };
+
       // Combine internal and external registrations
       const combinedRegs = [
-        ...regs.map(r => ({ ...r, user: userMap[r.user_id], isExternal: false })),
-        ...externalRegs.map(r => ({ ...r, user: userMap[r.user_id], isExternal: true }))
+        ...regs.map(r => ({ ...r, user: normalizeUser(r.user), isExternal: false })),
+        ...externalRegs.map(r => ({ ...r, isExternal: true, user: { id: `ext_${r.id}`, full_name: r.name || 'External', email: r.email } }))
       ];
       
       setRegistrations(combinedRegs);
 
       // Fetch attendance records
-      const records = await eventsMockApi.getEventAttendance(eventId);
-      setAttendanceRecords(records);
+      const recordsRaw = await eventsApi.getEventAttendance(eventId);
+      setAttendanceRecords(Array.isArray(recordsRaw) ? recordsRaw : []);
     } catch (err) {
       console.error(err);
       addToast('Failed to load attendance data', 'error');
@@ -58,7 +63,7 @@ const AttendanceManager = ({ eventId, clubId, onClose }) => {
 
   const handleCheckIn = async (userId) => {
     try {
-      await eventsMockApi.checkInUser(eventId, userId, currentUserId);
+      await eventsApi.checkInUser(eventId, userId, currentUserId);
       addToast('User checked in successfully', 'success');
       await fetchData(false); // Refresh without full loader
     } catch (err) {
@@ -69,7 +74,7 @@ const AttendanceManager = ({ eventId, clubId, onClose }) => {
 
   const handleUndoCheckIn = async (recordId) => {
     try {
-      await eventsMockApi.undoCheckIn(recordId);
+      await eventsApi.undoCheckIn(recordId);
       addToast('Check-in removed', 'success');
       await fetchData(false);
     } catch (err) {
@@ -119,14 +124,14 @@ const AttendanceManager = ({ eventId, clubId, onClose }) => {
                 <div className={styles.userInfo}>
                   <div className={styles.avatar}>
                     {user.avatar ? (
-                      <img src={user.avatar} alt={user.full_name} />
+                      <img src={user.avatar} alt={user.full_name || ''} />
                     ) : (
-                      user.full_name.charAt(0).toUpperCase()
+                      (user.full_name || '?').charAt(0).toUpperCase()
                     )}
                   </div>
                   <div className={styles.userDetails}>
                     <span className={styles.userName}>
-                      {user.full_name} {reg.isExternal && '(External)'}
+                      {user.full_name || 'Unknown'} {reg.isExternal && '(External)'}
                     </span>
                     <span className={styles.userEmail}>{user.email}</span>
                   </div>

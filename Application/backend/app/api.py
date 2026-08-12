@@ -2,29 +2,29 @@ from flask_restful import Api
 from app.modules.auth import auth_bp
 from app.modules.users import users_bp
 from app.modules.student.routes import student_bp
-from app.modules.club_leadership.routes import club_bp
+from app.modules.clubs.core.routes import club_bp
 from app.modules.helpdesk.routes import admin_support_bp,ticket_response_bp, support_ticket_bp
-from app.modules.club_leadership.membership_routes import membership_bp
-from app.modules.club_leadership.leave_club import leave_club_bp
-from app.modules.club_leadership.application_routes import application_bp
+from app.modules.clubs.members.membership_routes import membership_bp
+from app.modules.clubs.members.leave_club import leave_club_bp
+from app.modules.clubs.members.application_routes import application_bp
 from app.modules.notification_system.routes import notification_bp
-from app.modules.club_leadership.committee_routes import committee_bp
-from app.modules.club_leadership.volunteer_task_routes import volunteer_task_bp
+from app.modules.clubs.management.committee_routes import committee_bp
+from app.modules.clubs.management.volunteer_task_routes import volunteer_task_bp
 from app.modules.events.routes import event_bp
 from app.modules.student.rewards import rewards_bp
 from app.modules.announcements.routes import announcement_bp
-from app.modules.club_leadership.interests import interest_bp
+from app.modules.clubs.core.interests import interest_bp
 from app.modules.student.certificates import certificate_bp
 from app.modules.university_administration.university_routes import university_bp
 from app.modules.university_administration.university_admin import university_admin_bp
 from app.modules.system_admin.admin_routes import system_admin_bp
 from app.modules.faculty.routes import  faculty_advisor_bp
 from app.modules.faculty.faculty_advisors import faculty_bp
-from app.modules.club_leadership.club_creation_requests import club_creation_bp
-from app.modules.club_leadership.club_resources import communication_bp
+from app.modules.clubs.admin.club_creation_requests import club_creation_bp
+from app.modules.clubs.management.club_resources import communication_bp
 
-from app.modules.club_leadership.club_budget import budget_bp
-from app.modules.club_leadership.transfer_presidency import transfer_presidency_bp
+from app.modules.clubs.management.club_budget import budget_bp
+from app.modules.clubs.members.transfer_presidency import transfer_presidency_bp
 from app.modules.emergency_report.routes import  em_report
 from app.modules.calendar.routes import calendar_bp
 

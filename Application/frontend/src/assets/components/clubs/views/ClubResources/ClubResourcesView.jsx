@@ -10,6 +10,7 @@ import { EmptyState } from '../../../ui/EmptyState/EmptyState';
 import { Input } from '../../../ui/Input/Input';
 import { Dropdown } from '../../../ui/Dropdown/Dropdown';
 import { Button } from '../../../ui/Button/Button';
+import { ConfirmModal } from '../../../ui/ConfirmModal/ConfirmModal';
 
 export const ClubResourcesView = ({ club, userRole }) => {
   const { user } = useSession();
@@ -17,6 +18,7 @@ export const ClubResourcesView = ({ club, userRole }) => {
   const [resources, setResources] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [resourceToDelete, setResourceToDelete] = useState(null);
   
   const [formData, setFormData] = useState({
     title: '',
@@ -42,14 +44,20 @@ export const ClubResourcesView = ({ club, userRole }) => {
     }
   };
 
-  const handleDelete = async (resourceId) => {
-    if (!window.confirm('Are you sure you want to delete this resource?')) return;
+  const handleDeleteClick = (resourceId) => {
+    setResourceToDelete(resourceId);
+  };
+
+  const confirmDelete = async () => {
+    if (!resourceToDelete) return;
     try {
-      await clubsApi.deleteClubResource(club.id, resourceId, user.id);
+      await clubsApi.deleteClubResource(club.id, resourceToDelete, user.id);
       addToast('Resource deleted successfully', 'success');
-      setResources(resources.filter(r => r.id !== resourceId));
+      setResources(resources.filter(r => r.id !== resourceToDelete));
     } catch (err) {
       addToast(err.message || 'Failed to delete resource', 'error');
+    } finally {
+      setResourceToDelete(null);
     }
   };
 
@@ -137,7 +145,7 @@ export const ClubResourcesView = ({ club, userRole }) => {
                       <Icon icon="mdi:open-in-new" />
                     </a>
                     {canManage && (
-                      <button type="button" onClick={() => handleDelete(resource.id)} className={`${styles.actionBtn} ${styles.deleteBtn}`} title="Delete Resource">
+                      <button type="button" onClick={() => handleDeleteClick(resource.id)} className={`${styles.actionBtn} ${styles.deleteBtn}`} title="Delete Resource">
                         <Icon icon="mdi:trash-can-outline" />
                       </button>
                     )}
@@ -201,6 +209,17 @@ export const ClubResourcesView = ({ club, userRole }) => {
           </div>
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={!!resourceToDelete}
+        onClose={() => setResourceToDelete(null)}
+        onConfirm={confirmDelete}
+        title="Delete Resource"
+        message="Are you sure you want to delete this resource? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        type="danger"
+      />
     </>
   );
 };

@@ -1,11 +1,15 @@
 import { api } from '../../api';
 
 export const eventsRealApi = {
-  getAllEvents: async () => {
-    return await api.get('/events');
+  getAllEvents: async (params = {}) => {
+    return await api.get('/events', { params });
   },
 
   getEventById: async (id) => {
+    return await api.get(`/events/${id}`);
+  },
+
+  getEventDetails: async (id) => {
     return await api.get(`/events/${id}`);
   },
 
@@ -51,32 +55,42 @@ export const eventsRealApi = {
   },
 
   getEventSessions: async (eventId) => {
-    const res = await api.get(`/events/${eventId}/sessions`);
-    return res.data;
+    return await api.get(`/events/${eventId}/sessions`);
   },
 
   createEventSessions: async (eventId, sessionsArray) => {
-    const res = await api.post(`/events/${eventId}/sessions`, { sessions: sessionsArray });
-    return res.data;
+    return await api.post(`/events/${eventId}/sessions`, { sessions: sessionsArray });
   },
 
   deleteEventSessions: async (eventId) => {
-    const res = await api.delete(`/events/${eventId}/sessions`);
-    return res.data;
+    return await api.del(`/events/${eventId}/sessions`);
+  },
+
+  updateEventSession: async (sessionId, data) => {
+    return await api.put(`/sessions/${sessionId}`, data);
+  },
+
+  deleteEventSession: async (sessionId) => {
+    return await api.del(`/sessions/${sessionId}`);
+  },
+
+  getEventRegistrations: async (eventId) => {
+    return await api.get(`/events/${eventId}/register`);
+  },
+
+  getExternalParticipants: async (eventId) => {
+    return await api.get(`/events/${eventId}/register-external`);
   },
 
   getEventAttendance: async (eventId) => {
-    const res = await api.get(`/events/${eventId}/attendance`);
-    return res.data;
+    return await api.get(`/events/${eventId}/attendance`);
   },
 
   checkInUser: async (eventId, userId, recordedBy) => {
-    const res = await api.post(`/events/${eventId}/attendance`, { user_id: userId, recorded_by: recordedBy });
-    return res.data;
+    return await api.post(`/events/${eventId}/attendance`, { user_id: userId, recorded_by: recordedBy });
   },
 
   undoCheckIn: async (recordId) => {
-    const res = await api.delete(`/attendance/${recordId}`);
-    return res.data;
+    return await api.del(`/attendance/${recordId}`);
   }
 };

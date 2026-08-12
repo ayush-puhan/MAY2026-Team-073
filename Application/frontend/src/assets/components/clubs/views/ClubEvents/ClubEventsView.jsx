@@ -3,7 +3,7 @@ import { useOutletContext } from 'react-router-dom';
 import { useToast } from '../../../../../context/ToastContext';
 import { Icon } from '@iconify/react';
 import { clubsApi } from '../../../../../api/backendApis/clubsApis/clubs';
-import { eventsRealApi } from '../../../../../api/backendApis/eventsApis/events';
+import { eventsApi } from '../../../../../api';
 import { canManageEvents, canApproveEvents, canManageAttendance } from '../../../../../utils/clubPermissions';
 import styles from './ClubEventsView.module.css';
 import layoutStyles from '../../../ui/ContextLayout/ContextLayout.module.css';
@@ -11,7 +11,9 @@ import { Button } from '../../../ui/Button/Button';
 import { EmptyState } from '../../../ui/EmptyState/EmptyState';
 import { Input } from '../../../ui/Input/Input';
 import { EventSessionManager } from '../../../../components/events/EventSessionManager/EventSessionManager';
-import AttendanceManager from '../../../../components/events/AttendanceManager/AttendanceManager';
+import AttendanceManager from '../../../events/AttendanceManager/AttendanceManager';
+import SessionsManager from '../../../events/SessionsManager/SessionsManager';
+import EventFormWizard from '../../../events/EventForm/EventFormWizard';
 import { uiIcons, dashboardIcons } from '../../../../icons/registry';
 
 const ClubEventsView = () => {
@@ -109,7 +111,7 @@ const ClubEventsView = () => {
       });
 
       try {
-        const evData = await eventsRealApi.getEventDetails(event.id);
+        const evData = await eventsApi.getEventDetails(event.id);
         setSessions(evData.event_sessions || evData.sessions || []);
       } catch (e) {
         console.error('Failed to load sessions', e);
@@ -134,24 +136,23 @@ const ClubEventsView = () => {
     setShowCreateForm(true);
   };
 
-  const handleCreateSubmit = async (e) => {
-    e.preventDefault();
-    if (!newEvent.title || !newEvent.start_at || !newEvent.end_at) {
+  const handleCreateSubmit = async (formData, formSessions) => {
+    if (!formData.title || !formData.start_at || !formData.end_at) {
       showError('Title, start time, and end time are required.');
       return;
     }
 
     const payload = {
-      title: newEvent.title,
-      description: newEvent.description,
-      sponsors: newEvent.sponsors,
-      banner: newEvent.banner,
-      venue: newEvent.venue,
-      is_public: newEvent.is_public,
-      requires_external_participants: newEvent.requires_external_participants,
-      start_at: newEvent.start_at,
-      end_at: newEvent.end_at,
-      registration_deadline: newEvent.registration_deadline || null
+      title: formData.title,
+      description: formData.description,
+      sponsors: formData.sponsors,
+      banner: formData.banner,
+      venue: formData.venue,
+      is_public: formData.is_public,
+      requires_external_participants: formData.requires_external_participants,
+      start_at: formData.start_at,
+      end_at: formData.end_at,
+      registration_deadline: formData.registration_deadline || null
     };
 
     try {
@@ -169,9 +170,9 @@ const ClubEventsView = () => {
         eventId = createdEvent?.id;
       }
 
-      if (sessions.length > 0 && eventId) {
-        const cleanSessions = sessions.map(({ id, isNew, ...rest }) => rest);
-        await eventsRealApi.createEventSessions(eventId, cleanSessions);
+      if (formSessions && formSessions.length > 0 && eventId) {
+        const cleanSessions = formSessions.map(({ id, isNew, ...rest }) => rest);
+        await eventsApi.createEventSessions(eventId, cleanSessions);
       }
 
       setShowCreateForm(false);
@@ -245,109 +246,15 @@ const ClubEventsView = () => {
         </header>
 
         {showCreateForm && (
-          <div className={styles.modalOverlay} onClick={() => setShowCreateForm(false)}>
-            <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-              <form onSubmit={handleCreateSubmit}>
-                <h3>{editingEventId ? 'Edit Event' : 'Schedule New Event'}</h3>
-
-                <Input
-                  label="Event Title *"
-                  type="text"
-                  value={newEvent.title}
-                  onChange={e => setNewEvent({ ...newEvent, title: e.target.value })}
-                  required
-                />
-
-                <Input
-                  label="Venue (Optional)"
-                  type="text"
-                  value={newEvent.venue}
-                  onChange={e => setNewEvent({ ...newEvent, venue: e.target.value })}
-                />
-
-                <Input
-                  label="Description"
-                  as="textarea"
-                  rows="3"
-                  value={newEvent.description}
-                  onChange={e => setNewEvent({ ...newEvent, description: e.target.value })}
-                />
-
-                <Input
-                  label="Sponsors (Optional, comma separated)"
-                  type="text"
-                  placeholder="e.g. Google, GitHub, Local Pizza Shop"
-                  value={newEvent.sponsors}
-                  onChange={e => setNewEvent({ ...newEvent, sponsors: e.target.value })}
-                />
-
-                <Input
-                  label="Banner URL (Optional)"
-                  type="text"
-                  placeholder="https://example.com/banner.png"
-                  value={newEvent.banner}
-                  onChange={e => setNewEvent({ ...newEvent, banner: e.target.value })}
-                />
-
-                <Input
-                  label="Start Time *"
-                  type="datetime-local"
-                  value={newEvent.start_at}
-                  onChange={e => setNewEvent({ ...newEvent, start_at: e.target.value })}
-                  required
-                />
-
-                <Input
-                  label="End Time *"
-                  type="datetime-local"
-                  value={newEvent.end_at}
-                  onChange={e => setNewEvent({ ...newEvent, end_at: e.target.value })}
-                  required
-                />
-
-                <Input
-                  label="Registration Deadline (Optional)"
-                  type="datetime-local"
-                  value={newEvent.registration_deadline}
-                  onChange={e => setNewEvent({ ...newEvent, registration_deadline: e.target.value })}
-                />
-
-                <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginTop: '0.5rem', marginBottom: '1rem' }}>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
-                    <input
-                      type="checkbox"
-                      checked={newEvent.requires_external_participants}
-                      onChange={e => setNewEvent({ ...newEvent, requires_external_participants: e.target.checked })}
-                    />
-                    Public Event (Requires External Participants)
-                  </label>
-
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
-                    <input
-                      type="checkbox"
-                      checked={newEvent.is_public}
-                      onChange={e => setNewEvent({ ...newEvent, is_public: e.target.checked })}
-                    />
-                    Open Club Event (Open to any University Student)
-                  </label>
-                </div>
-
-                <EventSessionManager
-                  sessions={sessions}
-                  setSessions={setSessions}
-                />
-
-                <div className={styles.formActions}>
-                  <Button variant="outline" type="button" onClick={() => setShowCreateForm(false)}>
-                    Cancel
-                  </Button>
-                  <Button variant="primary" type="submit">
-                    {editingEventId ? 'Save Changes' : 'Submit Event'}
-                  </Button>
-                </div>
-              </form>
-            </div>
-          </div>
+          <EventFormWizard
+            initialData={newEvent}
+            onSubmit={handleCreateSubmit}
+            onCancel={() => {
+              setShowCreateForm(false);
+              setEditingEventId(null);
+            }}
+            isEditing={!!editingEventId}
+          />
         )}
 
         {visibleEvents.length === 0 ? (
@@ -387,13 +294,13 @@ const ClubEventsView = () => {
                     </div>
                   )}
 
-                  {canManageEvents(userRole) && (
+                  {canManageEvents(userRole) && event.status === 'scheduled' && (
                     <Button variant="outline" icon="mdi:pencil" onClick={() => openForm(event)}>
                       Edit Event
                     </Button>
                   )}
 
-                  {(event.status === 'scheduled' || event.status === 'ongoing') && canManageAttendance(userRole) && (
+                  {(event.status === 'scheduled' || event.status === 'ongoing' || event.status === 'completed') && canManageAttendance(userRole) && (
                     <Button
                       variant="outline"
                       fullWidth
@@ -425,6 +332,12 @@ const ClubEventsView = () => {
                     Attendance
                   </button>
                   <button
+                    className={`${styles.tabBtn} ${manageTab === 'sessions' ? styles.activeTab : ''}`}
+                    onClick={() => setManageTab('sessions')}
+                  >
+                    Sessions
+                  </button>
+                  <button
                     className={`${styles.tabBtn} ${manageTab === 'participation' ? styles.activeTab : ''}`}
                     onClick={() => setManageTab('participation')}
                   >
@@ -439,6 +352,13 @@ const ClubEventsView = () => {
                     eventId={manageEventId}
                     clubId={club.id}
                     onClose={() => setManageEventId(null)}
+                  />
+                )}
+                {manageTab === 'sessions' && (
+                  <SessionsManager
+                    eventId={manageEventId}
+                    clubId={club.id}
+                    isCompleted={events.find(e => e.id === manageEventId)?.status === 'completed'}
                   />
                 )}
                 {manageTab === 'participation' && (

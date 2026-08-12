@@ -307,7 +307,7 @@ const CommitteeWorkspaceView = () => {
           clubsApi.getCommitteeMembers(committeeId),
           clubsApi.getClubMembers(club.id),
           clubsApi.getCommitteeTasks(club.id, committeeId),
-          clubsApi.getCommitteeResources(club.id, committeeId)
+          clubsApi.getCommitteeResources(committeeId)
         ]);
 
         const currentComm = comms.find(c => String(c.id) === String(committeeId));

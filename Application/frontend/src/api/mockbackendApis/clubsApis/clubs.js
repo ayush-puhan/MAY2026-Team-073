@@ -10,7 +10,7 @@ const getNotificationApi = async () => {
 export const clubsApi = {
   // ── Read Operations ──
 
-  getAllClubs: async (universityId = null) => {
+  getAllClubs: async () => {
     const [clubs, universities, clubInterests, interests, allMemberships, allUsers] = await Promise.all([
       api.get('/clubs'),
       api.get('/universities'),
@@ -21,9 +21,6 @@ export const clubsApi = {
     ]);
     
     let filteredClubs = clubs;
-    if (universityId) {
-      filteredClubs = clubs.filter(c => String(c.university_id) === String(universityId));
-    }
 
     return filteredClubs.map(c => {
       // Find interests for this club

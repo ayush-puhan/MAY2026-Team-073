@@ -4,7 +4,6 @@ export const notificationApi = {
   getNotifications: async (userId) => {
     // Run background simulators (cron mocks)
     await notificationApi.simulateBackgroundJobs(userId);
-    // For json-server, use strict equality or fetch all and filter
     const res = await api.get(`/notifications?user_id=${userId}`);
     return res.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
   },

@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, g
 from flask_restful import Api, Resource
 from app.database.database import get_session
 from app.database.models.academics import Department, Program
@@ -15,7 +15,7 @@ student_api = Api(student_bp)
 def get_departments():
     try:
         with get_session() as session:
-            departments = session.query(Department).all()
+            departments = session.query(Department).filter(Department.university_id == g.current_user.university_id).all()
             return jsonify([
                 {
                     "id": dept.id,
@@ -32,7 +32,12 @@ def get_departments():
 def get_programs():
     try:
         with get_session() as session:
-            programs = session.query(Program).all()
+            programs = (
+                session.query(Program)
+                .join(Department, Program.department_id == Department.id)
+                .filter(Department.university_id == g.current_user.university_id)
+                .all()
+            )
             return jsonify([
                 {
                     "id": prog.id,

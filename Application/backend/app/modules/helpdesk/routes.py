@@ -65,11 +65,9 @@ class AdminSupportResource(Resource):
 
 
                 # GET /api/admin/support
-                tickets = db.query(SupportTicket).all()
-
-                responses = db.query(TicketResponse).all()
-
-                emergency_reports = db.query(EmergencyReport).all()
+                page = request.args.get('page', 1, type=int)
+                per_page = request.args.get('per_page', 100, type=int)
+                tickets = db.query(SupportTicket).limit(per_page).offset((page - 1) * per_page).all()
 
                 return [
                     {
@@ -92,7 +90,7 @@ class AdminSupportResource(Resource):
                     for ticket in tickets
                 ], 200
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message' : 'Uncaught Error'}, 500
             
 
     @require_auth
@@ -148,7 +146,7 @@ class AdminSupportResource(Resource):
                     "message": "Ticket updated successfully."
                 }, 200
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message' : 'Uncaught Error'}, 500
 
 
 
@@ -220,7 +218,7 @@ class TicketResponseResource(Resource):
                     "response_id": response.id
                 }, 201
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message' : 'Uncaught Error'}, 500
 
 #====================================================================
 ticket_response_bp = Blueprint("ticket_response", __name__)
@@ -279,7 +277,7 @@ class TicketResponsesListResource(Resource):
                     for r in responses
                 ], 200
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message' : 'Uncaught Error'}, 500
 #=================================================================
 support_ticket_bp = Blueprint("support_ticket", __name__)
 support_ticket_api = Api(support_ticket_bp)
@@ -317,12 +315,15 @@ class SupportTicketResource(Resource):
                     for ticket in tickets
                 ], 200
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message' : 'Uncaught Error'}, 500
     
     @require_auth
     def post(self):
         try:
             data = request.get_json()
+
+            if not data or not data.get('title') or not data.get('description'):
+                return {'message': 'title and description are required'}, 400
 
             with get_session() as db:
 
@@ -344,7 +345,7 @@ class SupportTicketResource(Resource):
                     "ticket_id": ticket.id
                 }, 201
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message' : 'Uncaught Error'}, 500
 api.add_resource(
     AdminSupportResource,
     "",

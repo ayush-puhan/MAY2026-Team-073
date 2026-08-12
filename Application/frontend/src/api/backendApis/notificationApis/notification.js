@@ -2,8 +2,8 @@ import { api } from '../../api';
 
 export const notificationApi = {
   getNotifications: async (userId) => {
-    // Assuming backend endpoint is /users/{userId}/notifications or similar.
-    const res = await api.get(`/notifications?user_id=${userId}`);
+    // Fetch all notifications including read ones for the NotificationsView
+    const res = await api.get(`/notifications?user_id=${userId}&is_read=all`);
     return res;
   },
   

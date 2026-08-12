@@ -90,12 +90,18 @@ def get_active_token(user_id: int, session=None) -> str | None:
 
 
 def validate_stored_token(token: str, session=None) -> bool:
-    """True if the exact token exists in auth_sessions and hasn't expired."""
+    """True if the exact token exists in auth_sessions and hasn't expired. Slides expiration by 1 hour."""
     with _session_scope(session) as db:
         auth_session = db.query(AuthSession).filter_by(token=token).one_or_none()
         if auth_session is None:
             return False
-        return auth_session.expires_at > datetime.utcnow()
+        
+        if auth_session.expires_at > datetime.utcnow():
+            # Sliding expiration: extend token by 1 hour from now
+            auth_session.expires_at = datetime.utcnow() + ACCESS_TOKEN_EXPIRES
+            db.commit()
+            return True
+        return False
 
 
 def delete_token(token: str, session=None) -> bool:

@@ -117,20 +117,17 @@ export const AnnouncementCenter = () => {
 
   useEffect(() => { load(); }, []);
 
-  const handlePublish = async ({ title, body, club_id }) => {
+  const handlePublish = async ({ title, body, club_id, target_committee, target_role }) => {
     try {
       let audience = 'all_members';
       if (isSysAdmin) {
         audience = 'system_wide';
       } else if (!club_id || club_id === 'university') {
         audience = 'university_wide';
-<<<<<<< HEAD
-=======
       } else if (target_committee && target_committee !== 'ALL') {
         audience = 'committee';
       } else if (target_role && target_role !== 'ALL') {
         audience = 'leadership';
->>>>>>> 862d3fa293902d414d1408d92d20296ee7dabd50
       }
 
       const payload = {
@@ -138,13 +135,10 @@ export const AnnouncementCenter = () => {
         posted_by_role: user.role.toLowerCase(),
         title,
         body,
-        target_audience: audience
+        target_audience: audience,
+        target_committee_id: target_committee !== 'ALL' ? parseInt(target_committee) : null,
+        target_role: target_role !== 'ALL' ? target_role : null
       };
-<<<<<<< HEAD
-      
-=======
-
->>>>>>> 862d3fa293902d414d1408d92d20296ee7dabd50
       if (club_id && club_id !== 'university') {
         payload.club_id = club_id;
       }

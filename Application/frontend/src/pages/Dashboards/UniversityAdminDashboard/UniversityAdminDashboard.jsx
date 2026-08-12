@@ -25,7 +25,7 @@ export const UniversityAdminDashboard = () => {
 
   return (
     <DashboardLayout title="University Admin Dashboard" user={user} sidebarLinks={sidebarLinks}>
-      <div style={{ width: '100%' }}>
+      <div style={{ width: '100%', height: '100%' }}>
         <Routes>
           <Route path="/" element={<AdminOverviewHome />} />
           <Route path="clubs/*" element={<AllClubs />} />

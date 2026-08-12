@@ -110,8 +110,10 @@ export const AnnouncementCenter = () => {
         audience = 'system_wide';
       } else if (!club_id || club_id === 'university') {
         audience = 'university_wide';
-      } else if (target_role !== 'ALL' || target_committee !== 'ALL') {
-        audience = 'targeted';
+      } else if (target_committee && target_committee !== 'ALL') {
+        audience = 'committee';
+      } else if (target_role && target_role !== 'ALL') {
+        audience = 'leadership';
       }
 
       const payload = {
@@ -121,12 +123,7 @@ export const AnnouncementCenter = () => {
         body,
         target_audience: audience
       };
-      
-      if (audience === 'targeted') {
-        payload.target_role = target_role;
-        payload.target_committee = target_committee;
-      }
-      
+
       if (club_id && club_id !== 'university') {
         payload.club_id = club_id;
       }

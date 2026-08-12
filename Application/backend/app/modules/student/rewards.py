@@ -83,7 +83,7 @@ class RewardTaskListResource(Resource):
 
                 return [serialize_task(t) for t in tasks], 200
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"Error  :  {e}"}, 500
 
 class RewardTaskCompletionResource(Resource):
 
@@ -100,7 +100,7 @@ class RewardTaskCompletionResource(Resource):
 
                 return [serialize_completion(c) for c in completions], 200
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"Error  :  {e}"}, 500
 
 class CompleteRewardTaskResource(Resource):
 
@@ -150,7 +150,7 @@ class CompleteRewardTaskResource(Resource):
                     "points_earned": task.points
                 }, 201
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"Error  :  {e}"}, 500
 
 class UserRewardPointsResource(Resource):
 
@@ -177,7 +177,7 @@ class UserRewardPointsResource(Resource):
                     "redeemed_points": redeemed
                 }, 200
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"Error  :  {e}"}, 500
 
 class RewardLedgerResource(Resource):
 
@@ -195,7 +195,7 @@ class RewardLedgerResource(Resource):
 
                 return [serialize_ledger(e) for e in entries], 200
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"Error  :  {e}"}, 500
 
 class RewardStoreItemsResource(Resource):
 
@@ -215,7 +215,7 @@ class RewardStoreItemsResource(Resource):
 
                 return [serialize_store_item(i) for i in items], 200
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"Error  :  {e}"}, 500
 
 class RedeemRewardResource(Resource):
 
@@ -273,7 +273,7 @@ class RedeemRewardResource(Resource):
                     "message": "Reward redeemed successfully"
                 }, 201
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"Error  :  {e}"}, 500
 
 class RewardRedemptionHistoryResource(Resource):
 

@@ -180,7 +180,7 @@ class ClubTasksResource(Resource):
                     for task in tasks
                 ],200
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"Error  :  {e}"}, 500
 
 
 
@@ -350,7 +350,7 @@ class CreateVolunteerTaskResource(Resource):
 
                 return serialize_task(task), 201
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"Error  :  {e}"}, 500
 # -------------------------------------------------
 # UPDATE TASK STATUS
 # PATCH /api/volunteer-tasks/<id>/status
@@ -432,7 +432,7 @@ class VolunteerTaskStatusResource(Resource):
 
                 return serialize_task(task),200
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"Error  :  {e}"}, 500
 
 
 
@@ -485,7 +485,7 @@ class CheckOverdueTasksResource(Resource):
                 "updated":updated
             },200
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"Error  :  {e}"}, 500
 
 
 

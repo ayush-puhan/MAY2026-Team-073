@@ -60,7 +60,7 @@ class AnnouncementListResource(Resource):
 
                 return [serialize_announcement(a) for a in announcements], 200
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"ERROR  :  {e}"}, 500
 
     @require_auth
     def post(self):
@@ -136,6 +136,6 @@ class AnnouncementListResource(Resource):
 
                 return serialize_announcement(announcement), 201
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"ERROR  :  {e}"}, 500
 
 api.add_resource(AnnouncementListResource, "/announcements")

@@ -60,7 +60,7 @@ class NotificationListResource(Resource):
                     for n in notifications
                 ], 200
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"Error  :  {e}"}, 500
             
     @require_auth
     def post(self):
@@ -90,7 +90,7 @@ class NotificationListResource(Resource):
                     "id": notification.id
                 }, 201
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"Error  :  {e}"}, 500
 class NotificationReadResource(Resource):
     
     @require_auth
@@ -117,7 +117,7 @@ class NotificationReadResource(Resource):
                     "updated_count": updated
                 }, 200
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"Error  :  {e}"}, 500
 
     @require_auth
     def patch(self, notification_id):
@@ -146,7 +146,7 @@ class NotificationReadResource(Resource):
                     "message": "Notification marked as read."
                 }, 200
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"Error  :  {e}"}, 500
 
 class NotificationEmailResource(Resource):
 
@@ -226,7 +226,7 @@ class NotificationEmailResource(Resource):
                     "error": str(e)
                 }, 500
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"Error  :  {e}"}, 500
 
 
 api.add_resource(NotificationListResource, "/notifications")

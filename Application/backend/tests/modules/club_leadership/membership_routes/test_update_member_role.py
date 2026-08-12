@@ -399,7 +399,7 @@ def test_update_member_role_database_query_error(
 
     body = response.get_json()
 
-    assert body["messge"] == "Uncaught Error"
+    assert "Database Error" in body["message"]
 
 
 def test_update_member_role_requires_authentication(

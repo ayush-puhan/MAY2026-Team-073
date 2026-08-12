@@ -113,7 +113,7 @@ class CreateClubRequestResource(Resource):
                     "request": serialize_request(req),
                 }, 201
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"ERROR  :  {e}"}, 500
 
 
 # -------------------------------------------------
@@ -142,7 +142,7 @@ class AdminClubRequestsResource(Resource):
                 requests = query.order_by(ClubCreationRequest.created_at.desc()).all()
                 return [serialize_request(x) for x in requests], 200
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"ERROR  :  {e}"}, 500
 
 
 # -------------------------------------------------
@@ -169,7 +169,7 @@ class FacultyClubRequestsResource(Resource):
                 )
                 return [serialize_request(x) for x in requests], 200
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"ERROR  :  {e}"}, 500
 
 
 # -------------------------------------------------
@@ -211,7 +211,7 @@ class RecommendClubRequestResource(Resource):
                     "request": serialize_request(req),
                 }, 200
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"ERROR  :  {e}"}, 500
 
 
 # -------------------------------------------------
@@ -267,7 +267,7 @@ class ApproveClubRequestResource(Resource):
                     "request": serialize_request(req),
                 }, 201
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"ERROR  :  {e}"}, 500
 
 
 # -------------------------------------------------
@@ -310,7 +310,7 @@ class RejectClubRequestResource(Resource):
                     "request": serialize_request(req),
                 }, 200
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"ERROR  :  {e}"}, 500
 
 
 # -------------------------------------------------

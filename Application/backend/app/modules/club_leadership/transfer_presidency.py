@@ -109,7 +109,7 @@ class TransferPresidencyResource(Resource):
                     "new_president_membership_id": successor_membership.id,
                 }, 200
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"Error  :  {e}"}, 500
 
 
 # ---------------------------------------------------

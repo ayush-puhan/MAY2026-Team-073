@@ -19,203 +19,214 @@ class NotificationListResource(Resource):
 
     @require_auth
     def get(self):
+        try:
+            is_read = request.args.get("is_read")
 
-        is_read = request.args.get("is_read")
+            with get_session() as session:
 
-        with get_session() as session:
-
-            query = session.query(Notification).filter(
-                Notification.user_id == g.current_user.id
-            )
-
-            if is_read is not None:
-                query = query.filter(
-                    Notification.is_read == (is_read.lower() == "true")
-                )
-            else:
-                # Default: return only unread notifications
-                query = query.filter(
-                    Notification.is_read == False
+                query = session.query(Notification).filter(
+                    Notification.user_id == g.current_user.id
                 )
 
-            notifications = (
-                query.order_by(Notification.created_at.desc())
-                .all()
-            )
+                if is_read is not None:
+                    query = query.filter(
+                        Notification.is_read == (is_read.lower() == "true")
+                    )
+                else:
+                    # Default: return only unread notifications
+                    query = query.filter(
+                        Notification.is_read == False
+                    )
 
-            return [
-                {
-                    "id": n.id,
-                    "user_id": n.user_id,
-                    "type": n.type.value,
-                    "title": n.title,
-                    "body": n.body,
-                    "channel": n.channel.value,
-                    "is_read": n.is_read,
-                    "sent_via_resend": n.sent_via_resend,
-                    "related_entity_type": n.related_entity_type,
-                    "related_entity_id": n.related_entity_id,
-                    "created_at": n.created_at.isoformat(),
-                }
-                for n in notifications
-            ], 200
+                notifications = (
+                    query.order_by(Notification.created_at.desc())
+                    .all()
+                )
+
+                return [
+                    {
+                        "id": n.id,
+                        "user_id": n.user_id,
+                        "type": n.type.value,
+                        "title": n.title,
+                        "body": n.body,
+                        "channel": n.channel.value,
+                        "is_read": n.is_read,
+                        "sent_via_resend": n.sent_via_resend,
+                        "related_entity_type": n.related_entity_type,
+                        "related_entity_id": n.related_entity_id,
+                        "created_at": n.created_at.isoformat(),
+                    }
+                    for n in notifications
+                ], 200
+        except Exception as e:
+            return {'message'  :  f"Error  :  {e}"}, 500
             
     @require_auth
     def post(self):
+        try:
+            data = request.get_json()
 
-        data = request.get_json()
+            with get_session() as session:
 
-        with get_session() as session:
+                notification = Notification(
+                    user_id=g.current_user.id,
+                    type=NotificationType(data["type"].lower()),
+                    title=data["title"],
+                    body=data["body"],
+                    channel=NotificationChannel(
+                        data.get("channel", "in_app").lower()
+                    ),
+                    related_entity_type=data.get("related_entity_type"),
+                    related_entity_id=data.get("related_entity_id")
+                )
 
-            notification = Notification(
-                user_id=g.current_user.id,
-                type=NotificationType(data["type"].lower()),
-                title=data["title"],
-                body=data["body"],
-                channel=NotificationChannel(
-                    data.get("channel", "in_app").lower()
-                ),
-                related_entity_type=data.get("related_entity_type"),
-                related_entity_id=data.get("related_entity_id")
-            )
+                session.add(notification)
+                session.commit()
+                session.refresh(notification)
 
-            session.add(notification)
-            session.commit()
-            session.refresh(notification)
-
-            return {
-                "message": "Notification created.",
-                "id": notification.id
-            }, 201
+                return {
+                    "message": "Notification created.",
+                    "id": notification.id
+                }, 201
+        except Exception as e:
+            return {'message'  :  f"Error  :  {e}"}, 500
 class NotificationReadResource(Resource):
     
     @require_auth
     def post(self):
-        with get_session() as session:
-            # Mark all notifications as read
-            updated = (
-                session.query(Notification)
-                .filter(
-                    Notification.user_id == g.current_user.id,
-                    Notification.is_read == False
+        try:
+            with get_session() as session:
+                # Mark all notifications as read
+                updated = (
+                    session.query(Notification)
+                    .filter(
+                        Notification.user_id == g.current_user.id,
+                        Notification.is_read == False
+                    )
+                    .update(
+                        {"is_read": True},
+                        synchronize_session=False
+                    )
                 )
-                .update(
-                    {"is_read": True},
-                    synchronize_session=False
-                )
-            )
 
-            session.commit()
+                session.commit()
 
-            return {
-                "message": "All notifications marked as read.",
-                "updated_count": updated
-            }, 200
+                return {
+                    "message": "All notifications marked as read.",
+                    "updated_count": updated
+                }, 200
+        except Exception as e:
+            return {'message'  :  f"Error  :  {e}"}, 500
 
     @require_auth
     def patch(self, notification_id):
+        try:
+            with get_session() as session:
 
-        with get_session() as session:
-
-            notification = (
-                session.query(Notification)
-                .filter(
-                    Notification.id == notification_id,
-                    Notification.user_id == g.current_user.id
+                notification = (
+                    session.query(Notification)
+                    .filter(
+                        Notification.id == notification_id,
+                        Notification.user_id == g.current_user.id
+                    )
+                    .first()
                 )
-                .first()
-            )
 
-            if not notification:
+                if not notification:
+                    return {
+                        "message": "Notification not found."
+                    }, 404
+
+                notification.is_read = True
+
+                session.commit()
+
                 return {
-                    "message": "Notification not found."
-                }, 404
-
-            notification.is_read = True
-
-            session.commit()
-
-            return {
-                "message": "Notification marked as read."
-            }, 200
+                    "message": "Notification marked as read."
+                }, 200
+        except Exception as e:
+            return {'message'  :  f"Error  :  {e}"}, 500
 
 class NotificationEmailResource(Resource):
 
     method_decorators = [require_auth]
 
     def post(self):
-
-        data = request.get_json()
-
-        recipient = data["email"]
-        subject = data["title"]
-        body = data["body"]
-
-        sender = os.getenv("GMAIL_ADDRESS")
-        password = os.getenv("GMAIL_APP_PASSWORD")
-
         try:
+            data = request.get_json()
 
-            message = MIMEMultipart()
-            message["From"] = sender
-            message["To"] = recipient
-            message["Subject"] = subject
+            recipient = data["email"]
+            subject = data["title"]
+            body = data["body"]
 
-            message.attach(MIMEText(body, "plain"))
+            sender = os.getenv("GMAIL_ADDRESS")
+            password = os.getenv("GMAIL_APP_PASSWORD")
 
-            with smtplib.SMTP("smtp.gmail.com", 587) as server:
+            try:
 
-                server.starttls()
+                message = MIMEMultipart()
+                message["From"] = sender
+                message["To"] = recipient
+                message["Subject"] = subject
 
-                server.login(sender, password)
+                message.attach(MIMEText(body, "plain"))
 
-                server.sendmail(
-                    sender,
-                    recipient,
-                    message.as_string()
-                )
+                with smtplib.SMTP("smtp.gmail.com", 587) as server:
 
-            with get_session() as session:
+                    server.starttls()
 
-                notification = Notification(
+                    server.login(sender, password)
 
-                    user_id=g.current_user.id,
-
-                    type=NotificationType.ANNOUNCEMENT
-                        if "type" not in data
-                        else NotificationType(data["type"]),
-
-                    title=subject,
-
-                    body=body,
-
-                    channel=NotificationChannel.EMAIL,
-
-                    sent_via_resend=True,
-
-                    related_entity_type=data.get(
-                        "related_entity_type"
-                    ),
-
-                    related_entity_id=data.get(
-                        "related_entity_id"
+                    server.sendmail(
+                        sender,
+                        recipient,
+                        message.as_string()
                     )
-                )
 
-                session.add(notification)
+                with get_session() as session:
 
-                session.commit()
+                    notification = Notification(
 
-            return {
-                "message": "Email sent successfully."
-            }, 200
+                        user_id=g.current_user.id,
 
+                        type=NotificationType.ANNOUNCEMENT
+                            if "type" not in data
+                            else NotificationType(data["type"]),
+
+                        title=subject,
+
+                        body=body,
+
+                        channel=NotificationChannel.EMAIL,
+
+                        sent_via_resend=True,
+
+                        related_entity_type=data.get(
+                            "related_entity_type"
+                        ),
+
+                        related_entity_id=data.get(
+                            "related_entity_id"
+                        )
+                    )
+
+                    session.add(notification)
+
+                    session.commit()
+
+                return {
+                    "message": "Email sent successfully."
+                }, 200
+
+            except Exception as e:
+
+                return {
+                    "message": "Failed to send email.",
+                    "error": str(e)
+                }, 500
         except Exception as e:
-
-            return {
-                "message": "Failed to send email.",
-                "error": str(e)
-            }, 500
+            return {'message'  :  f"Error  :  {e}"}, 500
 
 
 api.add_resource(NotificationListResource, "/notifications")

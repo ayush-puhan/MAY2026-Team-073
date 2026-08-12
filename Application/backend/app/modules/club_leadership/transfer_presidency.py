@@ -34,79 +34,82 @@ class TransferPresidencyResource(Resource):
     @require_auth
     @require_club_role(ClubMemberRole.PRESIDENT)
     def patch(self, club_id):
-        data = request.get_json() or {}
+        try:
+            data = request.get_json() or {}
 
-        current_membership_id = data.get("current_membership_id")
-        successor_membership_id = data.get("successor_membership_id")
+            current_membership_id = data.get("current_membership_id")
+            successor_membership_id = data.get("successor_membership_id")
 
-        if current_membership_id is None:
-            return {
-                "message": "current_membership_id is required"
-            }, 400
-
-        if successor_membership_id is None:
-            return {
-                "message": "successor_membership_id is required"
-            }, 400
-
-        with get_session() as session:
-
-            current_membership = session.get(
-                ClubMembership,
-                current_membership_id
-            )
-
-            successor_membership = session.get(
-                ClubMembership,
-                successor_membership_id
-            )
-
-            if current_membership is None:
+            if current_membership_id is None:
                 return {
-                    "message": "Current membership not found."
-                }, 404
-
-            if successor_membership is None:
-                return {
-                    "message": "Successor membership not found."
-                }, 404
-
-            if current_membership.club_id != club_id:
-                return {
-                    "message": "Current membership does not belong to this club."
+                    "message": "current_membership_id is required"
                 }, 400
 
-            if successor_membership.club_id != club_id:
+            if successor_membership_id is None:
                 return {
-                    "message": "Successor membership does not belong to this club."
+                    "message": "successor_membership_id is required"
                 }, 400
 
-            if current_membership.role_in_club != ClubMemberRole.PRESIDENT:
+            with get_session() as session:
+
+                current_membership = session.get(
+                    ClubMembership,
+                    current_membership_id
+                )
+
+                successor_membership = session.get(
+                    ClubMembership,
+                    successor_membership_id
+                )
+
+                if current_membership is None:
+                    return {
+                        "message": "Current membership not found."
+                    }, 404
+
+                if successor_membership is None:
+                    return {
+                        "message": "Successor membership not found."
+                    }, 404
+
+                if current_membership.club_id != club_id:
+                    return {
+                        "message": "Current membership does not belong to this club."
+                    }, 400
+
+                if successor_membership.club_id != club_id:
+                    return {
+                        "message": "Successor membership does not belong to this club."
+                    }, 400
+
+                if current_membership.role_in_club != ClubMemberRole.PRESIDENT:
+                    return {
+                        "message": "Current member is not the President."
+                    }, 400
+
+                if successor_membership.status != MembershipStatus.APPROVED:
+                    return {
+                        "message": "Successor must be an approved member."
+                    }, 400
+
+                if successor_membership.role_in_club == ClubMemberRole.PRESIDENT:
+                    return {
+                        "message": "Selected member is already the President."
+                    }, 400
+
+                # Transfer roles
+                current_membership.role_in_club = ClubMemberRole.VICE_PRESIDENT
+                successor_membership.role_in_club = ClubMemberRole.PRESIDENT
+
+                session.commit()
+
                 return {
-                    "message": "Current member is not the President."
-                }, 400
-
-            if successor_membership.status != MembershipStatus.APPROVED:
-                return {
-                    "message": "Successor must be an approved member."
-                }, 400
-
-            if successor_membership.role_in_club == ClubMemberRole.PRESIDENT:
-                return {
-                    "message": "Selected member is already the President."
-                }, 400
-
-            # Transfer roles
-            current_membership.role_in_club = ClubMemberRole.VICE_PRESIDENT
-            successor_membership.role_in_club = ClubMemberRole.PRESIDENT
-
-            session.commit()
-
-            return {
-                "message": "Presidency transferred successfully.",
-                "previous_president_membership_id": current_membership.id,
-                "new_president_membership_id": successor_membership.id,
-            }, 200
+                    "message": "Presidency transferred successfully.",
+                    "previous_president_membership_id": current_membership.id,
+                    "new_president_membership_id": successor_membership.id,
+                }, 200
+        except Exception as e:
+            return {'message'  :  f"Error  :  {e}"}, 500
 
 
 # ---------------------------------------------------

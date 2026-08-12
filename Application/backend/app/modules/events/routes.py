@@ -133,60 +133,66 @@ def serialize_event(event):
 class EventListResource(Resource):
     @require_auth
     def get(self):
-        club_id = request.args.get("club_id")
+        try:
+            club_id = request.args.get("club_id")
 
-        with get_session() as session:
-            query = session.query(Event)
-            if club_id:
-                parsed = _int_or_400(club_id, "club_id")
-                if isinstance(parsed, tuple):
-                    return parsed
-                query = query.filter(Event.club_id == parsed)
+            with get_session() as session:
+                query = session.query(Event)
+                if club_id:
+                    parsed = _int_or_400(club_id, "club_id")
+                    if isinstance(parsed, tuple):
+                        return parsed
+                    query = query.filter(Event.club_id == parsed)
 
-            events = query.all()
-            return [serialize_event(event) for event in events], 200
+                events = query.all()
+                return [serialize_event(event) for event in events], 200
+        except Exception as e:
+            return {'message'  :  f"Error  :  {e}"}, 500
 
     @require_auth
     @require_club_role("event_coordinator", "president")
     def post(self):
-        data = _json_data()
-
-        if "title" not in data:
-            return {"message": "title is required"}, 400
-        if "start_at" not in data:
-            return {"message": "start_at is required"}, 400
-        if "end_at" not in data:
-            return {"message": "end_at is required"}, 400
-
         try:
-            start_at = _parse_iso(data["start_at"], "start_at")
-            end_at = _parse_iso(data["end_at"], "end_at")
-            registration_deadline = _parse_iso(
-                data.get("registration_deadline"), "registration_deadline"
-            )
-        except ValueError as e:
-            return {"message": str(e)}, 400
+            data = _json_data()
 
-        with get_session() as session:
-            event = Event(
-                club_id=g.club_id,
-                title=data["title"],
-                description=data.get("description"),
-                venue=data.get("venue"),
-                start_at=start_at,
-                end_at=end_at,
-                registration_deadline=registration_deadline,
-                capacity=data.get("capacity"),
-                banner=data.get("banner"),
-                created_by=g.current_user.id,
-                is_public=data.get("is_public", False),
-            )
+            if "title" not in data:
+                return {"message": "title is required"}, 400
+            if "start_at" not in data:
+                return {"message": "start_at is required"}, 400
+            if "end_at" not in data:
+                return {"message": "end_at is required"}, 400
 
-            session.add(event)
-            session.commit()
-            session.refresh(event)
+            try:
+                start_at = _parse_iso(data["start_at"], "start_at")
+                end_at = _parse_iso(data["end_at"], "end_at")
+                registration_deadline = _parse_iso(
+                    data.get("registration_deadline"), "registration_deadline"
+                )
+            except ValueError as e:
+                return {"message": str(e)}, 400
 
-            return serialize_event(event), 201
+            with get_session() as session:
+                event = Event(
+                    club_id=g.club_id,
+                    title=data["title"],
+                    description=data.get("description"),
+                    venue=data.get("venue"),
+                    start_at=start_at,
+                    end_at=end_at,
+                    registration_deadline=registration_deadline,
+                    capacity=data.get("capacity"),
+                    banner=data.get("banner"),
+                    created_by=g.current_user.id,
+                    is_public=data.get("is_public", False),
+                )
+
+                session.add(event)
+                session.commit()
+                session.refresh(event)
+
+                return serialize_event(event), 201
+        except Exception as e:
+            return {'message'  :  f"Error  :  {e}"}, 500
 
 
 # ============================================================
@@ -198,55 +204,61 @@ class EventListResource(Resource):
 class EventDetailResource(Resource):
     @require_auth
     def get(self, event_id):
-        with get_session() as session:
-            event, error = get_event_or_404(session, event_id)
-            if error:
-                return error
-            return serialize_event(event), 200
+        try:
+            with get_session() as session:
+                event, error = get_event_or_404(session, event_id)
+                if error:
+                    return error
+                return serialize_event(event), 200
+        except Exception as e:
+            return {'message'  :  f"Error  :  {e}"}, 500
     @require_auth
     @require_club_role("event_coordinator", "president")
     def patch(self, event_id):
-        data = _json_data()
+        try:
+            data = _json_data()
 
-        with get_session() as session:
+            with get_session() as session:
 
-            event, error = get_event_or_404(session, event_id)
-            if error:
-                return error
+                event, error = get_event_or_404(session, event_id)
+                if error:
+                    return error
 
-            if "title" in data:
-                event.title = data["title"]
+                if "title" in data:
+                    event.title = data["title"]
 
-            if "description" in data:
-                event.description = data["description"]
+                if "description" in data:
+                    event.description = data["description"]
 
-            if "venue" in data:
-                event.venue = data["venue"]
+                if "venue" in data:
+                    event.venue = data["venue"]
 
-            if "capacity" in data:
-                event.capacity = data["capacity"]
+                if "capacity" in data:
+                    event.capacity = data["capacity"]
 
-            if "registration_deadline" in data:
-                event.registration_deadline = (
-                    _parse_iso(
-                        data["registration_deadline"],
-                        "registration_deadline"
+                if "registration_deadline" in data:
+                    event.registration_deadline = (
+                        _parse_iso(
+                            data["registration_deadline"],
+                            "registration_deadline"
+                        )
+                        if data["registration_deadline"]
+                        else None
                     )
-                    if data["registration_deadline"]
-                    else None
-                )
 
-            if "banner_url" in data:
-                event.banner_url = data["banner_url"]
+                if "banner_url" in data:
+                    event.banner_url = data["banner_url"]
 
-            if "visibility" in data:
-                event.visibility = data["visibility"]
+                if "visibility" in data:
+                    event.visibility = data["visibility"]
 
-            session.commit()
+                session.commit()
 
-            return {
-                "message": "Event updated successfully."
-            }, 200
+                return {
+                    "message": "Event updated successfully."
+                }, 200
+        except Exception as e:
+            return {'message'  :  f"Error  :  {e}"}, 500
 
 # ============================================================
 # EVENT REGISTRATION
@@ -258,44 +270,50 @@ class EventDetailResource(Resource):
 class EventRegistrationResource(Resource):
     @require_auth
     def post(self, event_id):
-        with get_session() as session:
-            event, error = get_event_or_404(session, event_id)
-            if error:
-                return error
+        try:
+            with get_session() as session:
+                event, error = get_event_or_404(session, event_id)
+                if error:
+                    return error
 
-            existing = (
-                session.query(EventRegistration)
-                .filter_by(event_id=event_id, user_id=g.current_user.id)
-                .first()
-            )
-            if existing:
-                return {"message": "Already registered"}, 400
+                existing = (
+                    session.query(EventRegistration)
+                    .filter_by(event_id=event_id, user_id=g.current_user.id)
+                    .first()
+                )
+                if existing:
+                    return {"message": "Already registered"}, 400
 
-            registration = EventRegistration(event_id=event.id, user_id=g.current_user.id)
-            session.add(registration)
-            session.commit()
+                registration = EventRegistration(event_id=event.id, user_id=g.current_user.id)
+                session.add(registration)
+                session.commit()
 
-            return {"message": "Registered successfully", "id": registration.id}, 201
+                return {"message": "Registered successfully", "id": registration.id}, 201
+        except Exception as e:
+            return {'message'  :  f"Error  :  {e}"}, 500
 
     @require_auth
     def delete(self, event_id):
-        with get_session() as session:
-            event, error = get_event_or_404(session, event_id)
-            if error:
-                return error
+        try:
+            with get_session() as session:
+                event, error = get_event_or_404(session, event_id)
+                if error:
+                    return error
 
-            registration = (
-                session.query(EventRegistration)
-                .filter_by(event_id=event.id, user_id=g.current_user.id)
-                .first()
-            )
-            if not registration:
-                return {"message": "Registration not found"}, 404
+                registration = (
+                    session.query(EventRegistration)
+                    .filter_by(event_id=event.id, user_id=g.current_user.id)
+                    .first()
+                )
+                if not registration:
+                    return {"message": "Registration not found"}, 404
 
-            session.delete(registration)
-            session.commit()
+                session.delete(registration)
+                session.commit()
 
-            return {"message": "Unregistered successfully"}, 200
+                return {"message": "Unregistered successfully"}, 200
+        except Exception as e:
+            return {'message'  :  f"Error  :  {e}"}, 500
 
 
 # ============================================================
@@ -308,30 +326,33 @@ class ExternalRegistrationResource(Resource):
     @require_auth
     @require_club_role("event_coordinator", "president")
     def post(self, event_id):
-        data = _json_data()
+        try:
+            data = _json_data()
 
-        required_fields = ["full_name", "participant_type"]
-        missing = [field for field in required_fields if not data.get(field)]
-        if missing:
-            return {"message": f"Missing required fields: {', '.join(missing)}"}, 400
+            required_fields = ["full_name", "participant_type"]
+            missing = [field for field in required_fields if not data.get(field)]
+            if missing:
+                return {"message": f"Missing required fields: {', '.join(missing)}"}, 400
 
-        with get_session() as session:
-            event, error = get_event_or_404(session, event_id)
-            if error:
-                return error
+            with get_session() as session:
+                event, error = get_event_or_404(session, event_id)
+                if error:
+                    return error
 
-            participant = ExternalParticipant(
-                event_id=event.id,
-                full_name=data["full_name"],
-                email=data.get("email"),
-                affiliation=data.get("affiliation"),
-                participant_type=data["participant_type"],
-            )
+                participant = ExternalParticipant(
+                    event_id=event.id,
+                    full_name=data["full_name"],
+                    email=data.get("email"),
+                    affiliation=data.get("affiliation"),
+                    participant_type=data["participant_type"],
+                )
 
-            session.add(participant)
-            session.commit()
+                session.add(participant)
+                session.commit()
 
-            return {"message": "External participant registered", "id": participant.id}, 201
+                return {"message": "External participant registered", "id": participant.id}, 201
+        except Exception as e:
+            return {'message'  :  f"Error  :  {e}"}, 500
 
 
 # ============================================================
@@ -343,13 +364,16 @@ class ExternalRegistrationResource(Resource):
 class UserEventsResource(Resource):
     @require_auth
     def get(self, user_id):
-        user_id = _int_or_400(user_id, "user_id")
-        if isinstance(user_id, tuple):
-            return user_id
+        try:
+            user_id = _int_or_400(user_id, "user_id")
+            if isinstance(user_id, tuple):
+                return user_id
 
-        with get_session() as session:
-            registrations = session.query(EventRegistration).filter_by(user_id=user_id).all()
-            return [serialize_event(r.event) for r in registrations], 200
+            with get_session() as session:
+                registrations = session.query(EventRegistration).filter_by(user_id=user_id).all()
+                return [serialize_event(r.event) for r in registrations], 200
+        except Exception as e:
+            return {'message'  :  f"Error  :  {e}"}, 500
 
 
 # ============================================================
@@ -363,62 +387,71 @@ class UserEventsResource(Resource):
 class EventSessionsResource(Resource):
     @require_auth
     def get(self, event_id):
-        with get_session() as session:
-            event, error = get_event_or_404(session, event_id)
-            if error:
-                return error
+        try:
+            with get_session() as session:
+                event, error = get_event_or_404(session, event_id)
+                if error:
+                    return error
 
-            sessions = session.query(EventSession).filter_by(event_id=event.id).all()
-            return [serialize_session(s) for s in sessions], 200
+                sessions = session.query(EventSession).filter_by(event_id=event.id).all()
+                return [serialize_session(s) for s in sessions], 200
+        except Exception as e:
+            return {'message'  :  f"Error  :  {e}"}, 500
 
     @require_auth
     @require_club_role("event_coordinator", "president")
     def post(self, event_id):
-        data = _json_data()
-
-        required_fields = ["title", "start_at", "end_at"]
-        missing = [field for field in required_fields if not data.get(field)]
-        if missing:
-            return {"message": f"Missing required fields: {', '.join(missing)}"}, 400
-
         try:
-            start_at = _parse_iso(data["start_at"], "start_at")
-            end_at = _parse_iso(data["end_at"], "end_at")
-        except ValueError as e:
-            return {"message": str(e)}, 400
+            data = _json_data()
 
-        with get_session() as session:
-            event, error = get_event_or_404(session, event_id)
-            if error:
-                return error
+            required_fields = ["title", "start_at", "end_at"]
+            missing = [field for field in required_fields if not data.get(field)]
+            if missing:
+                return {"message": f"Missing required fields: {', '.join(missing)}"}, 400
 
-            session_obj = EventSession(
-                event_id=event.id,
-                title=data["title"],
-                description=data.get("description"),
-                venue=data.get("venue"),
-                start_at=start_at,
-                end_at=end_at,
-                session_order=data.get("session_order", 1),
-            )
+            try:
+                start_at = _parse_iso(data["start_at"], "start_at")
+                end_at = _parse_iso(data["end_at"], "end_at")
+            except ValueError as e:
+                return {"message": str(e)}, 400
 
-            session.add(session_obj)
-            session.commit()
+            with get_session() as session:
+                event, error = get_event_or_404(session, event_id)
+                if error:
+                    return error
 
-            return {"message": "Session created", "id": session_obj.id}, 201
+                session_obj = EventSession(
+                    event_id=event.id,
+                    title=data["title"],
+                    description=data.get("description"),
+                    venue=data.get("venue"),
+                    start_at=start_at,
+                    end_at=end_at,
+                    session_order=data.get("session_order", 1),
+                )
+
+                session.add(session_obj)
+                session.commit()
+
+                return {"message": "Session created", "id": session_obj.id}, 201
+        except Exception as e:
+            return {'message'  :  f"Error  :  {e}"}, 500
 
     @require_auth
     @require_club_role("event_coordinator", "president")
     def delete(self, event_id):
-        with get_session() as session:
-            event, error = get_event_or_404(session, event_id)
-            if error:
-                return error
+        try:
+            with get_session() as session:
+                event, error = get_event_or_404(session, event_id)
+                if error:
+                    return error
 
-            session.query(EventSession).filter_by(event_id=event.id).delete()
-            session.commit()
+                session.query(EventSession).filter_by(event_id=event.id).delete()
+                session.commit()
 
-            return {"message": "Sessions deleted"}, 200
+                return {"message": "Sessions deleted"}, 200
+        except Exception as e:
+            return {'message'  :  f"Error  :  {e}"}, 500
 
 
 # ============================================================
@@ -440,49 +473,55 @@ class EventAttendanceResource(Resource):
         "president",
     )
     def get(self, event_id):
-        with get_session() as session:
-            event, error = get_event_or_404(session, event_id)
-            if error:
-                return error
+        try:
+            with get_session() as session:
+                event, error = get_event_or_404(session, event_id)
+                if error:
+                    return error
 
-            records = session.query(AttendanceRecord).filter_by(event_id=event.id).all()
-            return [
-                {
-                    "id": r.id,
-                    "event_id": r.event_id,
-                    "user_id": r.user_id,
-                    "checked_in_at": r.checked_in_at.isoformat() if r.checked_in_at else None,
-                }
-                for r in records
-            ], 200
+                records = session.query(AttendanceRecord).filter_by(event_id=event.id).all()
+                return [
+                    {
+                        "id": r.id,
+                        "event_id": r.event_id,
+                        "user_id": r.user_id,
+                        "checked_in_at": r.checked_in_at.isoformat() if r.checked_in_at else None,
+                    }
+                    for r in records
+                ], 200
+        except Exception as e:
+            return {'message'  :  f"Error  :  {e}"}, 500
 
     @require_auth
     @require_club_role("event_coordinator", "volunteer_coordinator", "president")
     def post(self, event_id):
-        data = _json_data()
+        try:
+            data = _json_data()
 
-        if not data.get("user_id"):
-            return {"message": "user_id is required"}, 400
+            if not data.get("user_id"):
+                return {"message": "user_id is required"}, 400
 
-        user_id = _int_or_400(data["user_id"], "user_id")
-        if isinstance(user_id, tuple):
-            return user_id
+            user_id = _int_or_400(data["user_id"], "user_id")
+            if isinstance(user_id, tuple):
+                return user_id
 
-        with get_session() as session:
-            event, error = get_event_or_404(session, event_id)
-            if error:
-                return error
+            with get_session() as session:
+                event, error = get_event_or_404(session, event_id)
+                if error:
+                    return error
 
-            record = AttendanceRecord(
-                event_id=event.id,
-                user_id=user_id,
-                recorded_by=g.current_user.id,
-            )
+                record = AttendanceRecord(
+                    event_id=event.id,
+                    user_id=user_id,
+                    recorded_by=g.current_user.id,
+                )
 
-            session.add(record)
-            session.commit()
+                session.add(record)
+                session.commit()
 
-            return {"message": "Checked in", "id": record.id}, 201
+                return {"message": "Checked in", "id": record.id}, 201
+        except Exception as e:
+            return {'message'  :  f"Error  :  {e}"}, 500
 
 
 # ============================================================
@@ -495,19 +534,22 @@ class AttendanceDeleteResource(Resource):
     @require_auth
     @require_club_role("event_coordinator", "president")
     def delete(self, record_id):
-        with get_session() as session:
-            record_id = _int_or_400(record_id, "record_id")
-            if isinstance(record_id, tuple):
-                return record_id
+        try:
+            with get_session() as session:
+                record_id = _int_or_400(record_id, "record_id")
+                if isinstance(record_id, tuple):
+                    return record_id
 
-            record, error = get_attendance_or_404(session, record_id)
-            if error:
-                return error
+                record, error = get_attendance_or_404(session, record_id)
+                if error:
+                    return error
 
-            session.delete(record)
-            session.commit()
+                session.delete(record)
+                session.commit()
 
-            return {"message": "Check-in removed"}, 200
+                return {"message": "Check-in removed"}, 200
+        except Exception as e:
+            return {'message'  :  f"Error  :  {e}"}, 500
 
 
 # ============================================================

@@ -73,209 +73,225 @@ class RewardTaskListResource(Resource):
 
     @require_auth
     def get(self):
+        try:
+            with get_session() as db:
+                tasks = (
+                    db.query(RewardTask)
+                    .filter(RewardTask.is_active == 1)
+                    .all()
+                )
 
-        with get_session() as db:
-            tasks = (
-                db.query(RewardTask)
-                .filter(RewardTask.is_active == 1)
-                .all()
-            )
-
-            return [serialize_task(t) for t in tasks], 200
+                return [serialize_task(t) for t in tasks], 200
+        except Exception as e:
+            return {'message'  :  f"Error  :  {e}"}, 500
 
 class RewardTaskCompletionResource(Resource):
 
     @require_auth
     def get(self, user_id):
+        try:
+            with get_session() as db:
 
-        with get_session() as db:
+                completions = (
+                    db.query(RewardTaskCompletion)
+                    .filter(RewardTaskCompletion.user_id == user_id)
+                    .all()
+                )
 
-            completions = (
-                db.query(RewardTaskCompletion)
-                .filter(RewardTaskCompletion.user_id == user_id)
-                .all()
-            )
-
-            return [serialize_completion(c) for c in completions], 200
+                return [serialize_completion(c) for c in completions], 200
+        except Exception as e:
+            return {'message'  :  f"Error  :  {e}"}, 500
 
 class CompleteRewardTaskResource(Resource):
 
     @require_auth
     def post(self):
+        try:
+            data = request.get_json()
 
-        data = request.get_json()
+            user_id = g.current_user.id
+            task_id = data["task_id"]
 
-        user_id = g.current_user.id
-        task_id = data["task_id"]
+            with get_session() as db:
 
-        with get_session() as db:
+                task = db.get(RewardTask, task_id)
 
-            task = db.get(RewardTask, task_id)
+                if not task:
+                    return {"message": "Task not found"}, 404
 
-            if not task:
-                return {"message": "Task not found"}, 404
+                count = (
+                    db.query(RewardTaskCompletion)
+                    .filter_by(user_id=user_id, task_id=task_id)
+                    .count()
+                )
 
-            count = (
-                db.query(RewardTaskCompletion)
-                .filter_by(user_id=user_id, task_id=task_id)
-                .count()
-            )
+                if count >= task.max_completions:
+                    return {
+                        "message": "Task completion limit reached"
+                    }, 400
 
-            if count >= task.max_completions:
+                completion = RewardTaskCompletion(
+                    user_id=user_id,
+                    task_id=task_id
+                )
+
+                ledger = RewardPointsLedger(
+                    user_id=user_id,
+                    points=task.points,
+                    reason=f"Completed task: {task.title}"
+                )
+
+                db.add(completion)
+                db.add(ledger)
+                db.commit()
+
                 return {
-                    "message": "Task completion limit reached"
-                }, 400
-
-            completion = RewardTaskCompletion(
-                user_id=user_id,
-                task_id=task_id
-            )
-
-            ledger = RewardPointsLedger(
-                user_id=user_id,
-                points=task.points,
-                reason=f"Completed task: {task.title}"
-            )
-
-            db.add(completion)
-            db.add(ledger)
-            db.commit()
-
-            return {
-                "success": True,
-                "points_earned": task.points
-            }, 201
+                    "success": True,
+                    "points_earned": task.points
+                }, 201
+        except Exception as e:
+            return {'message'  :  f"Error  :  {e}"}, 500
 
 class UserRewardPointsResource(Resource):
 
     @require_auth
     def get(self, user_id):
+        try:
+            with get_session() as db:
 
-        with get_session() as db:
+                total = (
+                    db.query(func.coalesce(func.sum(RewardPointsLedger.points), 0))
+                    .filter(RewardPointsLedger.user_id == user_id)
+                    .scalar()
+                )
 
-            total = (
-                db.query(func.coalesce(func.sum(RewardPointsLedger.points), 0))
-                .filter(RewardPointsLedger.user_id == user_id)
-                .scalar()
-            )
+                redeemed = (
+                    db.query(func.coalesce(func.sum(RewardRedemption.points_spent), 0))
+                    .filter(RewardRedemption.user_id == user_id)
+                    .scalar()
+                )
 
-            redeemed = (
-                db.query(func.coalesce(func.sum(RewardRedemption.points_spent), 0))
-                .filter(RewardRedemption.user_id == user_id)
-                .scalar()
-            )
-
-            return {
-                "balance": total - redeemed,
-                "total_points": total,
-                "redeemed_points": redeemed
-            }, 200
+                return {
+                    "balance": total - redeemed,
+                    "total_points": total,
+                    "redeemed_points": redeemed
+                }, 200
+        except Exception as e:
+            return {'message'  :  f"Error  :  {e}"}, 500
 
 class RewardLedgerResource(Resource):
 
     @require_auth
     def get(self, user_id):
+        try:
+            with get_session() as db:
 
-        with get_session() as db:
+                entries = (
+                    db.query(RewardPointsLedger)
+                    .filter_by(user_id=user_id)
+                    .order_by(RewardPointsLedger.created_at.desc())
+                    .all()
+                )
 
-            entries = (
-                db.query(RewardPointsLedger)
-                .filter_by(user_id=user_id)
-                .order_by(RewardPointsLedger.created_at.desc())
-                .all()
-            )
-
-            return [serialize_ledger(e) for e in entries], 200
+                return [serialize_ledger(e) for e in entries], 200
+        except Exception as e:
+            return {'message'  :  f"Error  :  {e}"}, 500
 
 class RewardStoreItemsResource(Resource):
 
     @require_auth
     def get(self):
+        try:
+            with get_session() as db:
 
-        with get_session() as db:
-
-            items = (
-                db.query(RewardStoreItem)
-                .filter(
-                    RewardStoreItem.is_active == 1,
-                    RewardStoreItem.stock > 0
+                items = (
+                    db.query(RewardStoreItem)
+                    .filter(
+                        RewardStoreItem.is_active == 1,
+                        RewardStoreItem.stock > 0
+                    )
+                    .all()
                 )
-                .all()
-            )
 
-            return [serialize_store_item(i) for i in items], 200
+                return [serialize_store_item(i) for i in items], 200
+        except Exception as e:
+            return {'message'  :  f"Error  :  {e}"}, 500
 
 class RedeemRewardResource(Resource):
 
     @require_auth
     def post(self):
+        try:
+            data = request.get_json()
 
-        data = request.get_json()
+            user_id = g.current_user.id
+            item_id = data["item_id"]
 
-        user_id = g.current_user.id
-        item_id = data["item_id"]
+            with get_session() as db:
 
-        with get_session() as db:
+                item = db.get(RewardStoreItem, item_id)
 
-            item = db.get(RewardStoreItem, item_id)
+                if not item:
+                    return {"message": "Reward not found"}, 404
 
-            if not item:
-                return {"message": "Reward not found"}, 404
+                if item.stock <= 0:
+                    return {"message": "Out of stock"}, 400
 
-            if item.stock <= 0:
-                return {"message": "Out of stock"}, 400
+                earned = (
+                    db.query(func.coalesce(func.sum(RewardPointsLedger.points), 0))
+                    .filter(RewardPointsLedger.user_id == user_id)
+                    .scalar()
+                )
 
-            earned = (
-                db.query(func.coalesce(func.sum(RewardPointsLedger.points), 0))
-                .filter(RewardPointsLedger.user_id == user_id)
-                .scalar()
-            )
+                spent = (
+                    db.query(func.coalesce(func.sum(RewardRedemption.points_spent), 0))
+                    .filter(RewardRedemption.user_id == user_id)
+                    .scalar()
+                )
 
-            spent = (
-                db.query(func.coalesce(func.sum(RewardRedemption.points_spent), 0))
-                .filter(RewardRedemption.user_id == user_id)
-                .scalar()
-            )
+                available = earned - spent
 
-            available = earned - spent
+                if available < item.points_cost:
+                    return {
+                        "message": "Insufficient reward points"
+                    }, 400
 
-            if available < item.points_cost:
+                redemption = RewardRedemption(
+                    user_id=user_id,
+                    points_spent=item.points_cost,
+                    reward_description=item.name,
+                    status=RedemptionStatus.REQUESTED
+                )
+
+                item.stock -= 1
+
+                db.add(redemption)
+                db.commit()
+
                 return {
-                    "message": "Insufficient reward points"
-                }, 400
-
-            redemption = RewardRedemption(
-                user_id=user_id,
-                points_spent=item.points_cost,
-                reward_description=item.name,
-                status=RedemptionStatus.REQUESTED
-            )
-
-            item.stock -= 1
-
-            db.add(redemption)
-            db.commit()
-
-            return {
-                "success": True,
-                "message": "Reward redeemed successfully"
-            }, 201
+                    "success": True,
+                    "message": "Reward redeemed successfully"
+                }, 201
+        except Exception as e:
+            return {'message'  :  f"Error  :  {e}"}, 500
 
 class RewardRedemptionHistoryResource(Resource):
 
     @require_auth
     def get(self, user_id):
+        try:
+            with get_session() as db:
 
-        with get_session() as db:
+                redemptions = (
+                    db.query(RewardRedemption)
+                    .filter_by(user_id=user_id)
+                    .order_by(RewardRedemption.created_at.desc())
+                    .all()
+                )
 
-            redemptions = (
-                db.query(RewardRedemption)
-                .filter_by(user_id=user_id)
-                .order_by(RewardRedemption.created_at.desc())
-                .all()
-            )
-
-            return [serialize_redemption(r) for r in redemptions], 200
+                return [serialize_redemption(r) for r in redemptions], 200
+        except Exception as e:
+            return {'messge' : 'Uncaught Error'}, 500
 
 api.add_resource(
     RewardTaskListResource,

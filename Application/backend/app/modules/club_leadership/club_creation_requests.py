@@ -82,35 +82,38 @@ class CreateClubRequestResource(Resource):
     @require_auth
     @require_role("student")
     def post(self):
-        data = _json_data()
-        if not data:
-            return {"message": "Request body required."}, 400
+        try:
+            data = _json_data()
+            if not data:
+                return {"message": "Request body required."}, 400
 
-        required = ["name", "description"]
-        missing = [x for x in required if not data.get(x)]
-        if missing:
-            return {"message": f"Missing fields: {', '.join(missing)}"}, 400
+            required = ["name", "description"]
+            missing = [x for x in required if not data.get(x)]
+            if missing:
+                return {"message": f"Missing fields: {', '.join(missing)}"}, 400
 
-        faculty_advisor_id = _to_int(data.get("faculty_advisor_id"))
+            faculty_advisor_id = _to_int(data.get("faculty_advisor_id"))
 
-        with get_session() as db:
-            req = ClubCreationRequest(
-                proposed_name=data.get("name").strip(),
-                proposed_category=data.get("category") or None,
-                proposal_description=data.get("description").strip(),
-                requested_by=g.current_user.id,
-                faculty_advisor_id=faculty_advisor_id,
-                status=ClubRequestStatus.SUBMITTED,
-                created_at=datetime.utcnow(),
-            )
-            db.add(req)
-            db.commit()
-            db.refresh(req)
+            with get_session() as db:
+                req = ClubCreationRequest(
+                    proposed_name=data.get("name").strip(),
+                    proposed_category=data.get("category") or None,
+                    proposal_description=data.get("description").strip(),
+                    requested_by=g.current_user.id,
+                    faculty_advisor_id=faculty_advisor_id,
+                    status=ClubRequestStatus.SUBMITTED,
+                    created_at=datetime.utcnow(),
+                )
+                db.add(req)
+                db.commit()
+                db.refresh(req)
 
-            return {
-                "message": "Club creation request submitted.",
-                "request": serialize_request(req),
-            }, 201
+                return {
+                    "message": "Club creation request submitted.",
+                    "request": serialize_request(req),
+                }, 201
+        except Exception as e:
+            return {'message'  :  f"ERROR  :  {e}"}, 500
 
 
 # -------------------------------------------------
@@ -122,21 +125,24 @@ class AdminClubRequestsResource(Resource):
     @require_auth
     @require_role("student_affairs_office", "dean_student_welfare")
     def get(self):
-        status = request.args.get("status")
+        try:
+            status = request.args.get("status")
 
-        with get_session() as db:
-            query = db.query(ClubCreationRequest)
+            with get_session() as db:
+                query = db.query(ClubCreationRequest)
 
-            if status:
-                try:
-                    query = query.filter(
-                        ClubCreationRequest.status == ClubRequestStatus(status.lower())
-                    )
-                except ValueError:
-                    return {"message": "Invalid status"}, 400
+                if status:
+                    try:
+                        query = query.filter(
+                            ClubCreationRequest.status == ClubRequestStatus(status.lower())
+                        )
+                    except ValueError:
+                        return {"message": "Invalid status"}, 400
 
-            requests = query.order_by(ClubCreationRequest.created_at.desc()).all()
-            return [serialize_request(x) for x in requests], 200
+                requests = query.order_by(ClubCreationRequest.created_at.desc()).all()
+                return [serialize_request(x) for x in requests], 200
+        except Exception as e:
+            return {'message'  :  f"ERROR  :  {e}"}, 500
 
 
 # -------------------------------------------------
@@ -148,19 +154,22 @@ class FacultyClubRequestsResource(Resource):
     @require_auth
     @require_role("faculty_advisor")
     def get(self):
-        faculty_id = request.args.get("faculty_advisor_id") or g.current_user.id
-        faculty_id = _to_int(faculty_id)
-        if faculty_id is None:
-            return {"message": "Invalid faculty_advisor_id"}, 400
+        try:
+            faculty_id = request.args.get("faculty_advisor_id") or g.current_user.id
+            faculty_id = _to_int(faculty_id)
+            if faculty_id is None:
+                return {"message": "Invalid faculty_advisor_id"}, 400
 
-        with get_session() as db:
-            requests = (
-                db.query(ClubCreationRequest)
-                .filter(ClubCreationRequest.faculty_advisor_id == faculty_id)
-                .order_by(ClubCreationRequest.created_at.desc())
-                .all()
-            )
-            return [serialize_request(x) for x in requests], 200
+            with get_session() as db:
+                requests = (
+                    db.query(ClubCreationRequest)
+                    .filter(ClubCreationRequest.faculty_advisor_id == faculty_id)
+                    .order_by(ClubCreationRequest.created_at.desc())
+                    .all()
+                )
+                return [serialize_request(x) for x in requests], 200
+        except Exception as e:
+            return {'message'  :  f"ERROR  :  {e}"}, 500
 
 
 # -------------------------------------------------
@@ -172,34 +181,37 @@ class RecommendClubRequestResource(Resource):
     @require_auth
     @require_role("faculty_advisor")
     def patch(self, request_id):
-        data = _json_data()
+        try:
+            data = _json_data()
 
-        with get_session() as db:
-            req = db.query(ClubCreationRequest).filter_by(id=request_id).first()
-            if not req:
-                return {"message": "Request not found"}, 404
+            with get_session() as db:
+                req = db.query(ClubCreationRequest).filter_by(id=request_id).first()
+                if not req:
+                    return {"message": "Request not found"}, 404
 
-            if req.status not in (
-                ClubRequestStatus.SUBMITTED,
-                ClubRequestStatus.FACULTY_RECOMMENDED,
-            ):
-                return {"message": "Request cannot be recommended in its current state."}, 400
+                if req.status not in (
+                    ClubRequestStatus.SUBMITTED,
+                    ClubRequestStatus.FACULTY_RECOMMENDED,
+                ):
+                    return {"message": "Request cannot be recommended in its current state."}, 400
 
-            if req.faculty_advisor_id and req.faculty_advisor_id != g.current_user.id:
-                return {"message": "You are not assigned to this request"}, 403
+                if req.faculty_advisor_id and req.faculty_advisor_id != g.current_user.id:
+                    return {"message": "You are not assigned to this request"}, 403
 
-            req.status = ClubRequestStatus.FACULTY_RECOMMENDED
-            req.review_comments = data.get("review_comments")
-            req.reviewed_by = g.current_user.id
-            req.decided_at = datetime.utcnow()
+                req.status = ClubRequestStatus.FACULTY_RECOMMENDED
+                req.review_comments = data.get("review_comments")
+                req.reviewed_by = g.current_user.id
+                req.decided_at = datetime.utcnow()
 
-            db.commit()
-            db.refresh(req)
+                db.commit()
+                db.refresh(req)
 
-            return {
-                "message": "Club proposal recommended.",
-                "request": serialize_request(req),
-            }, 200
+                return {
+                    "message": "Club proposal recommended.",
+                    "request": serialize_request(req),
+                }, 200
+        except Exception as e:
+            return {'message'  :  f"ERROR  :  {e}"}, 500
 
 
 # -------------------------------------------------
@@ -211,48 +223,51 @@ class ApproveClubRequestResource(Resource):
     @require_auth
     @require_role("dean_student_welfare")
     def patch(self, request_id):
-        with get_session() as db:
-            req = db.query(ClubCreationRequest).filter_by(id=request_id).first()
-            if not req:
-                return {"message": "Request not found"}, 404
+        try:
+            with get_session() as db:
+                req = db.query(ClubCreationRequest).filter_by(id=request_id).first()
+                if not req:
+                    return {"message": "Request not found"}, 404
 
-            if req.status != ClubRequestStatus.FACULTY_RECOMMENDED:
-                return {"message": "Request not recommended."}, 400
+                if req.status != ClubRequestStatus.FACULTY_RECOMMENDED:
+                    return {"message": "Request not recommended."}, 400
 
-            base_slug = _slugify(req.proposed_name)
-            if not base_slug:
-                return {"message": "Invalid proposed club name"}, 400
+                base_slug = _slugify(req.proposed_name)
+                if not base_slug:
+                    return {"message": "Invalid proposed club name"}, 400
 
-            unique_slug = _make_unique_slug(db, base_slug)
+                unique_slug = _make_unique_slug(db, base_slug)
 
-            club = Club(
-                name=req.proposed_name.strip(),
-                slug=unique_slug,
-                category=req.proposed_category,
-                description=req.proposal_description,
-                faculty_advisor_id=req.faculty_advisor_id,
-                status=ClubStatus.ACTIVE,
-                university_id=g.current_user.university_id,
-                created_at=datetime.utcnow(),
-            )
+                club = Club(
+                    name=req.proposed_name.strip(),
+                    slug=unique_slug,
+                    category=req.proposed_category,
+                    description=req.proposal_description,
+                    faculty_advisor_id=req.faculty_advisor_id,
+                    status=ClubStatus.ACTIVE,
+                    university_id=g.current_user.university_id,
+                    created_at=datetime.utcnow(),
+                )
 
-            db.add(club)
-            db.flush()
+                db.add(club)
+                db.flush()
 
-            req.status = ClubRequestStatus.APPROVED
-            req.resulting_club_id = club.id
-            req.reviewed_by = g.current_user.id
-            req.decided_at = datetime.utcnow()
+                req.status = ClubRequestStatus.APPROVED
+                req.resulting_club_id = club.id
+                req.reviewed_by = g.current_user.id
+                req.decided_at = datetime.utcnow()
 
-            db.commit()
-            db.refresh(req)
-            db.refresh(club)
+                db.commit()
+                db.refresh(req)
+                db.refresh(club)
 
-            return {
-                "message": "Club approved and created.",
-                "club_id": club.id,
-                "request": serialize_request(req),
-            }, 201
+                return {
+                    "message": "Club approved and created.",
+                    "club_id": club.id,
+                    "request": serialize_request(req),
+                }, 201
+        except Exception as e:
+            return {'message'  :  f"ERROR  :  {e}"}, 500
 
 
 # -------------------------------------------------
@@ -264,35 +279,38 @@ class RejectClubRequestResource(Resource):
     @require_auth
     @require_role("faculty_advisor", "dean_student_welfare")
     def patch(self, request_id):
-        data = _json_data()
+        try:
+            data = _json_data()
 
-        with get_session() as db:
-            req = db.query(ClubCreationRequest).filter_by(id=request_id).first()
-            if not req:
-                return {"message": "Request not found"}, 404
+            with get_session() as db:
+                req = db.query(ClubCreationRequest).filter_by(id=request_id).first()
+                if not req:
+                    return {"message": "Request not found"}, 404
 
-            if req.status in (ClubRequestStatus.APPROVED, ClubRequestStatus.REJECTED):
-                return {"message": "Request cannot be rejected in its current state."}, 400
+                if req.status in (ClubRequestStatus.APPROVED, ClubRequestStatus.REJECTED):
+                    return {"message": "Request cannot be rejected in its current state."}, 400
 
-            if (
-                g.current_user.role == "faculty_advisor"
-                and req.faculty_advisor_id
-                and req.faculty_advisor_id != g.current_user.id
-            ):
-                return {"message": "You are not assigned to this request"}, 403
+                if (
+                    g.current_user.role == "faculty_advisor"
+                    and req.faculty_advisor_id
+                    and req.faculty_advisor_id != g.current_user.id
+                ):
+                    return {"message": "You are not assigned to this request"}, 403
 
-            req.status = ClubRequestStatus.REJECTED
-            req.review_comments = data.get("review_comments")
-            req.reviewed_by = g.current_user.id
-            req.decided_at = datetime.utcnow()
+                req.status = ClubRequestStatus.REJECTED
+                req.review_comments = data.get("review_comments")
+                req.reviewed_by = g.current_user.id
+                req.decided_at = datetime.utcnow()
 
-            db.commit()
-            db.refresh(req)
+                db.commit()
+                db.refresh(req)
 
-            return {
-                "message": "Club request rejected.",
-                "request": serialize_request(req),
-            }, 200
+                return {
+                    "message": "Club request rejected.",
+                    "request": serialize_request(req),
+                }, 200
+        except Exception as e:
+            return {'message'  :  f"ERROR  :  {e}"}, 500
 
 
 # -------------------------------------------------

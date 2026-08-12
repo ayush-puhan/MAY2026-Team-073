@@ -37,57 +37,61 @@ def serialize_interest(interest):
 class InterestListResource(Resource):
 
     def get(self):
+        try:
+            with get_session() as db:
 
-        with get_session() as db:
+                interests = (
+                    db.query(Interest)
+                    .order_by(Interest.name.asc())
+                    .all()
+                )
 
-            interests = (
-                db.query(Interest)
-                .order_by(Interest.name.asc())
-                .all()
-            )
-
-            return [
-                serialize_interest(i)
-                for i in interests
-            ], 200
+                return [
+                    serialize_interest(i)
+                    for i in interests
+                ], 200
+        except Exception as e:
+            return {'message'  :  f"ERROR  :  {e}"}, 500
 
 
     def post(self):
+        try:
+            data = request.get_json()
 
-        data = request.get_json()
-
-        if not data or not data.get("name"):
-            return {
-                "message": "Interest name is required"
-            }, 400
-
-
-        with get_session() as db:
-
-            existing = (
-                db.query(Interest)
-                .filter(
-                    Interest.name == data["name"]
-                )
-                .first()
-            )
-
-            if existing:
+            if not data or not data.get("name"):
                 return {
-                    "message": "Interest already exists"
-                }, 409
+                    "message": "Interest name is required"
+                }, 400
 
 
-            interest = Interest(
-                name=data["name"]
-            )
+            with get_session() as db:
 
-            db.add(interest)
-            db.commit()
-            db.refresh(interest)
+                existing = (
+                    db.query(Interest)
+                    .filter(
+                        Interest.name == data["name"]
+                    )
+                    .first()
+                )
+
+                if existing:
+                    return {
+                        "message": "Interest already exists"
+                    }, 409
 
 
-            return serialize_interest(interest), 201
+                interest = Interest(
+                    name=data["name"]
+                )
+
+                db.add(interest)
+                db.commit()
+                db.refresh(interest)
+
+
+                return serialize_interest(interest), 201
+        except Exception as e:
+            return {'message'  :  f"ERROR  :  {e}"}, 500
 
 
 
@@ -100,84 +104,90 @@ class InterestListResource(Resource):
 class InterestResource(Resource):
 
     def get(self, interest_id):
+        try:
+            with get_session() as db:
 
-        with get_session() as db:
-
-            interest = (
-                db.query(Interest)
-                .filter(
-                    Interest.id == interest_id
+                interest = (
+                    db.query(Interest)
+                    .filter(
+                        Interest.id == interest_id
+                    )
+                    .first()
                 )
-                .first()
-            )
 
-            if not interest:
-                return {
-                    "message": "Interest not found"
-                }, 404
+                if not interest:
+                    return {
+                        "message": "Interest not found"
+                    }, 404
 
 
-            return serialize_interest(interest), 200
+                return serialize_interest(interest), 200
+        except Exception as e:
+            return {'message'  :  f"ERROR  :  {e}"}, 500
 
 
 
     def patch(self, interest_id):
+        try:
+            data = request.get_json()
 
-        data = request.get_json()
+            with get_session() as db:
 
-        with get_session() as db:
-
-            interest = (
-                db.query(Interest)
-                .filter(
-                    Interest.id == interest_id
+                interest = (
+                    db.query(Interest)
+                    .filter(
+                        Interest.id == interest_id
+                    )
+                    .first()
                 )
-                .first()
-            )
 
-            if not interest:
-                return {
-                    "message": "Interest not found"
-                }, 404
+                if not interest:
+                    return {
+                        "message": "Interest not found"
+                    }, 404
 
 
-            if "name" in data:
-                interest.name = data["name"]
+                if "name" in data:
+                    interest.name = data["name"]
 
 
-            db.commit()
-            db.refresh(interest)
+                db.commit()
+                db.refresh(interest)
 
 
-            return serialize_interest(interest), 200
+                return serialize_interest(interest), 200
+        except Exception as e:
+            return {'message'  :  f"ERROR  :  {e}"}, 500
 
 
 
     def delete(self, interest_id):
+        try:
+            with get_session() as db:
 
-        with get_session() as db:
-
-            interest = (
-                db.query(Interest)
-                .filter(
-                    Interest.id == interest_id
+                interest = (
+                    db.query(Interest)
+                    .filter(
+                        Interest.id == interest_id
+                    )
+                    .first()
                 )
-                .first()
-            )
 
-            if not interest:
+                if not interest:
+                    return {
+                        "message": "Interest not found"
+                    }, 404
+
+
+                db.delete(interest)
+                db.commit()
+
+
                 return {
-                    "message": "Interest not found"
-                }, 404
-
-
-            db.delete(interest)
-            db.commit()
-
-
-            return {
-                "message": "Interest deleted successfully"
-            }, 200
+                    "message": "Interest deleted successfully"
+                }, 200
+        except Exception as e:
+            return {'message'  :  f"ERROR  :  {e}"}, 500
 
 
 

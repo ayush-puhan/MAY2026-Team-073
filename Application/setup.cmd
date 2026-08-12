@@ -4,7 +4,7 @@ if "%~1"=="-rf" goto frontend
 if "%~1"=="-b" goto backend
 if "%~1"=="-if" goto install_frontend
 
-echo Invalid or missing argument.
+echo Invalid or missing argument. OR First go to Application folder and then run these command.
 echo Usage: setup [option]
 echo   -rf   : Go to frontend and Run frontend (npm run dev)
 echo   -b   : Go to backend and Activate Python venv for backend

@@ -29,7 +29,7 @@ from app.database.enums import (
     ExpenseApprovalStatus,
     ClubMemberRole,
 )
-from app.middleware.auth_middleware import require_auth, require_club_role
+from app.middleware.auth_middleware import require_auth, require_club_role, require_club_role_or_faculty_advisor
 
 
 
@@ -102,91 +102,97 @@ class BudgetListResource(Resource):
     """
 
     @require_auth
-    @require_club_role(
+    @require_club_role_or_faculty_advisor(
         ClubMemberRole.TREASURER,
         ClubMemberRole.PRESIDENT,
         ClubMemberRole.VICE_PRESIDENT
     )
     def get(self):
-        with get_session() as session:
-            club_id = request.args.get("club_id")
-            query = session.query(Budget)
+        try:
+            with get_session() as session:
+                club_id = request.args.get("club_id")
+                query = session.query(Budget)
 
-            if club_id:
-                query = query.filter(Budget.club_id == int(club_id))
+                if club_id:
+                    query = query.filter(Budget.club_id == int(club_id))
 
-            budgets = query.all()
-            # Return plain JSON array, matching your sample response
-            return [serialize_budget(b) for b in budgets], 200
+                budgets = query.all()
+                # Return plain JSON array
+                return [serialize_budget(b) for b in budgets], 200
+        except Exception as e:
+            return {'message' : f'ERROR {e}'},500
 
     @require_auth
-    @require_club_role(
+    @require_club_role_or_faculty_advisor(
         ClubMemberRole.TREASURER,
         ClubMemberRole.PRESIDENT
     )
     def post(self):
-        with get_session() as session:
-            data = request.get_json() or {}
+        try:
+            with get_session() as session:
+                data = request.get_json() or {}
 
-            # Required fields
-            required_fields = ["club_id", "allocated_amount"]
-            for field in required_fields:
-                if field not in data:
-                    return {"message": f"Missing field: {field}"}, 400
-
-            club_id = int(data["club_id"])
-            committee_id = data.get("committee_id")
-
-            # Committee budgets inherit dates from the main club budget
-            if committee_id:
-                parent_budget = (
-                    session.query(Budget)
-                    .filter(
-                        Budget.club_id == club_id,
-                        Budget.committee_id.is_(None),
-                        Budget.parent_budget_id.is_(None),
-                    )
-                    .first()
-                )
-
-                if not parent_budget:
-                    return {
-                        "message": "Main club budget not found. Create it first."
-                    }, 400
-
-                budget = Budget(
-                    club_id=club_id,
-                    committee_id=int(committee_id),
-                    parent_budget_id=parent_budget.id,
-                    title=data.get("title", "Committee Budget"),
-                    allocated_amount=float(data["allocated_amount"]),
-                    period_start=parent_budget.period_start,
-                    period_end=parent_budget.period_end,
-                    status=BudgetStatus.APPROVED,
-                    created_by=get_jwt_identity(),
-                )
-
-            # Main club budget
-            else:
-                required_dates = ["period_start", "period_end"]
-                for field in required_dates:
+                # Required fields
+                required_fields = ["club_id", "allocated_amount"]
+                for field in required_fields:
                     if field not in data:
                         return {"message": f"Missing field: {field}"}, 400
 
-                budget = Budget(
-                    club_id=club_id,
-                    title=data.get("title", "Main Club Budget"),
-                    allocated_amount=float(data["allocated_amount"]),
-                    period_start=datetime.fromisoformat(data["period_start"]),
-                    period_end=datetime.fromisoformat(data["period_end"]),
-                    status=BudgetStatus.APPROVED,
-                    created_by=get_jwt_identity(),
-                )
+                club_id = int(data["club_id"])
+                committee_id = data.get("committee_id")
 
-            session.add(budget)
-            session.commit()
+                # Committee budgets inherit dates from the main club budget
+                if committee_id:
+                    parent_budget = (
+                        session.query(Budget)
+                        .filter(
+                            Budget.club_id == club_id,
+                            Budget.committee_id.is_(None),
+                            Budget.parent_budget_id.is_(None),
+                        )
+                        .first()
+                    )
 
-            return serialize_budget(budget), 201
+                    if not parent_budget:
+                        return {
+                            "message": "Main club budget not found. Create it first."
+                        }, 400
+
+                    budget = Budget(
+                        club_id=club_id,
+                        committee_id=int(committee_id),
+                        parent_budget_id=parent_budget.id,
+                        title=data.get("title", "Committee Budget"),
+                        allocated_amount=float(data["allocated_amount"]),
+                        period_start=parent_budget.period_start,
+                        period_end=parent_budget.period_end,
+                        status=BudgetStatus.APPROVED,
+                        created_by=get_jwt_identity(),
+                    )
+
+                # Main club budget
+                else:
+                    required_dates = ["period_start", "period_end"]
+                    for field in required_dates:
+                        if field not in data:
+                            return {"message": f"Missing field: {field}"}, 400
+
+                    budget = Budget(
+                        club_id=club_id,
+                        title=data.get("title", "Main Club Budget"),
+                        allocated_amount=float(data["allocated_amount"]),
+                        period_start=datetime.fromisoformat(data["period_start"]),
+                        period_end=datetime.fromisoformat(data["period_end"]),
+                        status=BudgetStatus.APPROVED,
+                        created_by=get_jwt_identity(),
+                    )
+
+                session.add(budget)
+                session.commit()
+
+                return serialize_budget(budget), 201
+        except Exception as e:
+            return {'message'  :  f"ERROR  :  {e}"}, 500
 
 
 class BudgetUpdateResource(Resource):
@@ -195,28 +201,31 @@ class BudgetUpdateResource(Resource):
     """
 
     @require_auth
-    @require_club_role(
+    @require_club_role_or_faculty_advisor(
         ClubMemberRole.TREASURER,
         ClubMemberRole.PRESIDENT
     )
 
     def patch(self, budget_id: int):
-        with get_session() as session:
-            budget = (
-                session.query(Budget)
-                .filter(Budget.id == budget_id)
-                .first()
-            )
-            if not budget:
-                return {"message": "Budget not found"}, 404
+        try:
+            with get_session() as session:
+                budget = (
+                    session.query(Budget)
+                    .filter(Budget.id == budget_id)
+                    .first()
+                )
+                if not budget:
+                    return {"message": "Budget not found"}, 404
 
-            data = request.get_json() or {}
+                data = request.get_json() or {}
 
-            if "allocated_amount" in data:
-                budget.allocated_amount = float(data["allocated_amount"])
+                if "allocated_amount" in data:
+                    budget.allocated_amount = float(data["allocated_amount"])
 
-            session.commit()
-            return serialize_budget(budget), 200
+                session.commit()
+                return serialize_budget(budget), 200
+        except Exception as e:
+            return {'message' : f"Database error : {e}"},500
 
 
 
@@ -241,15 +250,18 @@ class ExpenseListResource(Resource):
         ClubMemberRole.VICE_PRESIDENT
     )
     def get(self):
-        with get_session() as session:
-            budget_id = request.args.get("budget_id")
-            query = session.query(Expense)
+        try:
+            with get_session() as session:
+                budget_id = request.args.get("budget_id")
+                query = session.query(Expense)
 
-            if budget_id:
-                query = query.filter(Expense.budget_id == int(budget_id))
+                if budget_id:
+                    query = query.filter(Expense.budget_id == int(budget_id))
 
-            expenses = query.all()
-            return [serialize_expense(e) for e in expenses], 200
+                expenses = query.all()
+                return [serialize_expense(e) for e in expenses], 200
+        except Exception as e:
+            return {'message' : f"Database error : {e}"},500
 
     @require_auth
     @require_club_role(
@@ -257,44 +269,47 @@ class ExpenseListResource(Resource):
         ClubMemberRole.PRESIDENT
     )
     def post(self):
-        with get_session() as session:
-            data = request.get_json() or {}
+        try:
+            with get_session() as session:
+                data = request.get_json() or {}
 
-            required_fields = [
-                "budget_id",
-                "description",
-                "amount",
-            ]
+                required_fields = [
+                    "budget_id",
+                    "description",
+                    "amount",
+                ]
 
-            for field in required_fields:
-                if field not in data:
-                    return {"message": f"Missing field: {field}"}, 400
+                for field in required_fields:
+                    if field not in data:
+                        return {"message": f"Missing field: {field}"}, 400
 
-            budget = (
-                session.query(Budget)
-                .filter(Budget.id == int(data["budget_id"]))
-                .first()
-            )
+                budget = (
+                    session.query(Budget)
+                    .filter(Budget.id == int(data["budget_id"]))
+                    .first()
+                )
 
-            if not budget:
-                return {"message": "Budget not found"}, 404
+                if not budget:
+                    return {"message": "Budget not found"}, 404
 
-            expense = Expense(
-                budget_id=budget.id,
-                description=data["description"],
-                amount=float(data["amount"]),
-                category=data.get("category"),
-                submitted_by=get_jwt_identity(),
+                expense = Expense(
+                    budget_id=budget.id,
+                    description=data["description"],
+                    amount=float(data["amount"]),
+                    category=data.get("category"),
+                    submitted_by=get_jwt_identity(),
 
-                # Initial state
-                status=ExpenseStatus.PENDING,
-                approval_status=ExpenseApprovalStatus.PENDING,
-            )
+                    # Initial state
+                    status=ExpenseStatus.PENDING,
+                    approval_status=ExpenseApprovalStatus.PENDING,
+                )
 
-            session.add(expense)
-            session.commit()
+                session.add(expense)
+                session.commit()
 
-            return serialize_expense(expense), 201
+                return serialize_expense(expense), 201
+        except Exception as e:
+            return {'message' : f"Error : {e}"}, 500
 
 
 class ExpenseUpdateResource(Resource):
@@ -310,37 +325,39 @@ class ExpenseUpdateResource(Resource):
     )
 
     def patch(self, expense_id: int):
-        with get_session() as session:
-            expense = (
-                session.query(Expense)
-                .filter(Expense.id == expense_id)
-                .first()
-            )
-            if not expense:
-                return {"message": "Expense not found"}, 404
+        try:
+            with get_session() as session:
+                expense = (
+                    session.query(Expense)
+                    .filter(Expense.id == expense_id)
+                    .first()
+                )
+                if not expense:
+                    return {"message": "Expense not found"}, 404
 
-            data = request.get_json() or {}
+                data = request.get_json() or {}
 
-            # Map frontend fields to model fields
-            if "approval_status" in data:
-                expense.approval_status = ExpenseApprovalStatus(data["approval_status"])
+                # Map frontend fields to model fields
+                if "approval_status" in data:
+                    expense.approval_status = ExpenseApprovalStatus(data["approval_status"])
 
-            if "status" in data:
-                expense.status = ExpenseStatus(data["status"])
+                if "status" in data:
+                    expense.status = ExpenseStatus(data["status"])
 
-            if "approval_remarks" in data:
-                expense.approval_remarks = data["approval_remarks"]
+                if "approval_remarks" in data:
+                    expense.approval_remarks = data["approval_remarks"]
 
-            if "approved_by" in data:
-                expense.approved_by = int(data["approved_by"])
+                if "approved_by" in data:
+                    expense.approved_by = int(data["approved_by"])
 
-            # Set approval_date if not already set
-            if expense.approval_date is None:
-                expense.approval_date = datetime.utcnow()
+                # Set approval_date if not already set
+                if expense.approval_date is None:
+                    expense.approval_date = datetime.utcnow()
 
-            session.commit()
-            return serialize_expense(expense), 200
-
+                session.commit()
+                return serialize_expense(expense), 200
+        except Exception as e:
+            return {'message' : f"ERROR : {e}"}, 500
 
 
 # =================================================

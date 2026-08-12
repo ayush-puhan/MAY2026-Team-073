@@ -5,6 +5,7 @@ from app.modules.student.routes import student_bp
 from app.modules.club_leadership.routes import club_bp
 from app.modules.helpdesk.routes import admin_support_bp,ticket_response_bp, support_ticket_bp
 from app.modules.club_leadership.membership_routes import membership_bp
+from app.modules.club_leadership.leave_club import leave_club_bp
 from app.modules.club_leadership.application_routes import application_bp
 from app.modules.notification_system.routes import notification_bp
 from app.modules.club_leadership.committee_routes import committee_bp
@@ -21,10 +22,11 @@ from app.modules.faculty.routes import  faculty_advisor_bp
 from app.modules.faculty.faculty_advisors import faculty_bp
 from app.modules.club_leadership.club_creation_requests import club_creation_bp
 from app.modules.club_leadership.club_resources import communication_bp
-from app.modules.club_leadership.leave_club import memberships_bp as leave_club_bp
+
 from app.modules.club_leadership.club_budget import budget_bp
 from app.modules.club_leadership.transfer_presidency import transfer_presidency_bp
 from app.modules.emergency_report.routes import  em_report
+from app.modules.calendar.routes import calendar_bp
 
 # ----------------------------------------------------
 # ClubConnect AI Module
@@ -40,6 +42,7 @@ def register_api_paths(app):
     app.register_blueprint(student_bp, url_prefix='/api/student')
     # Clubs-related api
     app.register_blueprint(club_bp, url_prefix="/api/clubs")
+    app.register_blueprint(leave_club_bp, url_prefix="/api")
     app.register_blueprint(membership_bp,url_prefix="/api")
     app.register_blueprint(application_bp,url_prefix="/api")
     app.register_blueprint(volunteer_task_bp,url_prefix="/api")
@@ -65,7 +68,6 @@ def register_api_paths(app):
     app.register_blueprint(faculty_bp)
     app.register_blueprint(club_creation_bp,url_prefix="/api")
     app.register_blueprint(communication_bp,url_prefix="/api")
-    app.register_blueprint(leave_club_bp,url_prefix="/api")
     app.register_blueprint(budget_bp,url_prefix="/api")
     app.register_blueprint(transfer_presidency_bp, url_prefix="/api")    # Faculty Advisor
     app.register_blueprint(faculty_advisor_bp, url_prefix='/api/faculty')
@@ -81,6 +83,9 @@ def register_api_paths(app):
 
     # Emergency Report
     app.register_blueprint(em_report, url_prefix="/api/emergency-reports")
+
+    # Calendar
+    app.register_blueprint(calendar_bp, url_prefix="/api/calendar")
 
     # AI Services (ClubConnect Assistant) - url_prefix already set on the blueprint itself
     app.register_blueprint(ai_bp)

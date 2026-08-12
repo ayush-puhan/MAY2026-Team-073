@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styles from './DataTable.module.css';
 import { Icon } from '@iconify/react';
 import { EmptyState } from '../EmptyState/EmptyState';
@@ -15,6 +15,10 @@ export const DataTable = ({
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 5;
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [data]);
 
   if (!data || data.length === 0) {
     return <EmptyState title={emptyTitle} description={emptyDesc} />;

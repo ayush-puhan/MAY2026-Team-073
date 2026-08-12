@@ -6,14 +6,15 @@ from datetime import datetime, timedelta
 
 from app.database.models import (
     User,Club,University,Event,SupportTicket ,AuditLog,Department,Budget,Expense,ClubMembership,
-    Committee, ClubCreationRequest,Announcement,ClubJoinApplication,Document
+    Committee, ClubCreationRequest,Announcement,ClubJoinApplication,Document,Interest,
+    ClubInterest,CommitteeMembership,VolunteerAssignment
 )
 
 from app.database.enums import (
     UserRole,AuthProvider,ClubStatus,EventStatus,TicketType,
     TicketPriority,ClubMemberRole,ClubRequestStatus,
-    TicketStatus, MembershipStatus,AnnouncementAudience,
-    BudgetStatus,ExpenseStatus,ExpenseApprovalStatus,DocumentType
+    TicketStatus, MembershipStatus,AnnouncementAudience,VolunteerTaskStatus,
+    BudgetStatus,ExpenseStatus,ExpenseApprovalStatus,DocumentType,CommitteeRole
 )
 
 class UserFactory(BaseFactory):
@@ -173,17 +174,6 @@ class ClubMembershipFactory(BaseFactory):
     rejection_reason = None
 
 
-class CommitteeFactory(BaseFactory):
-    class Meta:
-        model = Committee
-    club = None#factory.SubFactory(ClubFactory)
-
-    name = factory.Sequence(lambda n: f"Committee {n}")
-    description = factory.Faker("sentence")
-
-    created_at = factory.LazyFunction(datetime.utcnow)
-
-
 class ClubCreationRequestFactory(BaseFactory):
     class Meta:
         model = ClubCreationRequest
@@ -241,16 +231,58 @@ class ClubJoinApplicationFactory(BaseFactory):
 class DocumentFactory(BaseFactory):
     class Meta:
         model = Document
-
     owner = None #factory.SubFactory(UserFactory)
-
     club = None
     event = None
     committee = None
-
     doc_type = DocumentType.GENERAL
-
     file_url = factory.Faker("url")
     title = factory.Sequence(lambda n: f"Document {n}")
+    created_at = factory.LazyFunction(datetime.utcnow)
 
+
+class InterestFactory(BaseFactory):
+    class Meta:
+        model = Interest
+    name = factory.Sequence(lambda n: f"Interest {n}")
+    created_at = factory.LazyFunction(datetime.utcnow)
+
+
+class ClubInterestFactory(BaseFactory):
+    class Meta:
+        model = ClubInterest
+    club = None #factory.SubFactory(ClubFactory)
+    interest = None #factory.SubFactory(InterestFactory)
+    created_at = factory.LazyFunction(datetime.utcnow)
+
+class CommitteeFactory(BaseFactory):
+    class Meta:
+        model = Committee
+    club = None #factory.SubFactory(ClubFactory)
+    name = factory.Sequence(lambda n: f"Committee {n}")
+    description = factory.Faker("paragraph")
+    created_at = factory.LazyFunction(datetime.utcnow)
+
+
+class CommitteeMembershipFactory(BaseFactory):
+    class Meta:
+        model = CommitteeMembership
+    committee = None #factory.SubFactory(CommitteeFactory)
+    membership = None #factory.SubFactory(ClubMembershipFactory)
+    role = CommitteeRole.MEMBER
+    joined_at = factory.LazyFunction(datetime.utcnow)
+
+
+class VolunteerAssignmentFactory(BaseFactory):
+    class Meta:
+        model = VolunteerAssignment
+    event = None #factory.SubFactory(EventFactory)
+    assignee_membership = None #factory.SubFactory(ClubMembershipFactory)
+    assigner = None #factory.SubFactory(UserFactory)
+    task_description = factory.Faker("sentence")
+    status = VolunteerTaskStatus.ASSIGNED
+    due_at = factory.LazyFunction(
+        lambda: datetime.utcnow() + timedelta(days=7)
+    )
+    committee = None
     created_at = factory.LazyFunction(datetime.utcnow)

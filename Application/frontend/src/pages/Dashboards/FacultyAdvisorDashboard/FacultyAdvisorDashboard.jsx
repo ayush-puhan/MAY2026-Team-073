@@ -20,7 +20,7 @@ export const FacultyAdvisorDashboard = () => {
 
   return (
     <DashboardLayout title="Faculty Advisor Dashboard" user={user} sidebarLinks={sidebarLinks}>
-      <div style={{ width: '100%' }}>
+      <div style={{ width: '100%', height: '100%' }}>
         <Routes>
           <Route path="/" element={<FacultyDashboardHome />} />
           <Route path="clubs/*" element={<AdvisedClubs />} />

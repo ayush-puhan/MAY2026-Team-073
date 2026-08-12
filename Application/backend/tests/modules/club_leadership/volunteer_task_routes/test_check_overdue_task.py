@@ -7,7 +7,8 @@ import app.modules.club_leadership.transfer_presidency  as tp_module
 def test_check_overdue_tasks_updates_overdue_task(
     client,
     auth_headers,
-    mock_resolve_club_id
+    mock_resolve_club_id,
+    db_session
 ):
     university = UniversityFactory()
     club = ClubFactory(
@@ -40,6 +41,7 @@ def test_check_overdue_tasks_updates_overdue_task(
         "/api/volunteer-tasks/check-overdue",
         headers=headers,
     )
+    db_session.refresh(task)
     assert response.status_code == 200
     body = response.get_json()
     assert body["updated"] == 1
@@ -138,7 +140,8 @@ def test_check_overdue_tasks_does_not_update_future_task(
 def test_check_overdue_tasks_updates_multiple_tasks(
     client,
     auth_headers,
-    mock_resolve_club_id
+    mock_resolve_club_id,
+    db_session
 ):
     university = UniversityFactory()
     club = ClubFactory(
@@ -184,7 +187,9 @@ def test_check_overdue_tasks_updates_multiple_tasks(
         "/api/volunteer-tasks/check-overdue",
         headers=headers,
     )
-
+    db_session.refresh(overdue_task_1)
+    db_session.refresh(overdue_task_2)
+    db_session.refresh(future_task)
     assert response.status_code == 200
     body = response.get_json()
     assert body["updated"] == 2

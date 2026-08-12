@@ -204,7 +204,7 @@ def test_get_user_role_in_club_database_error(
 
     body = response.get_json()
 
-    assert body["messge"] == "Uncaught Error"
+    assert "Database Error" in body["message"]
 
 
 

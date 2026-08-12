@@ -91,4 +91,4 @@ def test_create_interest_query_database_error(
 
     body = response.get_json()
 
-    assert body["messge"] == "Uncaught Error"
+    assert "Database Error" in body["message"]

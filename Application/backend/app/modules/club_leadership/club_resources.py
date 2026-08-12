@@ -71,7 +71,7 @@ class ClubResourcesResource(Resource):
                 )
                 return [serialize_document(r) for r in resources], 200
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"ERROR  :  {e}"}, 500
 
 
     @require_auth
@@ -121,7 +121,7 @@ class ClubResourcesResource(Resource):
 
                 return serialize_document(document), 201
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"ERROR  :  {e}"}, 500
 
 
 # =========================================================
@@ -155,7 +155,7 @@ class ClubResourceDeleteResource(Resource):
                     "message": "Resource deleted successfully"
                 }, 200
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"ERROR  :  {e}"}, 500
 
 # =========================================================
 # Committee Resources
@@ -188,7 +188,7 @@ class CommitteeResourcesResource(Resource):
                 )
                 return [serialize_document(r) for r in resources], 200
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"ERROR  :  {e}"}, 500
 
 
 # =========================================================

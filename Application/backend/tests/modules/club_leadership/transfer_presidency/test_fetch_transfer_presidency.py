@@ -598,4 +598,4 @@ def test_transfer_presidency_database_get_error(
     )
     assert response.status_code == 500
     body = response.get_json()
-    assert body["messge"] == "Uncaught Error"
+    assert "Database Error" in body["message"]

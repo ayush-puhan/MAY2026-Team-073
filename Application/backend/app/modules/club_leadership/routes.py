@@ -73,7 +73,7 @@ class ClubListResource(Resource):
                     for club in clubs
                 ], 200
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"Error  :  {e}"}, 500
 
 # ---------------------------------------------------
 # GET CLUB BY ID
@@ -98,7 +98,7 @@ class ClubDetailResource(Resource):
                     db
                 ),200
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"Error  :  {e}"}, 500
 
 
 

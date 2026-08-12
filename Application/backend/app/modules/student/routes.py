@@ -25,7 +25,7 @@ def get_departments():
                 } for dept in departments
             ]), 200
     except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"Error  :  {e}"}, 500
 
 @student_bp.route('/programs', methods=['GET'])
 @require_auth
@@ -41,7 +41,7 @@ def get_programs():
                 } for prog in programs
             ]), 200
     except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"Error  :  {e}"}, 500
 
 @student_bp.route('/interests', methods=['GET'])
 @require_auth
@@ -56,4 +56,4 @@ def get_interests():
                 } for interest in interests
             ]), 200
     except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"Error  :  {e}"}, 500

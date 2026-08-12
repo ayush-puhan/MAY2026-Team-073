@@ -147,7 +147,7 @@ class EventListResource(Resource):
                 events = query.all()
                 return [serialize_event(event) for event in events], 200
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"Error  :  {e}"}, 500
 
     @require_auth
     @require_club_role("event_coordinator", "president")
@@ -192,7 +192,7 @@ class EventListResource(Resource):
 
                 return serialize_event(event), 201
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"Error  :  {e}"}, 500
 
 
 # ============================================================
@@ -211,7 +211,7 @@ class EventDetailResource(Resource):
                     return error
                 return serialize_event(event), 200
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"Error  :  {e}"}, 500
     @require_auth
     @require_club_role("event_coordinator", "president")
     def patch(self, event_id):
@@ -258,7 +258,7 @@ class EventDetailResource(Resource):
                     "message": "Event updated successfully."
                 }, 200
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"Error  :  {e}"}, 500
 
 # ============================================================
 # EVENT REGISTRATION
@@ -290,7 +290,7 @@ class EventRegistrationResource(Resource):
 
                 return {"message": "Registered successfully", "id": registration.id}, 201
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"Error  :  {e}"}, 500
 
     @require_auth
     def delete(self, event_id):
@@ -313,7 +313,7 @@ class EventRegistrationResource(Resource):
 
                 return {"message": "Unregistered successfully"}, 200
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"Error  :  {e}"}, 500
 
 
 # ============================================================
@@ -352,7 +352,7 @@ class ExternalRegistrationResource(Resource):
 
                 return {"message": "External participant registered", "id": participant.id}, 201
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"Error  :  {e}"}, 500
 
 
 # ============================================================
@@ -373,7 +373,7 @@ class UserEventsResource(Resource):
                 registrations = session.query(EventRegistration).filter_by(user_id=user_id).all()
                 return [serialize_event(r.event) for r in registrations], 200
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"Error  :  {e}"}, 500
 
 
 # ============================================================
@@ -396,7 +396,7 @@ class EventSessionsResource(Resource):
                 sessions = session.query(EventSession).filter_by(event_id=event.id).all()
                 return [serialize_session(s) for s in sessions], 200
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"Error  :  {e}"}, 500
 
     @require_auth
     @require_club_role("event_coordinator", "president")
@@ -435,7 +435,7 @@ class EventSessionsResource(Resource):
 
                 return {"message": "Session created", "id": session_obj.id}, 201
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"Error  :  {e}"}, 500
 
     @require_auth
     @require_club_role("event_coordinator", "president")
@@ -451,7 +451,7 @@ class EventSessionsResource(Resource):
 
                 return {"message": "Sessions deleted"}, 200
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"Error  :  {e}"}, 500
 
 
 # ============================================================
@@ -490,7 +490,7 @@ class EventAttendanceResource(Resource):
                     for r in records
                 ], 200
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"Error  :  {e}"}, 500
 
     @require_auth
     @require_club_role("event_coordinator", "volunteer_coordinator", "president")
@@ -521,7 +521,7 @@ class EventAttendanceResource(Resource):
 
                 return {"message": "Checked in", "id": record.id}, 201
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"Error  :  {e}"}, 500
 
 
 # ============================================================
@@ -549,7 +549,7 @@ class AttendanceDeleteResource(Resource):
 
                 return {"message": "Check-in removed"}, 200
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"Error  :  {e}"}, 500
 
 
 # ============================================================

@@ -267,7 +267,7 @@ def test_get_club_membership_requests_database_error(
 
     body = response.get_json()
 
-    assert body["messge"] == "Uncaught Error"
+    assert "Database Error" in body["message"]
 
 
 def test_get_club_membership_requests_requires_authentication(

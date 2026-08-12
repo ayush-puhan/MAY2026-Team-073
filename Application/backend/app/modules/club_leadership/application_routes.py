@@ -143,7 +143,7 @@ class ClubApplicationsResource(Resource):
 
                 ], 200
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"ERROR  :  {e}"}, 500
 
 
 # -------------------------------------------------
@@ -176,7 +176,7 @@ class UserClubApplicationsResource(Resource):
 
                 ], 200
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"ERROR  :  {e}"}, 500
 
 
 # -------------------------------------------------
@@ -269,7 +269,7 @@ class ClubApplicationSubmissionResource(Resource):
 
                 }, 201
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"ERROR  :  {e}"}, 500
 
 
 # -------------------------------------------------
@@ -454,7 +454,7 @@ class ReviewApplicationResource(Resource):
 
                 }, 200
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"ERROR  :  {e}"}, 500
 
 
 # -------------------------------------------------

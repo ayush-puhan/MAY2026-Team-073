@@ -178,7 +178,7 @@ class UserClubResource(Resource):
                     for member in memberships
                 ], 200
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"Error  :  {e}"}, 500
 
 
 
@@ -225,7 +225,7 @@ class ClubMembersResource(Resource):
                     for member in members
                 ], 200
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"Error  :  {e}"}, 500
 # -------------------------------------------------
 # GET /api/clubs/<club_id>/membership-requests
 # -------------------------------------------------
@@ -252,7 +252,7 @@ class ClubMembershipRequestsResource(Resource):
                     for member in requests
                 ], 200
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"Error  :  {e}"}, 500
 
 
 
@@ -299,7 +299,7 @@ class UserRoleInClubResource(Resource):
 
                 }, 200
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"Error  :  {e}"}, 500
 
 # -------------------------------------------------
 # PATCH /api/memberships/<id>/role
@@ -366,7 +366,7 @@ class UpdateMemberRoleResource(Resource):
                     "membership": serialize_membership(membership)
                 }, 200
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"Error  :  {e}"}, 500
 
 # -------------------------------------------------
 # Route Registration

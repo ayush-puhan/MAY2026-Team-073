@@ -51,7 +51,7 @@ class InterestListResource(Resource):
                     for i in interests
                 ], 200
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"ERROR  :  {e}"}, 500
 
 
     def post(self):
@@ -91,7 +91,7 @@ class InterestListResource(Resource):
 
                 return serialize_interest(interest), 201
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"ERROR  :  {e}"}, 500
 
 
 
@@ -123,7 +123,7 @@ class InterestResource(Resource):
 
                 return serialize_interest(interest), 200
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"ERROR  :  {e}"}, 500
 
 
 
@@ -157,7 +157,7 @@ class InterestResource(Resource):
 
                 return serialize_interest(interest), 200
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"ERROR  :  {e}"}, 500
 
 
 
@@ -187,7 +187,7 @@ class InterestResource(Resource):
                     "message": "Interest deleted successfully"
                 }, 200
         except Exception as e:
-            return {'messge' : 'Uncaught Error'}, 500
+            return {'message'  :  f"ERROR  :  {e}"}, 500
 
 
 

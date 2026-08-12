@@ -41,6 +41,17 @@ def serialize_application(application):
             else None
         ),
 
+        "user": (
+            {
+                "id": application.user.id,
+                "full_name": application.user.full_name,
+                "email": application.user.email,
+                "profile_photo_url": application.user.profile_photo_url,
+            }
+            if application.user
+            else None
+        ),
+
         "motivation": application.motivation,
 
         "contribution": application.contribution,

@@ -29,7 +29,7 @@ from app.database.enums import (
     ExpenseApprovalStatus,
     ClubMemberRole,
 )
-from app.middleware.auth_middleware import require_auth, require_club_role
+from app.middleware.auth_middleware import require_auth, require_club_role, require_club_role_or_faculty_advisor
 
 
 
@@ -102,7 +102,7 @@ class BudgetListResource(Resource):
     """
 
     @require_auth
-    @require_club_role(
+    @require_club_role_or_faculty_advisor(
         ClubMemberRole.TREASURER,
         ClubMemberRole.PRESIDENT,
         ClubMemberRole.VICE_PRESIDENT
@@ -123,7 +123,7 @@ class BudgetListResource(Resource):
             return {'message' : f'ERROR {e}'},500
 
     @require_auth
-    @require_club_role(
+    @require_club_role_or_faculty_advisor(
         ClubMemberRole.TREASURER,
         ClubMemberRole.PRESIDENT
     )
@@ -201,7 +201,7 @@ class BudgetUpdateResource(Resource):
     """
 
     @require_auth
-    @require_club_role(
+    @require_club_role_or_faculty_advisor(
         ClubMemberRole.TREASURER,
         ClubMemberRole.PRESIDENT
     )

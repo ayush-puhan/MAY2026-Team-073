@@ -5,8 +5,8 @@ from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity
 
 from app.database.session_manager import validate_stored_token
 from app.database.database import get_session
-from app.database.models import User, ClubMembership, Event, AttendanceRecord, VolunteerAssignment, Budget
-from app.database.enums import MembershipStatus
+from app.database.models import User, ClubMembership, Event, AttendanceRecord, VolunteerAssignment, Budget, Club
+from app.database.enums import MembershipStatus, UserRole
 
 
 def require_auth(fn):
@@ -191,6 +191,66 @@ def require_club_role(*allowed_roles):
         return wrapper
 
     return decorator
+
+def require_club_role_or_faculty_advisor(*allowed_roles):
+    """
+    Like require_club_role, but also grants access to the faculty advisor
+    of the resolved club (who has no ClubMembership row to check against).
+    """
+    def decorator(fn):
+        @wraps(fn)
+        def wrapper(*args, **kwargs):
+            if not hasattr(g, "current_user"):
+                return {"message": "Authentication required"}, 401
+
+            with get_session() as db:
+                resolved = resolve_club_id(db, kwargs)
+
+                if isinstance(resolved, tuple):
+                    return resolved
+
+                if resolved is None:
+                    return {"message": "Club ID missing"}, 400
+
+                club_id = _to_int(resolved)
+                if club_id is None:
+                    return {"message": "Invalid club ID"}, 400
+
+                if g.current_user.role == UserRole.FACULTY_ADVISOR:
+                    club = db.query(Club).filter_by(id=club_id).first()
+                    if club and club.faculty_advisor_id == g.current_user.id:
+                        g.club_id = club_id
+                        g.club_role = "faculty_advisor"
+                        return fn(*args, **kwargs)
+
+                membership = (
+                    db.query(ClubMembership)
+                    .filter(
+                        ClubMembership.user_id == g.current_user.id,
+                        ClubMembership.club_id == club_id,
+                        ClubMembership.status == MembershipStatus.APPROVED,
+                    )
+                    .first()
+                )
+
+                if not membership:
+                    return {"message": "You are not an approved member of this club"}, 403
+
+                club_role = membership.role_in_club.value if hasattr(membership.role_in_club, "value") else membership.role_in_club
+
+                if allowed_roles and club_role not in allowed_roles:
+                    return {"message": "Insufficient club permissions"}, 403
+
+                g.club_id = club_id
+                g.club_role = club_role
+                g.club_membership = membership
+
+            return fn(*args, **kwargs)
+
+        return wrapper
+
+    return decorator
+
 
 def _require_club_role(*allowed_roles):
     """

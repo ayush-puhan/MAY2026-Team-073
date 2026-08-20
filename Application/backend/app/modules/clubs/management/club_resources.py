@@ -179,13 +179,13 @@ class CommitteeResourcesResource(Resource):
         "president",
         "faculty_advisor",
     )
-    def get(self, id):
+    def get(self, committee_id):
         try:
             with get_session() as db:
 
                 committee = (
                     db.query(Committee)
-                    .filter(Committee.id == id)
+                    .filter(Committee.id == committee_id)
                     .first()
                 )
                 if not committee:
@@ -193,13 +193,93 @@ class CommitteeResourcesResource(Resource):
 
                 resources = (
                     db.query(Document)
-                    .filter(Document.committee_id == id)
+                    .filter(Document.committee_id == committee_id)
                     .order_by(Document.created_at.desc())
                     .all()
                 )
                 return [serialize_document(r) for r in resources], 200
         except Exception as e:
             return {'message'  :  f"ERROR  :  {e}"}, 500
+
+    @require_auth
+    @require_club_role(
+        "head",
+        "co_head",
+        "member",
+        "president",
+        "faculty_advisor"
+    )
+    def post(self, committee_id):
+        try:
+            data = request.get_json()
+            if not data:
+                return {"message": "Invalid request body"}, 400
+
+            title = data.get("title")
+            file_url = data.get("file_url")
+            owner_id = g.current_user.id
+            club_id = g.club_id
+            doc_type = data.get("doc_type", "GENERAL")
+
+            if not title:
+                return {"message": "title is required"}, 400
+            if not file_url:
+                return {"message": "file_url is required"}, 400
+
+            try:
+                from app.database.enums import DocumentType
+                document = Document(
+                    owner_id=owner_id,
+                    club_id=club_id,
+                    committee_id=committee_id,
+                    event_id=None,
+                    title=title,
+                    file_url=file_url,
+                    doc_type=DocumentType(doc_type.lower()),
+                    created_at=datetime.utcnow(),
+                )
+            except ValueError:
+                return {"message": "Invalid document type"}, 400
+
+            with get_session() as db:
+                db.add(document)
+                db.commit()
+                db.refresh(document)
+                return serialize_document(document), 201
+        except Exception as e:
+            return {'message' : f"ERROR : {e}"}, 500
+
+class CommitteeResourceDeleteResource(Resource):
+    @require_auth
+    @require_club_role(
+        "head",
+        "co_head",
+        "president",
+        "faculty_advisor"
+    )
+    def delete(self, committee_id, id):
+        try:
+            with get_session() as db:
+                document = (
+                    db.query(Document)
+                    .filter(
+                        Document.id == id,
+                        Document.committee_id == committee_id,
+                    )
+                    .first()
+                )
+
+                if not document:
+                    return {"message": "Resource not found"}, 404
+
+                db.delete(document)
+                db.commit()
+
+                return {
+                    "message": "Resource deleted successfully"
+                }, 200
+        except Exception as e:
+            return {'message' : f"ERROR : {e}"}, 500
 
 
 # =========================================================
@@ -218,5 +298,10 @@ api.add_resource(
 
 api.add_resource(
     CommitteeResourcesResource,
-    "/committees/<int:id>/resources",
+    "/committees/<int:committee_id>/resources",
+)
+
+api.add_resource(
+    CommitteeResourceDeleteResource,
+    "/committees/<int:committee_id>/resources/<int:id>",
 )

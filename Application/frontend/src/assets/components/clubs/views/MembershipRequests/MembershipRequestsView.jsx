@@ -24,9 +24,8 @@ const MembershipRequestsView = ({
   const handleApprove = async (id) => {
     try {
       await onApprove(id);
-      addToast('Request approved successfully', 'success');
     } catch (err) {
-      addToast('Failed to approve request', 'error');
+      console.error(err);
     }
   };
 
@@ -43,11 +42,10 @@ const MembershipRequestsView = ({
   const handleConfirmReject = async (id) => {
     try {
       await onReject(id, rejectReason);
-      addToast('Request rejected', 'success');
       setRejectingId(null);
       setRejectReason('');
     } catch (err) {
-      addToast('Failed to reject request', 'error');
+      console.error(err);
     }
   };
 

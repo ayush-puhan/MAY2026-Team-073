@@ -12,7 +12,13 @@ import { Dropdown } from '../../../ui/Dropdown/Dropdown';
 import { Button } from '../../../ui/Button/Button';
 import { ConfirmModal } from '../../../ui/ConfirmModal/ConfirmModal';
 
-export const ClubResourcesView = ({ club, userRole }) => {
+export const ClubResourcesView = ({ isCommitteeMode, committeeId, overrideClub, overrideUserRole, overrideCanManage }) => {
+  let context = {};
+  try { context = useOutletContext() || {}; } catch(e) {}
+  
+  const club = overrideClub || context.club;
+  const userRole = overrideUserRole || context.userRole;
+
   const { user } = useSession();
   const { addToast } = useToast();
   const [resources, setResources] = useState([]);
@@ -26,17 +32,20 @@ export const ClubResourcesView = ({ club, userRole }) => {
     file_url: ''
   });
 
-  const canManage = canManageResources(userRole);
+  const canManage = overrideCanManage !== undefined ? overrideCanManage : canManageResources(userRole);
 
   useEffect(() => {
     fetchResources();
-  }, [club.id]);
+  }, [club?.id, committeeId]);
 
   const fetchResources = async () => {
+    if (!club) return;
     try {
       setLoading(true);
-      const res = await clubsApi.getClubResources(club.id);
-      setResources(res);
+      const res = isCommitteeMode 
+        ? await clubsApi.getCommitteeResources(committeeId)
+        : await clubsApi.getClubResources(club.id);
+      setResources(res || []);
     } catch (err) {
       addToast('Failed to load resources', 'error');
     } finally {
@@ -51,7 +60,11 @@ export const ClubResourcesView = ({ club, userRole }) => {
   const confirmDelete = async () => {
     if (!resourceToDelete) return;
     try {
-      await clubsApi.deleteClubResource(club.id, resourceToDelete, user.id);
+      if (isCommitteeMode) {
+        await clubsApi.deleteCommitteeResource(committeeId, resourceToDelete);
+      } else {
+        await clubsApi.deleteClubResource(club.id, resourceToDelete, user.id);
+      }
       addToast('Resource deleted successfully', 'success');
       setResources(resources.filter(r => r.id !== resourceToDelete));
     } catch (err) {
@@ -68,13 +81,18 @@ export const ClubResourcesView = ({ club, userRole }) => {
       return;
     }
     try {
-      const newDoc = await clubsApi.addClubResource(club.id, formData, user.id);
+      let newDoc;
+      if (isCommitteeMode) {
+        newDoc = await clubsApi.addCommitteeResource(committeeId, formData);
+      } else {
+        newDoc = await clubsApi.addClubResource(club.id, formData, user.id);
+      }
       addToast('Resource added successfully', 'success');
       setResources([...resources, newDoc]);
       setIsModalOpen(false);
       setFormData({ title: '', doc_type: 'general', file_url: '' });
     } catch (err) {
-      addToast(err.message || 'Failed to add resource', 'error');
+      addToast(err.response?.data?.message || err.message || 'Failed to add resource', 'error');
     }
   };
 

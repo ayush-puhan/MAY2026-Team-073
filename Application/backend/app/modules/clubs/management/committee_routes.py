@@ -2,7 +2,7 @@ from flask import Blueprint, request, g
 from flask_restful import Api, Resource
 from datetime import datetime
 from app.database.database import get_session
-from app.database.models import (Club,Committee,CommitteeMembership,ClubMembership,)
+from app.database.models import (Club,Committee,CommitteeMembership,ClubMembership,User)
 from app.database.enums import (CommitteeRole,MembershipStatus,ClubMemberRole,)
 from app.middleware.auth_middleware import (require_auth,require_club_role,)
 
@@ -286,6 +286,8 @@ class CommitteeMemberResource(Resource):
                         continue
 
 
+                    user = db.query(User).filter_by(id=club_member.user_id).first()
+
                     members.append({
                         "committee_membership": (
                             serialize_committee_membership(link)
@@ -301,7 +303,14 @@ class CommitteeMemberResource(Resource):
                             "status": (
                                 club_member.status.value
                             ),
-                        }
+                        },
+                        
+                        "user": {
+                            "id": user.id if user else None,
+                            "first_name": user.full_name if user else "Member",
+                            "last_name": "",
+                            "email": user.email if user else ""
+                        } if user else None
                     })
 
 

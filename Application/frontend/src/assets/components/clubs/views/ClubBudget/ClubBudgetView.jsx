@@ -134,16 +134,16 @@ const ClubBudgetView = () => {
   if (loading) return <div className={styles.loading}>Loading budget...</div>;
   if (error) return <div className={styles.error}>{error}</div>;
 
-  const totalAllocated = mainBudget ? parseFloat(mainBudget.allocated_amount || 0) : 0;
+  const totalAllocatedToCommittees = subBudgets.reduce((sum, b) => sum + parseFloat(b.allocated_amount || 0), 0);
+  
+  const totalAllocated = (mainBudget ? parseFloat(mainBudget.allocated_amount || 0) : 0) + totalAllocatedToCommittees;
   
   const mainExpenses = expenses.filter(e => e.budget_id === mainBudget?.id);
   const totalClubSpent = mainExpenses
     .filter(e => (e.status || '').toLowerCase() === 'approved')
     .reduce((sum, e) => sum + parseFloat(e.amount || 0), 0);
-    
-  const totalAllocatedToCommittees = subBudgets.reduce((sum, b) => sum + parseFloat(b.allocated_amount || 0), 0);
   
-  const remaining = totalAllocated - totalClubSpent - totalAllocatedToCommittees;
+  const remaining = (mainBudget ? parseFloat(mainBudget.allocated_amount || 0) : 0) - totalClubSpent;
 
   const showAdvancedFilters = ['treasurer', 'vice_president', 'president'].includes(userRole);
 

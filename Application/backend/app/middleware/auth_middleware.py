@@ -140,6 +140,24 @@ def resolve_club_id(db, kwargs):
             return {"message": "Event not found"}, 404
         return event.club_id
 
+    application_id = kwargs.get("application_id") or request.args.get("application_id") or json_data.get("application_id")
+    application_id = _to_int(application_id)
+    if application_id is not None:
+        from app.database.models.applications import ClubJoinApplication
+        application = db.query(ClubJoinApplication).filter_by(id=application_id).first()
+        if not application:
+            return {"message": "Application not found"}, 404
+        return application.club_id
+
+    committee_id = kwargs.get("committee_id") or request.args.get("committee_id") or json_data.get("committee_id")
+    committee_id = _to_int(committee_id)
+    if committee_id is not None:
+        from app.database.models import Committee
+        committee = db.query(Committee).filter_by(id=committee_id).first()
+        if not committee:
+            return {"message": "Committee not found"}, 404
+        return committee.club_id
+
     task_id = kwargs.get("id")
     task_id = _to_int(task_id)
     if task_id is not None:

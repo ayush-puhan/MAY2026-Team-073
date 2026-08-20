@@ -215,7 +215,7 @@ const ClubWorkspace = ({ club, userRole, user, onBack, basePath }) => {
     if (canManageMembers(userRole)) {
       setLoadingRequests(true);
       clubsApi.getClubApplications(club.id)
-        .then(setRequests)
+        .then(reqs => setRequests((reqs || []).filter(r => r.status === 'pending')))
         .catch(err => console.error('Failed to fetch requests:', err))
         .finally(() => setLoadingRequests(false));
     } else {
@@ -245,6 +245,7 @@ const ClubWorkspace = ({ club, userRole, user, onBack, basePath }) => {
       setMembers(updated);
     } catch (err) {
       addToast({ title: 'Error', message: err.message || 'Failed to approve.', type: 'error' });
+      throw err;
     }
   };
 
@@ -255,12 +256,13 @@ const ClubWorkspace = ({ club, userRole, user, onBack, basePath }) => {
       addToast({ title: 'Rejected', message: 'Application rejected.', type: 'info' });
     } catch (err) {
       addToast({ title: 'Error', message: err.message || 'Failed to reject.', type: 'error' });
+      throw err;
     }
   };
 
   const handleRoleChange = async (membershipId, newRole) => {
     try {
-      await clubsApi.updateMemberRole(membershipId, newRole, user.id);
+      await clubsApi.updateMemberRole(club.id, membershipId, newRole, user.id);
       setMembers(prev => prev.map(m => String(m.id) === String(membershipId) ? { ...m, role_in_club: newRole } : m));
       addToast({ title: 'Updated', message: 'Member role updated.', type: 'success' });
     } catch (err) {
@@ -270,7 +272,7 @@ const ClubWorkspace = ({ club, userRole, user, onBack, basePath }) => {
 
   const handleRemoveMember = async (membershipId) => {
     try {
-      await clubsApi.removeMember(membershipId, user.id);
+      await clubsApi.removeMember(club.id, membershipId, user.id);
       setMembers(prev => prev.filter(m => String(m.id) !== String(membershipId)));
       addToast({ title: 'Removed', message: 'Member removed from club.', type: 'info' });
     } catch (err) {
@@ -535,7 +537,7 @@ export const ClubsHub = () => {
   useEffect(() => {
     if (selectedClub && canManageMembers(userRoleInClub)) {
       clubsApi.getClubApplications(selectedClub.id)
-        .then(reqs => setPendingRequestsCount(reqs.length))
+        .then(reqs => setPendingRequestsCount((reqs || []).filter(r => r.status === 'pending').length))
         .catch(() => setPendingRequestsCount(0));
     } else {
       setPendingRequestsCount(0);

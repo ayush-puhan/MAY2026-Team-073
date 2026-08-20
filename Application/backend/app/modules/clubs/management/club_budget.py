@@ -158,6 +158,13 @@ class BudgetListResource(Resource):
                             "message": "Main club budget not found. Create it first."
                         }, 400
 
+                    if parent_budget.allocated_amount < float(data["allocated_amount"]):
+                        return {
+                            "message": "Insufficient main budget"
+                        }, 400
+
+                    parent_budget.allocated_amount -= float(data["allocated_amount"])
+                    
                     budget = Budget(
                         club_id=club_id,
                         committee_id=int(committee_id),
@@ -169,6 +176,8 @@ class BudgetListResource(Resource):
                         status=BudgetStatus.APPROVED,
                         created_by=get_jwt_identity(),
                     )
+                    
+                    session.add(parent_budget)
 
                 # Main club budget
                 else:

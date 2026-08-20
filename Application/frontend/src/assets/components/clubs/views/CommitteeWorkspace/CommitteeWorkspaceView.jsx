@@ -11,6 +11,8 @@ import { SecondaryHeader } from '../../../ui/SecondaryHeader/SecondaryHeader';
 import { EmptyState } from '../../../ui/EmptyState/EmptyState';
 import { DataTable } from '../../../ui/DataTable/DataTable';
 import { dashboardIcons, uiIcons, rewardsIcons } from '../../../../icons/registry';
+import ManageTasksView from '../ManageTasks/ManageTasksView';
+import { ClubResourcesView } from '../ClubResources/ClubResourcesView';
 
 // Subcomponents for tabs
 const CommitteeOverview = ({ committee }) => (
@@ -100,39 +102,151 @@ const CommitteeMembers = ({
   );
 };
 
-const CommitteeTasks = ({ tasks }) => (
-  <div style={{ marginTop: '1.5rem' }}>
-    {tasks.length > 0 ? (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        {tasks.map(t => (
-          <div key={t.id} style={{ padding: '1rem', border: '1px solid var(--border)', borderRadius: '8px', background: 'var(--surface)' }}>
-            <h4 style={{ margin: '0 0 0.5rem 0' }}>{t.task_description}</h4>
-            <span style={{ fontSize: '0.85rem', color: 'var(--muted-foreground)' }}>Status: {t.status}</span>
-          </div>
-        ))}
-      </div>
-    ) : (
-      <EmptyState icon={uiIcons.clipboardCheckOutline} title="No Tasks" description="No tasks assigned to this committee." />
-    )}
-  </div>
-);
+const CommitteeTasks = ({ tasks, events, members, onAddTask, onDeleteTask, canManage }) => {
+  const [showAdd, setShowAdd] = useState(false);
+  const [desc, setDesc] = useState('');
+  const [eventId, setEventId] = useState('');
+  const [assigneeId, setAssigneeId] = useState('');
 
-const CommitteeResources = ({ resources }) => (
-  <div style={{ marginTop: '1.5rem' }}>
-    {resources.length > 0 ? (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        {resources.map(r => (
-          <div key={r.id} style={{ padding: '1rem', border: '1px solid var(--border)', borderRadius: '8px', background: 'var(--surface)' }}>
-            <h4 style={{ margin: '0 0 0.5rem 0' }}>{r.title}</h4>
-            <a href={r.file_url} target="_blank" rel="noreferrer" style={{ fontSize: '0.9rem', color: 'var(--primary)' }}>View Document</a>
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!desc || !eventId || !assigneeId) return;
+    await onAddTask({
+      task_description: desc,
+      event_id: parseInt(eventId, 10),
+      assignee_membership_id: parseInt(assigneeId, 10)
+    });
+    setDesc('');
+    setEventId('');
+    setAssigneeId('');
+    setShowAdd(false);
+  };
+
+  return (
+    <div style={{ marginTop: '1.5rem' }}>
+      {canManage && (
+        <div style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'flex-end' }}>
+          <Button variant="primary" onClick={() => setShowAdd(!showAdd)}>
+            {showAdd ? 'Cancel' : 'Assign Task'}
+          </Button>
+        </div>
+      )}
+
+      {showAdd && (
+        <form onSubmit={handleSubmit} style={{ marginBottom: '1.5rem', padding: '1.5rem', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '8px', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div>
+            <label style={{ fontSize: '0.85rem', fontWeight: 500, display: 'block', marginBottom: '0.5rem' }}>Task Description</label>
+            <input type="text" value={desc} onChange={e => setDesc(e.target.value)} required style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid var(--border)', background: 'var(--background)', color: 'var(--text)' }} />
           </div>
-        ))}
-      </div>
-    ) : (
-      <EmptyState icon={uiIcons.folderOutline} title="No Resources" description="No resources uploaded for this committee." />
-    )}
-  </div>
-);
+          <div style={{ display: 'flex', gap: '1rem' }}>
+            <div style={{ flex: 1 }}>
+              <label style={{ fontSize: '0.85rem', fontWeight: 500, display: 'block', marginBottom: '0.5rem' }}>Event</label>
+              <select value={eventId} onChange={e => setEventId(e.target.value)} required style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid var(--border)', background: 'var(--background)', color: 'var(--text)' }}>
+                <option value="">Select Event...</option>
+                {events.filter(e => ['scheduled', 'ongoing'].includes((e.status || '').toLowerCase())).map(e => (
+                  <option key={e.id} value={e.id}>{e.title}</option>
+                ))}
+              </select>
+            </div>
+            <div style={{ flex: 1 }}>
+              <label style={{ fontSize: '0.85rem', fontWeight: 500, display: 'block', marginBottom: '0.5rem' }}>Assign To</label>
+              <select value={assigneeId} onChange={e => setAssigneeId(e.target.value)} required style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid var(--border)', background: 'var(--background)', color: 'var(--text)' }}>
+                <option value="">Select Member...</option>
+                {members.map(m => (
+                  <option key={m.membership?.id || m.id} value={m.membership?.id || ''}>
+                    {m.user?.first_name} {m.user?.last_name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <Button type="submit" variant="primary" style={{ alignSelf: 'flex-start' }}>Save Task</Button>
+        </form>
+      )}
+
+      {tasks.length > 0 ? (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          {tasks.map(t => {
+            return (
+              <div key={t.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', border: '1px solid var(--border)', borderRadius: '8px', background: 'var(--surface)' }}>
+                <div>
+                  <h4 style={{ margin: '0 0 0.5rem 0' }}>{t.task_description}</h4>
+                  <span style={{ fontSize: '0.85rem', color: 'var(--muted-foreground)', marginRight: '1rem' }}>Event: {t.event?.title || 'Unknown'}</span>
+                  <span style={{ fontSize: '0.85rem', color: 'var(--muted-foreground)', marginRight: '1rem' }}>Status: {t.status}</span>
+                  <span style={{ fontSize: '0.85rem', color: 'var(--muted-foreground)' }}>Assigned to: {t.assignee?.full_name || 'Unknown'}</span>
+                </div>
+                {canManage && (
+                  <Button variant="ghost" icon={uiIcons.deleteOutline} onClick={() => onDeleteTask(t.id)} style={{ color: 'var(--destructive)', padding: '0.5rem' }} />
+                )}
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <EmptyState icon={uiIcons.clipboardCheckOutline} title="No Tasks" description="No tasks assigned to this committee." />
+      )}
+    </div>
+  );
+};
+
+const CommitteeResources = ({ resources, onAddResource, onDeleteResource, canManage }) => {
+  const [showUpload, setShowUpload] = useState(false);
+  const [newTitle, setNewTitle] = useState('');
+  const [newUrl, setNewUrl] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!newTitle || !newUrl) return;
+    await onAddResource({ title: newTitle, file_url: newUrl });
+    setNewTitle('');
+    setNewUrl('');
+    setShowUpload(false);
+  };
+
+  return (
+    <div style={{ marginTop: '1.5rem' }}>
+      {canManage && (
+        <div style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'flex-end' }}>
+          <Button variant="primary" onClick={() => setShowUpload(!showUpload)}>
+            {showUpload ? 'Cancel' : 'Add Resource'}
+          </Button>
+        </div>
+      )}
+
+      {showUpload && (
+        <form onSubmit={handleSubmit} style={{ marginBottom: '1.5rem', padding: '1.5rem', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '8px', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div>
+            <label style={{ fontSize: '0.85rem', fontWeight: 500, display: 'block', marginBottom: '0.5rem' }}>Title</label>
+            <input type="text" value={newTitle} onChange={e => setNewTitle(e.target.value)} required style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid var(--border)', background: 'var(--background)', color: 'var(--text)' }} />
+          </div>
+          <div>
+            <label style={{ fontSize: '0.85rem', fontWeight: 500, display: 'block', marginBottom: '0.5rem' }}>URL</label>
+            <input type="url" value={newUrl} onChange={e => setNewUrl(e.target.value)} required style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid var(--border)', background: 'var(--background)', color: 'var(--text)' }} />
+          </div>
+          <Button type="submit" variant="primary" style={{ alignSelf: 'flex-start' }}>Save Resource</Button>
+        </form>
+      )}
+
+      {resources.length > 0 ? (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          {resources.map(r => (
+            <div key={r.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', border: '1px solid var(--border)', borderRadius: '8px', background: 'var(--surface)' }}>
+              <div>
+                <h4 style={{ margin: '0 0 0.5rem 0' }}>{r.title}</h4>
+                <a href={r.file_url} target="_blank" rel="noreferrer" style={{ fontSize: '0.9rem', color: 'var(--primary)' }}>View Document</a>
+              </div>
+              {canManage && (
+                <Button variant="ghost" icon={uiIcons.deleteOutline} onClick={() => onDeleteResource(r.id)} style={{ color: 'var(--destructive)', padding: '0.5rem' }} />
+              )}
+            </div>
+          ))}
+        </div>
+      ) : (
+        <EmptyState icon={uiIcons.folderOutline} title="No Resources" description="No resources uploaded for this committee." />
+      )}
+    </div>
+  );
+};
 
 const CommitteeBudgets = ({ committeeId, clubId, currentUserId, canManageThis }) => {
   const [budgets, setBudgets] = useState([]);
@@ -172,11 +286,13 @@ const CommitteeBudgets = ({ committeeId, clubId, currentUserId, canManageThis })
     }
 
     try {
-      await clubsApi.createExpense(budgets[0].id, {
+      await clubsApi.createExpense({
+        budget_id: budgets[0].id,
         description: newDesc,
         amount: parseFloat(newAmount),
-        category: 'Committee Expense'
-      }, currentUserId);
+        category: 'Committee Expense',
+        requested_by: currentUserId
+      });
       setNewDesc('');
       setNewAmount('');
       fetchData();
@@ -249,7 +365,12 @@ const CommitteeBudgets = ({ committeeId, clubId, currentUserId, canManageThis })
         {canManageThis && (
           <div style={{ flex: 1 }}>
             <h3 style={{ marginBottom: '1rem' }}>Request Expense</h3>
-            <form onSubmit={handleCreateExpense} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', padding: '1.5rem', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '8px' }}>
+            {budgets.length === 0 ? (
+              <div style={{ padding: '1.5rem', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '8px', color: 'var(--muted-foreground)', textAlign: 'center' }}>
+                No active budget assigned to this committee. Please assign a budget first.
+              </div>
+            ) : (
+              <form onSubmit={handleCreateExpense} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', padding: '1.5rem', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '8px' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                 <label style={{ fontSize: '0.85rem', fontWeight: '500' }}>Description</label>
                 <input 
@@ -275,6 +396,7 @@ const CommitteeBudgets = ({ committeeId, clubId, currentUserId, canManageThis })
               </div>
               <Button type="submit" variant="primary" style={{ marginTop: '0.5rem' }}>Submit Request</Button>
             </form>
+            )}
           </div>
         )}
       </div>
@@ -292,6 +414,7 @@ const CommitteeWorkspaceView = () => {
   const [clubMembers, setClubMembers] = useState([]);
   const [tasks, setTasks] = useState([]);
   const [resources, setResources] = useState([]);
+  const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
 
@@ -302,12 +425,13 @@ const CommitteeWorkspaceView = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [comms, mems, cMems, tsks, res] = await Promise.all([
+        const [comms, mems, cMems, tsks, res, evts] = await Promise.all([
           clubsApi.getClubCommittees(club.id),
           clubsApi.getCommitteeMembers(committeeId),
           clubsApi.getClubMembers(club.id),
           clubsApi.getCommitteeTasks(club.id, committeeId),
-          clubsApi.getCommitteeResources(committeeId)
+          clubsApi.getCommitteeResources(committeeId),
+          clubsApi.getClubEvents(club.id)
         ]);
 
         const currentComm = comms.find(c => String(c.id) === String(committeeId));
@@ -321,6 +445,7 @@ const CommitteeWorkspaceView = () => {
         setClubMembers(cMems || []);
         setTasks(tsks || []);
         setResources(res || []);
+        setEvents(evts || []);
       } catch (err) {
         console.error("Failed to load workspace:", err);
       } finally {
@@ -357,6 +482,51 @@ const CommitteeWorkspaceView = () => {
       setMembers(updated);
     } catch (err) {
       alert('Failed to update role');
+    }
+  };
+
+  const handleAddTask = async (taskData) => {
+    try {
+      // Need to add committee_id to taskData before sending
+      await clubsApi.createTask(
+        taskData.event_id, 
+        taskData.assignee_membership_id, 
+        currentUserId, 
+        taskData.task_description, 
+        null, // dueAt
+        parseInt(committeeId, 10)
+      );
+      const tsks = await clubsApi.getCommitteeTasks(club.id, committeeId);
+      setTasks(tsks || []);
+    } catch (err) {
+      console.error(err);
+      const backendMsg = err.response?.data?.message || err.message;
+      alert(`Failed to assign task: ${backendMsg}`);
+    }
+  };
+
+  const handleDeleteTask = async (taskId) => {
+    // There is no api.deleteTask yet? We'll leave it as a TODO or implement if it exists
+    alert('Task deletion not implemented yet');
+  };
+
+  const handleAddResource = async (resourceData) => {
+    try {
+      await clubsApi.addCommitteeResource(committeeId, resourceData);
+      const updated = await clubsApi.getCommitteeResources(committeeId);
+      setResources(updated || []);
+    } catch (err) {
+      alert('Failed to add resource');
+    }
+  };
+
+  const handleDeleteResource = async (resourceId) => {
+    try {
+      await clubsApi.deleteCommitteeResource(committeeId, resourceId);
+      const updated = await clubsApi.getCommitteeResources(committeeId);
+      setResources(updated || []);
+    } catch (err) {
+      alert('Failed to delete resource');
     }
   };
 
@@ -404,8 +574,28 @@ const CommitteeWorkspaceView = () => {
             canManage={canManageThis}
           />
         )}
-        {activeTab === 'tasks' && <CommitteeTasks tasks={tasks} />}
-        {activeTab === 'resources' && <CommitteeResources resources={resources} />}
+        {activeTab === 'tasks' && (
+          <div style={{ margin: '-1rem' }}>
+            <ManageTasksView 
+              isCommitteeMode={true} 
+              overrideCommitteeId={committeeId}
+              overrideClub={club}
+              overrideUserRole={userRole}
+              overrideCurrentUserId={currentUserId}
+            />
+          </div>
+        )}
+        {activeTab === 'resources' && (
+          <div style={{ margin: '-1rem' }}>
+            <ClubResourcesView 
+              isCommitteeMode={true} 
+              committeeId={committeeId}
+              overrideClub={club}
+              overrideUserRole={userRole}
+              overrideCanManage={canManageThis}
+            />
+          </div>
+        )}
         {activeTab === 'budgets' && (
           <CommitteeBudgets 
             committeeId={committeeId} 

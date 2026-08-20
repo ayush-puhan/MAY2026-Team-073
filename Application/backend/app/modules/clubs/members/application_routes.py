@@ -183,8 +183,15 @@ class ReviewApplicationResource(Resource):
                         .first()
                     )
                     if existing_membership:
-                        return {"message":"User already has membership."}, 400
-                    
+                        application.status = MembershipStatus.APPROVED
+                        application.reviewed_by = g.current_user.id
+                        application.review_comments = data.get("review_comments")
+                        application.reviewed_at = datetime.utcnow()
+                        db.commit()
+                        return {
+                            "message": "User was already a member. Application marked as approved."
+                        }, 200
+
                     membership = ClubMembership(
                         user_id=application.user_id,
                         # Required field

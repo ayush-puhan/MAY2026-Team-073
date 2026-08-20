@@ -112,6 +112,7 @@ def serialize_event(event):
         "banner": event.banner,
         "club_id": event.club_id,
         "is_public": event.is_public,
+        "requires_external_participants": event.requires_external_participants,
         "club": {
             "id": event.club.id,
             "name": event.club.name,
@@ -215,6 +216,7 @@ class EventListResource(Resource):
                     banner=data.get("banner"),
                     created_by=g.current_user.id,
                     is_public=data.get("is_public", False),
+                    requires_external_participants=data.get("requires_external_participants", False),
                 )
 
                 session.add(event)
@@ -282,8 +284,11 @@ class EventDetailResource(Resource):
                 if "banner_url" in data:
                     event.banner_url = data["banner_url"]
 
-                if "visibility" in data:
-                    event.visibility = data["visibility"]
+                if "is_public" in data:
+                    event.is_public = data["is_public"]
+                    
+                if "requires_external_participants" in data:
+                    event.requires_external_participants = data["requires_external_participants"]
 
                 session.commit()
 

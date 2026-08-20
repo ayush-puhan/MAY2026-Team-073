@@ -197,7 +197,7 @@ export const clubsApi = {
   },
 
   removeMember: async (membershipId, removedBy) => {
-    const res = await api.delete(`/memberships/${membershipId}`);
+    const res = await api.del(`/memberships/${membershipId}`);
     return res;
   },
 

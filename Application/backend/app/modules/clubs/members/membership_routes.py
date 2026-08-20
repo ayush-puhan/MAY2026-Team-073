@@ -1,8 +1,10 @@
-from flask import Blueprint, request, g
+from datetime import datetime
+
+from flask import Blueprint, g, request
 from flask_restful import Api, Resource
 
 from app.database import get_session
-from app.database.models.clubs import ClubMembership
+from app.database.models.clubs import ClubMembership, CommitteeMembership
 from app.database.enums import ClubMemberRole, MembershipStatus
 from app.middleware.auth_middleware import require_auth, require_role, require_club_role
 
@@ -26,60 +28,22 @@ def serialize_membership(member):
     """
 
     return {
-
         "id": member.id,
-
         "user_id": member.user_id,
-
         "club_id": member.club_id,
-
-        "role_in_club": (
-            member.role_in_club.value.lower()
-            if member.role_in_club
-            else None
-        ),
-
-        "status": (
-            member.status.value.lower()
-            if member.status
-            else None
-        ),
-
-        "applied_at": (
-            member.applied_at.isoformat()
-            if member.applied_at
-            else None
-        ),
-
-        "decided_at": (
-            member.decided_at.isoformat()
-            if member.decided_at
-            else None
-        ),
-
+        "role_in_club": ( member.role_in_club.value.lower() if member.role_in_club else None),
+        "status": ( member.status.value.lower() if member.status else None),
+        "applied_at": ( member.applied_at.isoformat() if member.applied_at else None),
+        "decided_at": ( member.decided_at.isoformat() if member.decided_at else None),
         "approved_by": member.approved_by,
-
         "rejection_reason": member.rejection_reason,
-
-        "user": (
-            {
+        "user": ({
                 "id": member.user.id,
-
                 "full_name": member.user.full_name,
-
                 "email": member.user.email,
-
                 "profile_photo_url": member.user.profile_photo_url,
-
-                "role": (
-                    member.user.role.value.lower()
-                    if member.user.role
-                    else None
-                )
-            }
-            if member.user
-            else None
-        )
+                "role": ( member.user.role.value.lower() if member.user.role else None)
+            } if member.user else None)
     }
 
 
@@ -161,9 +125,6 @@ class UserClubResource(Resource):
     @require_auth
     def get(self, user_id):
         try:
-            if int(user_id) != g.current_user.id:
-                return {"message": "You can only view your own club memberships."}, 403
-                
             with get_session() as db:
 
                 memberships = (
@@ -201,7 +162,7 @@ class ClubMembersResource(Resource):
         try:
             if club_id is None:
                 club_id = request.args.get("club_id")
-            user_id = request.args.get("user_id")
+
 
             with get_session() as db:
 
@@ -218,12 +179,7 @@ class ClubMembersResource(Resource):
                     query = query.filter(
                         ClubMembership.club_id == int(club_id)
                     )
-                
-                # If user_id is provided, filter that user only
-                if user_id:
-                    query = query.filter(
-                        ClubMembership.user_id == int(user_id)
-                    )
+
 
                 members = query.all()
 
@@ -240,7 +196,7 @@ class ClubMembersResource(Resource):
 
 class ClubMembershipRequestsResource(Resource):
     @require_auth
-    @require_club_role("president", "vice_president", "secretary")
+    @require_role("student")
     def get(self, club_id):
         try:
             with get_session() as db:
@@ -310,78 +266,348 @@ class UserRoleInClubResource(Resource):
             return {'message'  :  f"Error  :  {e}"}, 500
 
 # -------------------------------------------------
-# PATCH /api/clubs/<club_id>/memberships/<id>/role
+# PATCH /api/memberships/<id>/role
 # -------------------------------------------------
 
 class UpdateMemberRoleResource(Resource):
 
     @require_auth
-    @require_club_role("president")
-    def patch(self, club_id, id):
+    @require_club_role(
+        "president",
+        "vice_president",
+        "secretary",
+        "event_coordinator",
+        "volunteer_coordinator"
+    )
+    def patch(self, membershipId):
         try:
-            data = request.get_json()
+            data = request.get_json(silent=True)
 
             if not data:
-                return {
-                    "message": "Request body required."
-                }, 400
+                return {"message": "Request body required."}, 400
 
-
-            new_role = data.get("role_in_club")
+            new_role = data.get("role")
 
             if not new_role:
-                return {
-                    "message": "role_in_club is required."
-                }, 400
-
+                return {"message": "role is required."}, 400
 
             with get_session() as db:
 
                 membership = (
                     db.query(ClubMembership)
+                    .filter(ClubMembership.id == membershipId)
+                    .first()
+                )
+
+                if not membership:
+                    return {"message": "Membership not found."}, 404
+
+                try:
+                    membership.role_in_club = ClubMemberRole(new_role)
+                except ValueError:
+                    return {
+                        "message": f"Invalid club role: {new_role}"
+                    }, 400
+
+                db.commit()
+                db.refresh(membership)
+
+                return {
+                    "message": "Member role updated successfully.",
+                    "membership": serialize_membership(membership)
+                }, 200
+
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+
+            return {
+                "message": f"ERROR: {str(e)}"
+            }, 500     
+# -------------------------------------------------
+# POST /api/clubs/<club_id>/join
+# API 7: Join Club
+# -------------------------------------------------
+
+class JoinClubResource(Resource):
+
+    @require_auth
+    @require_role("student")
+    def post(self, club_id):
+        try:
+            data = request.get_json(silent=True) or {}
+
+            # The frontend may send role_in_club and reason.
+            # We intentionally do NOT trust the role from the frontend.
+            # A newly joining student always starts as MEMBER.
+            with get_session() as db:
+
+                # Check whether the club exists
+                from app.database.models.clubs import Club
+
+                club = (
+                    db.query(Club)
+                    .filter(Club.id == club_id)
+                    .first()
+                )
+
+                if not club:
+                    return {
+                        "message": "Club not found."
+                    }, 404
+
+                # Get the authenticated student
+                user_id = g.current_user.id
+
+                # Check existing membership
+                membership = (
+                    db.query(ClubMembership)
                     .filter(
-                        ClubMembership.id == id
+                        ClubMembership.user_id == user_id,
+                        ClubMembership.club_id == club_id
                     )
                     .first()
                 )
 
+                # -------------------------------------------------
+                # Already has a membership
+                # -------------------------------------------------
+
+                if membership:
+
+                    if membership.status == MembershipStatus.APPROVED:
+                        return {
+                            "message": "You are already a member of this club."
+                        }, 400
+
+                    if membership.status == MembershipStatus.PENDING:
+                        return {
+                            "message": "Your membership request is already pending."
+                        }, 400
+
+                    # Allow a rejected/withdrawn student to apply again
+                    if membership.status in (
+                        MembershipStatus.REJECTED,
+                        MembershipStatus.WITHDRAWN
+                    ):
+                        membership.status = MembershipStatus.PENDING
+                        membership.role_in_club = ClubMemberRole.MEMBER
+                        membership.applied_at = datetime.utcnow()
+                        membership.decided_at = None
+                        membership.approved_by = None
+                        membership.rejection_reason = None
+
+                        db.commit()
+                        db.refresh(membership)
+
+                        return {
+                            "message": "Club membership request submitted successfully.",
+                            "membership": serialize_membership(membership)
+                        }, 201
+
+                # -------------------------------------------------
+                # Create new membership request
+                # -------------------------------------------------
+
+                membership = ClubMembership(
+                    user_id=user_id,
+                    club_id=club_id,
+                    role_in_club=ClubMemberRole.MEMBER,
+                    status=MembershipStatus.PENDING,
+                    applied_at=datetime.utcnow()
+                )
+
+                db.add(membership)
+                db.commit()
+                db.refresh(membership)
+
+                return {
+                    "message": "Club membership request submitted successfully.",
+                    "membership": serialize_membership(membership)
+                }, 201
+        except Exception as e:
+            return {'message'  :  f"ERROR  :  {e}"}, 500
+        
+
+# -------------------------------------------------
+# PATCH /api/memberships/<membership_id>/approve
+# API 8: Approve Membership
+# -------------------------------------------------
+
+class ApproveMembershipResource(Resource):
+
+    @require_auth
+    @require_club_role(
+        "president",
+        "vice_president"
+    )
+    def patch(self, membership_id):
+        try:
+            with get_session() as db:
+
+                membership = (
+                    db.query(ClubMembership)
+                    .filter(
+                        ClubMembership.id == membership_id
+                    )
+                    .first()
+                )
 
                 if not membership:
                     return {
                         "message": "Membership not found."
                     }, 404
 
-
-                try:
-
-                    membership.role_in_club = ClubMemberRole(
-                        new_role
-                    )
-
-                except ValueError:
-
+                # Only pending requests can be approved
+                if membership.status != MembershipStatus.PENDING:
                     return {
-                        "message": "Invalid club role."
+                        "message": (
+                            "Only pending membership requests "
+                            "can be approved."
+                        )
                     }, 400
 
+                # Approve membership
+                membership.status = MembershipStatus.APPROVED
+                membership.role_in_club = ClubMemberRole.MEMBER
+                membership.decided_at = datetime.utcnow()
+                membership.approved_by = g.current_user.id
+                membership.rejection_reason = None
 
                 db.commit()
                 db.refresh(membership)
 
-
                 return {
-                    "message": "Member role updated successfully.",
+                    "message": "Membership approved successfully.",
                     "membership": serialize_membership(membership)
                 }, 200
         except Exception as e:
-            return {'message'  :  f"Error  :  {e}"}, 500
+                    return {'message'  :  f"ERROR  :  {e}"}, 500
+        
 
+# -------------------------------------------------
+# PATCH /api/memberships/<membership_id>/reject
+# API 9: Reject Membership
+# -------------------------------------------------
+
+class RejectMembershipResource(Resource):
+
+    @require_auth
+    @require_club_role(
+        "president",
+        "vice_president"
+    )
+    def patch(self, membership_id):
+        try:
+            data = request.get_json(silent=True) or {}
+
+            reason = data.get("reason")
+
+            with get_session() as db:
+
+                membership = (
+                    db.query(ClubMembership)
+                    .filter(
+                        ClubMembership.id == membership_id
+                    )
+                    .first()
+                )
+
+                if not membership:
+                    return {
+                        "message": "Membership not found."
+                    }, 404
+
+                # Only pending requests can be rejected
+                if membership.status != MembershipStatus.PENDING:
+                    return {
+                        "message": (
+                            "Only pending membership requests "
+                            "can be rejected."
+                        )
+                    }, 400
+
+                # Reject membership
+                membership.status = MembershipStatus.REJECTED
+                membership.decided_at = datetime.utcnow()
+                membership.approved_by = None
+                membership.rejection_reason = reason
+
+                db.commit()
+                db.refresh(membership)
+
+                return {
+                    "message": "Membership rejected successfully.",
+                    "membership": serialize_membership(membership)
+                }, 200
+        except Exception as e:
+                    return {'message'  :  f"ERROR  :  {e}"}, 500
+        
+# -------------------------------------------------
+# DELETE /api/memberships/<membership_id>
+# -------------------------------------------------
+
+class RemoveMemberResource(Resource):
+
+    @require_auth
+    @require_club_role("president")
+    def delete(self, membershipId):
+        try:
+            with get_session() as db:
+
+                membership = (
+                    db.query(ClubMembership)
+                    .filter(
+                        ClubMembership.id == membershipId
+                    )
+                    .first()
+                )
+
+                if not membership:
+                    return {
+                        "message": "Membership not found."
+                    }, 404
+
+                # Prevent removing a non-approved member
+                if membership.status != MembershipStatus.APPROVED:
+                    return {
+                        "message": "Only approved members can be removed."
+                    }, 400
+
+                # Prevent President from removing themselves
+                if membership.role_in_club == ClubMemberRole.PRESIDENT:
+                    return {
+                        "message": "The President cannot be removed from the club."
+                    }, 400
+
+                # Remove committee memberships first
+                # because CommitteeMembership references ClubMembership
+                # and this also keeps the relationship clean.
+                db.query(CommitteeMembership).filter(
+                    CommitteeMembership.membership_id == membership.id
+                ).delete(
+                    synchronize_session=False
+                )
+
+                db.delete(membership)
+                db.commit()
+
+                return {
+                    "message": "Member removed successfully."
+                }, 200
+
+        except Exception as e:
+            return {'message'  :  f"ERROR  :  {e}"}, 500
 # -------------------------------------------------
 # Route Registration
 # -------------------------------------------------
 
+api.add_resource(JoinClubResource,"/clubs/<int:club_id>/join")
+api.add_resource(ApproveMembershipResource,"/memberships/<int:membership_id>/approve")
+api.add_resource(RejectMembershipResource,"/memberships/<int:membership_id>/reject")
 api.add_resource(UserClubResource,"/users/<int:user_id>/clubs")
 api.add_resource(ClubMembersResource,"/clubs/<int:club_id>/members","/club_memberships")
 api.add_resource(ClubMembershipRequestsResource,"/clubs/<int:club_id>/membership-requests")
 api.add_resource(UserRoleInClubResource,"/clubs/<int:club_id>/members/<int:user_id>/role")
-api.add_resource(UpdateMemberRoleResource,"/clubs/<int:club_id>/memberships/<int:id>/role")
+api.add_resource(UpdateMemberRoleResource,"/memberships/<int:membershipId>/role")
+api.add_resource(RemoveMemberResource,"/memberships/<int:membershipId>")

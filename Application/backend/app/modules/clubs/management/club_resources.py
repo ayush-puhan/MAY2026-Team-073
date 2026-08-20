@@ -77,9 +77,7 @@ class ClubResourcesResource(Resource):
     @require_auth
     @require_club_role(
         "president",
-        "vice_president",
         "secretary",
-        "treasurer",
         "event_coordinator",
         "volunteer_coordinator"
     )
@@ -135,36 +133,18 @@ class ClubResourcesResource(Resource):
 class ClubResourceDeleteResource(Resource):
 
     @require_auth
-    @require_club_role(
-        "president",
-        "vice_president",
-        "secretary",
-        "treasurer",
-        "event_coordinator",
-        "volunteer_coordinator"
-    )
+    @require_club_role("president", "event_coordinator","volunteer_coordinator")
     def delete(self, club_id, id):
         try:
             with get_session() as db:
-
-                document = (
-                    db.query(Document)
-                    .filter(
-                        Document.id == id,
-                        Document.club_id == club_id,
-                    )
-                    .first()
-                )
-
+                document = (db.query(Document).filter(Document.id == id,Document.club_id == club_id,).first())
                 if not document:
                     return {"message": "Resource not found"}, 404
 
                 db.delete(document)
                 db.commit()
 
-                return {
-                    "message": "Resource deleted successfully"
-                }, 200
+                return {"message": "Resource deleted successfully"}, 200
         except Exception as e:
             return {'message'  :  f"ERROR  :  {e}"}, 500
 

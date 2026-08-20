@@ -165,20 +165,14 @@ class ClubTasksResource(Resource):
                 current_user = g.current_user
 
 
-                committee_id = request.args.get("committee_id")
-                
-                query = (
+                tasks = (
                     db.query(VolunteerAssignment)
                     .join(Event)
                     .filter(
                         Event.club_id == club_id
                     )
+                    .all()
                 )
-
-                if committee_id:
-                    query = query.filter(VolunteerAssignment.committee_id == int(committee_id))
-                    
-                tasks = query.all()
 
 
                 return [
@@ -204,11 +198,14 @@ class CreateVolunteerTaskResource(Resource):
     @require_club_role(
         "event_coordinator",
         "volunteer_coordinator",
-        "president"
+        "president",
+        "vice_president",
     )
     def post(self):
         try:
             data = request.get_json()
+
+            print("REQUEST DATA:", data)
 
             if not data:
                 return {
@@ -224,6 +221,7 @@ class CreateVolunteerTaskResource(Resource):
 
             for field in required_fields:
                 if field not in data:
+                    print("MISSING FIELD:", field)
 
                     return {
                         "message": f"{field} is required"
@@ -241,6 +239,9 @@ class CreateVolunteerTaskResource(Resource):
                 )
 
 
+                print("EVENT:", event)
+
+
                 if not event:
                     return {
                         "message": "Event not found"
@@ -256,11 +257,31 @@ class CreateVolunteerTaskResource(Resource):
                     .first()
                 )
 
+
+                print(
+                    "ASSIGNEE MEMBERSHIP:",
+                    membership
+                )
+
+
                 if not membership:
                     return {
                         "message":
                         "Membership ID does not exist"
                     },400
+
+
+
+                print(
+                    "MEMBERSHIP CLUB:",
+                    membership.club_id
+                )
+
+                print(
+                    "EVENT CLUB:",
+                    event.club_id
+                )
+
 
                 if membership.club_id != event.club_id:
 
@@ -324,6 +345,10 @@ class CreateVolunteerTaskResource(Resource):
 
                 db.refresh(task)
 
+
+                print("TASK CREATED:", task.id)
+
+
                 return serialize_task(task), 201
         except Exception as e:
             return {'message'  :  f"Error  :  {e}"}, 500
@@ -342,12 +367,10 @@ class VolunteerTaskStatusResource(Resource):
     )
 
 
-    def patch(self, id):
+    def patch(self, taskId):
         try:
             data = request.get_json()
-
             new_status = data.get("status")
-
 
             if not new_status:
                 return {
@@ -362,7 +385,7 @@ class VolunteerTaskStatusResource(Resource):
                 task = (
                     db.query(VolunteerAssignment)
                     .filter(
-                        VolunteerAssignment.id==id
+                        VolunteerAssignment.id==taskId
                     )
                     .first()
                 )
@@ -481,7 +504,7 @@ api.add_resource(
 
 api.add_resource(
     VolunteerTaskStatusResource,
-    "/volunteer-tasks/<int:id>/status"
+    "/volunteer-tasks/<int:taskId>/status"
 )
 
 

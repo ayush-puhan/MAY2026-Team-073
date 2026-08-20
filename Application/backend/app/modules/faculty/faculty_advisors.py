@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, g
 from flask_restful import Api, Resource
 
 from app.database import get_session
@@ -28,7 +28,8 @@ class FacultyAdvisorListResource(Resource):
                     session.query(User)
                     .filter(
                         User.role == UserRole.FACULTY_ADVISOR,
-                        User.is_active == True
+                        User.is_active == True,
+                        User.university_id == g.current_user.university_id
                     )
                     .order_by(User.full_name)
                     .all()

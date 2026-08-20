@@ -16,8 +16,10 @@ export const VerifiedHome = ({ user, events = [], quote }) => {
   const [registerEvent, setRegisterEvent] = useState(null);
   const fullName = user?.full_name || 'Student';
   
+  const upcomingEventsList = events.filter(ev => ev.status?.toUpperCase() !== 'COMPLETED' && ev.status?.toUpperCase() !== 'CANCELLED');
+  
   // Real data mapped from events
-  const todayEvents = events.slice(0, 3).map(ev => {
+  const todayEvents = upcomingEventsList.slice(0, 3).map(ev => {
     const d = new Date(ev.start_at);
     const timeStr = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
     return { title: ev.title, time: timeStr };
@@ -182,7 +184,7 @@ export const VerifiedHome = ({ user, events = [], quote }) => {
         </div>
 
         <div className={styles.eventsGrid} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem', marginTop: '1rem' }}>
-          {events.slice(0, 3).map((ev, i) => (
+          {upcomingEventsList.slice(0, 4).map((ev, i) => (
             <EventCard 
               key={ev.id || i}
               icon={dashboardIcons.calendarBlankOutline}

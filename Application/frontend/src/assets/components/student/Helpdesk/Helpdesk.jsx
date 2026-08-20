@@ -56,24 +56,36 @@ export const Helpdesk = () => {
   const [emergencyForm, setEmergencyForm] = useState({ category: 'medical', description: '', event_id: '' });
 
 
+  const [events, setEvents] = useState([]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const isFacultyAdvisor = user.role?.toLowerCase() === 'faculty_advisor';
-        const [ticketsData, clubsData, memberships, emergencyData] = await Promise.all([
+        const [ticketsData, memberships, emergencyData, eventsData] = await Promise.all([
           api.get(`/support_tickets`),
-          api.get('/clubs'),
           isFacultyAdvisor ? Promise.resolve([]) : api.get(`/club_memberships?user_id=${user.id}`),
-          emergencyApi.getEmergencyReports({ reported_by: user.id })
+          emergencyApi.getEmergencyReports({ reported_by: user.id }),
+          api.get('/events')
         ]);
         const userTickets = ticketsData.filter(t => String(t.raised_by) === String(user.id));
         setTickets(userTickets);
         setEmergencies(emergencyData);
+        setEvents(eventsData || []);
 
-        const userClubs = isFacultyAdvisor
-          ? clubsData.filter(c => String(c.faculty_advisor_id) === String(user.id))
-          : clubsData.filter(c => memberships.map(m => String(m.club_id)).includes(String(c.id)));
-        setClubs(userClubs);
+        if (isFacultyAdvisor) {
+          const clubsData = await api.get('/clubs');
+          setClubs(clubsData.filter(c => String(c.faculty_advisor_id) === String(user.id)));
+        } else {
+          const clubsData = await api.get('/clubs');
+          const approvedClubIds = new Set(
+            memberships
+              .filter(m => m.status?.toLowerCase() === 'approved')
+              .map(m => String(m.club_id))
+          );
+          const enrolledClubs = clubsData.filter(c => approvedClubIds.has(String(c.id)));
+          setClubs(enrolledClubs);
+        }
       } catch (err) {
         console.error("Failed to fetch helpdesk data", err);
       } finally {
@@ -132,7 +144,7 @@ export const Helpdesk = () => {
         event_id: emergencyForm.event_id || null
       };
       const res = await emergencyApi.submitEmergencyReport(data);
-      setEmergencies(prev => [res, ...prev]);
+      setEmergencies(prev => [res.report || res, ...prev]);
       setIsEmergencyModalOpen(false);
       setEmergencyForm({ category: 'medical', description: '', event_id: '' });
       showInfo("Emergency report submitted successfully.");
@@ -186,23 +198,58 @@ export const Helpdesk = () => {
       <div className={styles.header}>
         <div>
           <h2 className={styles.title}>Support Helpdesk</h2>
-          <p className={styles.subtitle}>Submit and track your support tickets.</p>
+          <p className={styles.subtitle}>Submit and track your support tickets and emergency reports.</p>
         </div>
-        <Button className={styles.createBtn} onClick={handleOpenModal} icon={uiIcons.plus}>
-          New Ticket
-        </Button>
+        <div style={{ display: 'flex', gap: '0.75rem' }}>
+          <Button variant="outline" onClick={() => setIsEmergencyModalOpen(true)} icon={emergencyIcons.alert} style={{ borderColor: 'var(--destructive)', color: 'var(--destructive)' }}>
+            Report Emergency
+          </Button>
+          <Button className={styles.createBtn} onClick={handleOpenModal} icon={uiIcons.plus}>
+            New Ticket
+          </Button>
+        </div>
+      </div>
+
+      <div className={styles.tabs} style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
+        <button
+          className={`${styles.tab || ''} ${activeTab === 'tickets' ? styles.activeTab || '' : ''}`}
+          style={{ padding: '0.5rem 1.25rem', borderRadius: '8px', border: activeTab === 'tickets' ? '1px solid var(--primary)' : '1px solid var(--border)', background: activeTab === 'tickets' ? 'var(--primary)' : 'transparent', color: activeTab === 'tickets' ? 'white' : 'var(--text-secondary)', cursor: 'pointer', fontSize: '0.875rem', fontWeight: 500 }}
+          onClick={() => setActiveTab('tickets')}
+        >
+          Support Tickets ({tickets.length})
+        </button>
+        <button
+          className={`${styles.tab || ''} ${activeTab === 'emergencies' ? styles.activeTab || '' : ''}`}
+          style={{ padding: '0.5rem 1.25rem', borderRadius: '8px', border: activeTab === 'emergencies' ? '1px solid var(--destructive)' : '1px solid var(--border)', background: activeTab === 'emergencies' ? 'var(--destructive)' : 'transparent', color: activeTab === 'emergencies' ? 'white' : 'var(--text-secondary)', cursor: 'pointer', fontSize: '0.875rem', fontWeight: 500 }}
+          onClick={() => setActiveTab('emergencies')}
+        >
+          Emergency Reports ({emergencies.length})
+        </button>
       </div>
 
       <div className={styles.content}>
         {loading ? (
           <div className={styles.loading}><Icon icon={uiIcons.loading} className="spin" width="32" /></div>
-        ) : (
+        ) : activeTab === 'tickets' ? (
           <DataTable 
             columns={columns} 
             data={tickets} 
             emptyTitle="No tickets found"
             emptyDesc="You haven't submitted any support tickets yet."
             onRowClick={handleRowClick}
+          />
+        ) : (
+          <DataTable
+            columns={[
+              { header: 'ID', cell: (row) => <span>#{row.id}</span>, width: '80px' },
+              { header: 'Category', cell: (row) => <span style={{ textTransform: 'capitalize' }}>{(row.category || '').replace('_', ' ')}</span> },
+              { header: 'Description', cell: (row) => <span>{(row.description || '').substring(0, 60)}{(row.description || '').length > 60 ? '...' : ''}</span> },
+              { header: 'Status', cell: (row) => <StatusBadge status={row.status || 'reported'} /> },
+              { header: 'Created', cell: (row) => new Date(row.created_at).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' }) }
+            ]}
+            data={emergencies}
+            emptyTitle="No emergency reports"
+            emptyDesc="You haven't submitted any emergency reports."
           />
         )}
       </div>
@@ -367,6 +414,65 @@ export const Helpdesk = () => {
                 </div>
               )}
             </div>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {isEmergencyModalOpen && typeof document !== 'undefined' && createPortal(
+        <div className={styles.modalOverlay}>
+          <div className={styles.modal}>
+            <div className={styles.modalHeader}>
+              <h3>Report Emergency</h3>
+              <button className={styles.closeBtn} onClick={() => setIsEmergencyModalOpen(false)}>
+                <Icon icon={uiIcons.close} />
+              </button>
+            </div>
+            <form onSubmit={handleEmergencySubmit} className={styles.form}>
+              <div className={styles.field}>
+                <label>Category</label>
+                <Dropdown
+                  name="category"
+                  value={emergencyForm.category}
+                  onChange={(e) => setEmergencyForm({...emergencyForm, category: e.target.value})}
+                  options={[
+                    { value: 'medical', label: 'Medical Emergency' },
+                    { value: 'harassment', label: 'Harassment' },
+                    { value: 'wheelchair_assistance', label: 'Wheelchair Assistance' },
+                    { value: 'other_emergency', label: 'Other' }
+                  ]}
+                />
+              </div>
+              <div className={styles.field}>
+                <label>Event (optional)</label>
+                <Dropdown
+                  name="event_id"
+                  value={emergencyForm.event_id}
+                  onChange={(e) => setEmergencyForm({...emergencyForm, event_id: e.target.value})}
+                  options={[
+                    { value: '', label: 'None / Not Event Related' },
+                    ...(events || []).map(ev => ({ value: ev.id, label: ev.title }))
+                  ]}
+                />
+              </div>
+              <div className={styles.field}>
+                <label>Description</label>
+                <textarea
+                  value={emergencyForm.description}
+                  onChange={(e) => setEmergencyForm({...emergencyForm, description: e.target.value})}
+                  required
+                  className={styles.textarea}
+                  rows={4}
+                  placeholder="Describe the emergency situation..."
+                />
+              </div>
+              <div className={styles.footer}>
+                <Button variant="outline" type="button" onClick={() => setIsEmergencyModalOpen(false)}>Cancel</Button>
+                <Button type="submit" disabled={submitting} isLoading={submitting} style={{ backgroundColor: 'var(--destructive)', border: 'none' }}>
+                  Submit Report
+                </Button>
+              </div>
+            </form>
           </div>
         </div>,
         document.body

@@ -4,6 +4,20 @@
   gap: 1.5rem;
 }
 
+.filterRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.filterRow h2 {
+  margin: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
 .splitLayout {
   display: flex;
   flex-direction: column;

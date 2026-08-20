@@ -64,8 +64,9 @@ export const GuestHome = ({ publicEvents = [], quote, hasOptedOut = false }) => 
     return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
   };
 
+  const upcomingEventsList = publicEvents.filter(ev => ev.status?.toUpperCase() !== 'COMPLETED' && ev.status?.toUpperCase() !== 'CANCELLED');
+  const previewEvents = upcomingEventsList.slice(0, 4);
   const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
-  const previewEvents = publicEvents.slice(0, 3);
 
   return (
     <div className={styles.wrapper}>

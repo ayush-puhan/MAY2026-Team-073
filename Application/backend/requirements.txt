@@ -12,12 +12,8 @@ google-auth-httplib2>=0.2.0
 python-dotenv>=1.0.1
 factory_boy>=3.3.0
 
-# ----------------------------------------------------
 # ClubConnect AI Module
-# Integrated by AI Backend
-# Module Owner: AI Assistant / RAG Pipeline
-# ----------------------------------------------------
-# ---------- AI / RAG ----------
+#  AI / RAG 
 numpy==2.3.2
 scipy==1.16.1
 scikit-learn==1.7.1

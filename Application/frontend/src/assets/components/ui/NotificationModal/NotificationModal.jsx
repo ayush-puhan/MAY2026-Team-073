@@ -1,4 +1,5 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Icon } from '@iconify/react';
 import styles from './NotificationModal.module.css';
@@ -6,6 +7,7 @@ import { uiIcons } from '../../../icons/registry';
 
 export const NotificationModal = ({ isOpen, onClose, hasUnread, notifications = [], onMarkAllRead }) => {
   const modalRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -24,6 +26,11 @@ export const NotificationModal = ({ isOpen, onClose, hasUnread, notifications = 
     };
   }, [isOpen, onClose]);
 
+  const handleViewAll = () => {
+    onClose();
+    navigate('/student-dashboard/notifications');
+  };
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -39,10 +46,9 @@ export const NotificationModal = ({ isOpen, onClose, hasUnread, notifications = 
               <h3>Notifications</h3>
               <button 
                 className={styles.markReadBtn} 
-                onClick={onMarkAllRead}
-                disabled={!hasUnread}
+                onClick={handleViewAll}
               >
-                Mark all as read
+                View all
               </button>
             </div>
             

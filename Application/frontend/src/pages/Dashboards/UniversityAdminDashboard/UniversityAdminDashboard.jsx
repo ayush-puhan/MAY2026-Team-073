@@ -1,4 +1,4 @@
-﻿import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { DashboardLayout } from '../../../assets/components/dashboard/DashboardLayout/DashboardLayout';
 import { getNavForUser } from '../../../config/navigation';
 import { useSession } from '../../../context/SessionContext';
@@ -15,6 +15,7 @@ import { UniversityAnalytics } from '../../../assets/components/universityAdmin/
 
 import { GlobalCalendar } from '../../../assets/components/calendar/GlobalCalendar/GlobalCalendar';
 import { EmergencyDashboard } from '../../../assets/components/universityAdmin/EmergencyDashboard/EmergencyDashboard';
+import { NotificationsView } from '../../../assets/components/notifications/NotificationsView/NotificationsView';
 
 export const UniversityAdminDashboard = () => {
   const { user } = useSession();
@@ -25,7 +26,7 @@ export const UniversityAdminDashboard = () => {
 
   return (
     <DashboardLayout title="University Admin Dashboard" user={user} sidebarLinks={sidebarLinks}>
-      <div style={{ width: '100%' }}>
+      <div style={{ width: '100%', height: '100%' }}>
         <Routes>
           <Route path="/" element={<AdminOverviewHome />} />
           <Route path="clubs/*" element={<AllClubs />} />
@@ -39,6 +40,7 @@ export const UniversityAdminDashboard = () => {
           
           <Route path="emergencies/*" element={<EmergencyDashboard />} />
           <Route path="calendar/*" element={<GlobalCalendar />} />
+          <Route path="notifications" element={<NotificationsView />} />
           
           <Route path="*" element={<Navigate to="" replace />} />
         </Routes>

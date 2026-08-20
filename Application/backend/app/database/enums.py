@@ -131,6 +131,7 @@ class NotificationType(str, enum.Enum):
     CLUB_PROPOSAL_APPROVED = "club_proposal_approved"
     DEADLINE_WARNING = "deadline_warning"
     EVENT_STARTING = "event_starting"
+    SYSTEM_ALERT = "system_alert"
 
 
 class NotificationChannel(str, enum.Enum):

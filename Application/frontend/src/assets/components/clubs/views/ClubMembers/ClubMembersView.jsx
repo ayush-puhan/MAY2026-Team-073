@@ -166,35 +166,37 @@ const ClubMembersView = ({
                     Joined {formatDate(member.applied_at || member.created_at)}
                   </div>
                   
-                  <div className={styles.actions}>
-                    {canEditRole && (
-                      <Dropdown
-                        options={ROLES}
-                        value={member.role_in_club}
-                        onChange={(val) => handleRoleChange(member.id, val)}
-                        className={styles.roleSelectWrapper}
-                      />
-                    )}
-                    
-                    {canRemove && (
-                      <Button
-                        variant="ghost"
-                        color="error"
-                        size="sm"
-                        icon={uiIcons.accountRemoveOutline}
-                        onClick={() => handleRemoveMember(member.id)}
-                        title="Remove member"
-                      >
-                        Remove
-                      </Button>
-                    )}
+                  {(canEditRole || canRemove || isCurrentUser || allowManageMembers || allowManageRoles) && (
+                    <div className={styles.actions}>
+                      {canEditRole && (
+                        <Dropdown
+                          options={ROLES}
+                          value={member.role_in_club}
+                          onChange={(val) => handleRoleChange(member.id, val)}
+                          className={styles.roleSelectWrapper}
+                        />
+                      )}
+                      
+                      {canRemove && (
+                        <Button
+                          variant="ghost"
+                          color="error"
+                          size="sm"
+                          icon={uiIcons.accountRemoveOutline}
+                          onClick={() => handleRemoveMember(member.id)}
+                          title="Remove member"
+                        >
+                          Remove
+                        </Button>
+                      )}
 
-                    {!canEditRole && !canRemove && (
-                      <span className={styles.protectedNote}>
-                        {isCurrentUser ? 'This is you' : 'Protected role'}
-                      </span>
-                    )}
-                  </div>
+                      {!canEditRole && !canRemove && (isCurrentUser || allowManageMembers || allowManageRoles) && (
+                        <span className={styles.protectedNote}>
+                          {isCurrentUser ? 'This is you' : 'Protected role'}
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             );

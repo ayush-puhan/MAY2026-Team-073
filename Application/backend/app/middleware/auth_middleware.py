@@ -116,6 +116,19 @@ def resolve_club_id(db, kwargs):
         if not budget:
             return {"message": "Budget not found"}, 404
         return budget.club_id
+        
+    expense_id = kwargs.get("expense_id") or request.args.get("expense_id") or json_data.get("expense_id")
+    expense_id = _to_int(expense_id)
+    if expense_id is not None:
+        from app.database.models import Expense
+        expense = db.query(Expense).filter_by(id=expense_id).first()
+        if not expense:
+            return {"message": "Expense not found"}, 404
+        budget = db.query(Budget).filter_by(id=expense.budget_id).first()
+        if not budget:
+            return {"message": "Budget for expense not found"}, 404
+        return budget.club_id
+
     record_id = kwargs.get("record_id")
     record_id = _to_int(record_id)
     if record_id is not None:

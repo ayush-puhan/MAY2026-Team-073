@@ -147,11 +147,11 @@ export const SecurityTab = ({
             {!isAdminOrFaculty && (
               <div className={styles.secField}>
                 <label>University ID</label>
-                <Input type="text" name="roll_number" value={formData.roll_number || ''} onChange={handleChange} className={styles.secInput} placeholder="e.g. UID12345" />
+                <Input type="text" name="roll_number" value={formData.roll_number || ''} onChange={handleChange} placeholder="e.g. UID12345" />
               </div>
             )}
 
-            <div className={styles.secField} style={{ gridColumn: '1 / -1' }}>
+            <div className={styles.secField}>
               <label>Password <span className={styles.required}>*</span></label>
               
               <AnimatePresence>
@@ -183,7 +183,7 @@ export const SecurityTab = ({
                   </motion.div>
                 ) : (
                   <div className={styles.secPasswordRow}>
-                    <Input type="password" value="********" disabled wrapperClassName={styles.secInput} />
+                    <Input type="password" value="********" disabled />
                     <Button variant="outline" type="button" className={styles.secResetBtn} onClick={(e) => { e.preventDefault(); handleResetPassword(); }} disabled={isResetting}>
                       {isResetting ? 'Sending...' : (fullUser?.auth_provider?.toUpperCase() === 'GOOGLE' && !fullUser?.has_password ? 'Set Password' : 'Reset Password')}
                     </Button>

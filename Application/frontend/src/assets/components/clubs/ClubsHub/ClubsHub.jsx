@@ -485,7 +485,7 @@ export const ClubsHub = () => {
     const fetchData = async () => {
       try {
         const [allData, myData] = await Promise.all([
-          clubsApi.getAllClubs(user?.university_id),
+          clubsApi.getAllClubs({ status: 'ACTIVE' }),
           user?.id ? clubsApi.getUserClubs(user.id) : Promise.resolve([])
         ]);
         // Build a map of club_id -> { membership_status, role_in_club }
@@ -498,15 +498,17 @@ export const ClubsHub = () => {
         // Also check for pending memberships (user applied but not yet approved)
         if (user?.id) {
           try {
-            const pendingMemberships = await clubsApi.getPendingMemberships?.(user.id);
-            if (pendingMemberships?.length) {
-              pendingMemberships.forEach(m => {
-                const cid = Number(m.club_id);
-                if (!myClubMap.has(cid)) {
-                  myClubMap.set(cid, { 
-                    membership_status: 'pending', 
-                    role_in_club: null 
-                  });
+            const userApplications = await clubsApi.getUserApplications(user.id);
+            if (userApplications?.length) {
+              userApplications.forEach(app => {
+                if (app.status === 'pending') {
+                  const cid = Number(app.club_id);
+                  if (!myClubMap.has(cid)) {
+                    myClubMap.set(cid, { 
+                      membership_status: 'pending', 
+                      role_in_club: null 
+                    });
+                  }
                 }
               });
             }

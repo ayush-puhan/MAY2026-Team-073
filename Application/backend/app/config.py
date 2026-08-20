@@ -7,7 +7,7 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-super-secret-key-replace-me')
     
     JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY", "dev-only-insecure-secret-do-not-use-in-production")
-    JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=1)
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(days=7) # Long-lived JWT, actual expiration is enforced by AuthSession with sliding expiration
 
     FRONTEND_URL = os.environ.get("VITE_FRONTEND_URL", "http://localhost:5173")
     CORS_ORIGINS = [FRONTEND_URL]

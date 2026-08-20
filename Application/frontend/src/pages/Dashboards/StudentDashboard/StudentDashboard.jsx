@@ -6,14 +6,15 @@ import { useSession } from '../../../context/SessionContext';
 import { Helpdesk } from '../../../assets/components/student/Helpdesk/Helpdesk';
 import { AnnouncementCenter } from '../../../assets/components/announcements/AnnouncementCenter/AnnouncementCenter';
 import { GlobalCalendar } from '../../../assets/components/calendar/GlobalCalendar/GlobalCalendar';
-import { RewardsHub } from './RewardsHub';
 import { getRandomGreeting } from '../../../config/greetings';
 import { eventsApi } from '../../../api';
 import { VerifiedHome } from './VerifiedHome/VerifiedHome';
 import { GuestHome } from './GuestHome/GuestHome';
 import { EventsHub } from '../../../assets/components/events/EventsHub/EventsHub';
 import { ClubsHub } from '../../../assets/components/clubs/ClubsHub/ClubsHub';
-import styles from './StudentDashboard.module.css';
+import { RewardsHub } from "./RewardsHub";
+import { NotificationsView } from "../../../assets/components/notifications/NotificationsView/NotificationsView";
+import styles from "./StudentDashboard.module.css";
 
 export const StudentDashboard = () => {
   const { user } = useSession();
@@ -26,7 +27,7 @@ export const StudentDashboard = () => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const data = await eventsApi.getAllEvents();
+        const data = await eventsApi.getAllEvents({ status: 'upcoming' });
         let eventsToShow;
         if (!isVerified) {
           // Guest users: only show public events that allow external participants
@@ -36,10 +37,10 @@ export const StudentDashboard = () => {
           );
           eventsToShow = guestVisible;
         } else {
-          const publicOnly = data.filter(e => e.is_public === true || e.is_public === 1 || e.is_public === "1");
-          eventsToShow = publicOnly.length > 0 ? publicOnly : data;
+          // Verified users should see both public and university-specific events
+          eventsToShow = data;
         }
-        setPublicEvents(eventsToShow.slice(0, 6));
+        setPublicEvents(eventsToShow);
       } catch (err) {
         console.error("Failed to load events", err);
       }
@@ -70,6 +71,7 @@ export const StudentDashboard = () => {
           <Route path="events/*" element={<EventsHub />} />
           <Route path="clubs/*" element={<ClubsHub />} />
           <Route path="rewards/*" element={<RewardsHub />} />
+          <Route path="notifications" element={<NotificationsView />} />
           
           <Route path="*" element={<Navigate to="" replace />} />
         </Routes>

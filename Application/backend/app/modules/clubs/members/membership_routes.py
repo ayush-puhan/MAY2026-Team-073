@@ -599,6 +599,38 @@ class RemoveMemberResource(Resource):
         except Exception as e:
             return {'message'  :  f"ERROR  :  {e}"}, 500
 # -------------------------------------------------
+# DELETE /api/clubs/<club_id>/memberships/<id>
+# -------------------------------------------------
+
+class RemoveMemberResource(Resource):
+    @require_auth
+    @require_club_role("president", "vice_president")
+    def delete(self, club_id, id):
+        try:
+            with get_session() as db:
+                membership = (
+                    db.query(ClubMembership)
+                    .filter(
+                        ClubMembership.id == id,
+                        ClubMembership.club_id == club_id
+                    )
+                    .first()
+                )
+
+                if not membership:
+                    return {"message": "Membership not found."}, 404
+
+                if membership.role_in_club == ClubMemberRole.PRESIDENT:
+                    return {"message": "Cannot remove the president."}, 400
+
+                db.delete(membership)
+                db.commit()
+
+                return {"message": "Member removed successfully."}, 200
+        except Exception as e:
+            return {'message': f"Error: {e}"}, 500
+
+# -------------------------------------------------
 # Route Registration
 # -------------------------------------------------
 
@@ -609,5 +641,5 @@ api.add_resource(UserClubResource,"/users/<int:user_id>/clubs")
 api.add_resource(ClubMembersResource,"/clubs/<int:club_id>/members","/club_memberships")
 api.add_resource(ClubMembershipRequestsResource,"/clubs/<int:club_id>/membership-requests")
 api.add_resource(UserRoleInClubResource,"/clubs/<int:club_id>/members/<int:user_id>/role")
-api.add_resource(UpdateMemberRoleResource,"/memberships/<int:membershipId>/role")
-api.add_resource(RemoveMemberResource,"/memberships/<int:membershipId>")
+api.add_resource(UpdateMemberRoleResource,"/clubs/<int:club_id>/memberships/<int:id>/role")
+api.add_resource(RemoveMemberResource,"/clubs/<int:club_id>/memberships/<int:id>")

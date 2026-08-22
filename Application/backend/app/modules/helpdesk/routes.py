@@ -9,7 +9,9 @@ from app.database.models.support import (
     TicketResponse,
     EmergencyReport
 )
-from app.database.enums import TicketStatus, TicketPriority, TicketType
+from app.database.models.auth import User
+from app.database.models.clubs import ClubMembership
+from app.database.enums import TicketStatus, TicketPriority, TicketType, UserRole, ClubMemberRole, MembershipStatus
 
 
 admin_support_bp = Blueprint("admin_support", __name__)
@@ -301,12 +303,18 @@ class SupportTicketResource(Resource):
                 return [
                     {
                         "id": ticket.id,
+                        "raised_by": ticket.raised_by,
                         "title": ticket.title,
                         "description": ticket.description,
                         "ticket_type": ticket.ticket_type.value,
                         "priority": ticket.priority.value,
                         "status": ticket.status.value,
                         "club_id": ticket.club_id,
+                        "assigned_agent_id": ticket.assigned_agent_id,
+                        "assigned_agent_name": (
+                            ticket.assigned_agent.full_name
+                            if ticket.assigned_agent else None
+                        ),
                         "created_at": (
                             ticket.created_at.strftime("%Y-%m-%d %H:%M:%S")
                             if ticket.created_at else None
@@ -326,23 +334,73 @@ class SupportTicketResource(Resource):
                 return {'message': 'title and description are required'}, 400
 
             with get_session() as db:
+                assigned_agent_id = None
+                assigned_role = data.get("assigned_role")
+                university_id = data.get("university_id")
+                club_id = data.get("club_id")
+
+                if assigned_role:
+                    # 1. System Admin
+                    if assigned_role == UserRole.SYSTEM_ADMIN.value:
+                        admin = db.query(User).filter(User.role == UserRole.SYSTEM_ADMIN).first()
+                        if admin:
+                            assigned_agent_id = admin.id
+                    
+                    # 2. University Staff (Dean or Student Affairs)
+                    elif assigned_role in [UserRole.DEAN_STUDENT_WELFARE.value, UserRole.STUDENT_AFFAIRS_OFFICE.value] and university_id:
+                        staff = db.query(User).filter(
+                            User.role == UserRole(assigned_role),
+                            User.university_id == university_id
+                        ).first()
+                        if staff:
+                            assigned_agent_id = staff.id
+                            
+                    # 3. Faculty Advisor for a club
+                    elif assigned_role == UserRole.FACULTY_ADVISOR.value and club_id:
+                        from app.database.models.clubs import Club
+                        club = db.query(Club).filter_by(id=club_id).first()
+                        if club and club.faculty_advisor_id:
+                            assigned_agent_id = club.faculty_advisor_id
+                            
+                    # 4. Club Officer
+                    elif club_id:
+                        # Find member with that role in that club
+                        membership = db.query(ClubMembership).filter(
+                            ClubMembership.club_id == club_id,
+                            ClubMembership.role_in_club == ClubMemberRole(assigned_role),
+                            ClubMembership.status == MembershipStatus.APPROVED
+                        ).first()
+                        if membership:
+                            assigned_agent_id = membership.user_id
 
                 ticket = SupportTicket(
                     raised_by=g.current_user.id,
-                    club_id=data.get("club_id"),
+                    club_id=club_id,
                     title=data["title"],
                     description=data["description"],
-                    ticket_type=TicketType(data.get("ticket_type", "support")),
-                    priority=TicketPriority(data.get("priority", "MEDIUM")),
-                    university_id=data.get("university_id"),
+                    ticket_type=TicketType(data.get("ticket_type", "Support")),
+                    priority=TicketPriority(data.get("priority", "Medium")),
+                    university_id=university_id,
+                    assigned_agent_id=assigned_agent_id
                 )
 
                 db.add(ticket)
                 db.commit()
+                db.refresh(ticket)
 
                 return {
-                    "message": "Ticket created successfully.",
-                    "ticket_id": ticket.id
+                    "id": ticket.id,
+                    "raised_by": ticket.raised_by,
+                    "title": ticket.title,
+                    "description": ticket.description,
+                    "ticket_type": ticket.ticket_type.value,
+                    "priority": ticket.priority.value,
+                    "status": ticket.status.value,
+                    "club_id": ticket.club_id,
+                    "created_at": (
+                        ticket.created_at.strftime("%Y-%m-%d %H:%M:%S")
+                        if ticket.created_at else None
+                    )
                 }, 201
         except Exception as e:
             return {'message' : 'Uncaught Error'}, 500

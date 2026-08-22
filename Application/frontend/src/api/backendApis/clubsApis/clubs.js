@@ -36,12 +36,32 @@ export const clubsApi = {
     const committees = await api.get(`/clubs/${clubId}/committees`);
     return committees;
   },
+  createCommittee: async (clubId, payload, createdBy) => {
+    const res = await api.post(`/clubs/${clubId}/committees`, payload);
+    return res;
+  },
   getUserCertificates: async (userId) => {
     return await api.get(`/users/${userId}/certificates`);
   },
   getCommitteeMembers: async (committeeId) => {
     const members = await api.get(`/committees/${committeeId}/members`);
-  return members;
+    if (Array.isArray(members)) {
+      return members.map(m => ({
+        ...m.committee_membership,
+        user: m.user,
+        membership: m.membership
+      }));
+    }
+    return members;
+  },
+  addCommitteeMember: async (committeeId, membershipId, role = 'member') => {
+    return await api.post(`/committees/${committeeId}/members`, { membership_id: membershipId, role });
+  },
+  removeCommitteeMember: async (committeeMembershipId) => {
+    return await api.delete(`/committee-memberships/${committeeMembershipId}`);
+  },
+  updateCommitteeMemberRole: async (committeeMembershipId, role) => {
+    return await api.patch(`/committee-memberships/${committeeMembershipId}`, { role });
   },
   getUserClubs: async (userId) => {
     const res = await api.get(`/users/${userId}/clubs`);
@@ -105,11 +125,11 @@ export const clubsApi = {
 
     // Budget utilization
     const totalAllocated = budgets.reduce((sum, b) => sum + parseFloat(b.allocated_amount || 0), 0);
-    const totalSpent = expenses.filter(e => e.status === 'APPROVED').reduce((sum, e) => sum + parseFloat(e.amount || 0), 0);
+    const totalSpent = expenses.filter(e => (e.status || '').toLowerCase() === 'approved').reduce((sum, e) => sum + parseFloat(e.amount || 0), 0);
     
     // Expense breakdown by category
     const expenseByCategory = {};
-    expenses.filter(e => e.status === 'APPROVED').forEach(e => {
+    expenses.filter(e => (e.status || '').toLowerCase() === 'approved').forEach(e => {
       const cat = e.category || 'Other';
       expenseByCategory[cat] = (expenseByCategory[cat] || 0) + parseFloat(e.amount || 0);
     });
@@ -190,14 +210,14 @@ export const clubsApi = {
     return res;
   },
 
-  updateMemberRole: async (membershipId, newRole, changedBy) => {
-    const res = await api.patch(`/memberships/${membershipId}/role`, { role: newRole });
+  updateMemberRole: async (clubId, membershipId, newRole, changedBy) => {
+    const res = await api.patch(`/clubs/${clubId}/memberships/${membershipId}/role`, { role_in_club: newRole });
     console.log(res);
     return res;
   },
 
-  removeMember: async (membershipId, removedBy) => {
-    const res = await api.del(`/memberships/${membershipId}`);
+  removeMember: async (clubId, membershipId, removedBy) => {
+    const res = await api.delete(`/clubs/${clubId}/memberships/${membershipId}`);
     return res;
   },
 
@@ -218,12 +238,13 @@ export const clubsApi = {
     return res;
   },
 
-  createTask: async (eventId, assigneeMembershipId, assignedBy, description, dueAt) => {
+  createTask: async (eventId, assigneeMembershipId, assignedBy, description, dueAt, committeeId = null) => {
     const res = await api.post('/volunteer-tasks', {
       event_id: eventId,
       assignee_membership_id: assigneeMembershipId,
       task_description: description,
-      due_at: dueAt
+      due_at: dueAt,
+      committee_id: committeeId
     });
     return res;
   },
@@ -363,6 +384,19 @@ export const clubsApi = {
     );
     return res;
   },
+  addCommitteeResource: async (committeeId, resourceData) => {
+    const res = await api.post(
+      `/committees/${committeeId}/resources`,
+      resourceData
+    );
+    return res;
+  },
+  deleteCommitteeResource: async (committeeId, resourceId) => {
+    const res = await api.del(
+      `/committees/${committeeId}/resources/${resourceId}`
+    );
+    return res;
+  },
   // ── Budgets ─────────────────────────────
 
   getClubBudgets: async (clubId) => {
@@ -374,7 +408,7 @@ export const clubsApi = {
     // If you still need committee budgets, filter on backend or client.
     // Simple approach: fetch all budgets for the club and filter by committee_id.
     const budgets = await api.get(`/budgets?club_id=${clubId}`);
-    return budgets.filter(b => b.committee_id === committeeId);
+    return budgets.filter(b => String(b.committee_id) === String(committeeId));
   },
 
   allocateCommitteeBudget: async (clubId, committeeId, budgetData) => {
@@ -404,10 +438,10 @@ export const clubsApi = {
     return res;
   },
 
-  approveExpense: async (expenseId, approvalData) => {
+  approveExpense: async (expenseId, approvedBy, userRole) => {
     const res = await api.patch(
-      `/expenses/${expenseId}/approve`,
-      approvalData
+      `/expenses/${expenseId}`,
+      { status: 'approved', approval_status: 'approved', approved_by: approvedBy }
     );
     return res;
   },

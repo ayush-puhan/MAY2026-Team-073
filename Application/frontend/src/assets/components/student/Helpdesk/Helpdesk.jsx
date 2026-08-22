@@ -102,14 +102,11 @@ export const Helpdesk = () => {
       const newTicket = {
         title: formData.title,
         description: formData.description,
-        raised_by: user.id,
         club_id: formData.assigned_club_id ? parseInt(formData.assigned_club_id) : null,
         university_id: user.university_id || null,
-        status: 'Open',
         priority: formData.priority,
         ticket_type: formData.ticket_type,
-        assigned_agent_id: null,
-        created_at: istNow()
+        assigned_role: formData.assigned_role || null,
       };
       
       const savedTicket = await api.post('/support_tickets', newTicket);
@@ -171,6 +168,7 @@ export const Helpdesk = () => {
     { header: 'Title', accessor: 'title' },
     { header: 'Priority', cell: (row) => <PriorityBadge priority={row.priority || 'Medium'} /> },
     { header: 'Status', cell: (row) => <StatusBadge status={row.status || 'Open'} /> },
+    { header: 'Assigned To', cell: (row) => <span style={{ color: row.assigned_agent_name ? 'var(--text)' : 'var(--muted-foreground)' }}>{row.assigned_agent_name || 'Unassigned'}</span> },
     { header: 'Created', cell: (row) => new Date(row.created_at).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' }) }
   ];
 

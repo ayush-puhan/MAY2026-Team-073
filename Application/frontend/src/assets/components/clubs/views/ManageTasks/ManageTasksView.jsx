@@ -13,15 +13,24 @@ import { DataTable } from '../../../ui/DataTable/DataTable';
 import layoutStyles from '../../../ui/ContextLayout/ContextLayout.module.css';
 import { uiIcons } from '../../../../icons/registry';
 
-const ManageTasksView = () => {
-  const { club, userRole, currentUserId } = useOutletContext();
+const ManageTasksView = ({ isCommitteeMode, overrideCommitteeId, overrideClub, overrideUserRole, overrideCurrentUserId, overrideCanManage }) => {
+  let context = {};
+  try { context = useOutletContext() || {}; } catch(e) {}
+  
+  const club = overrideClub || context.club;
+  const userRole = overrideUserRole || context.userRole;
+  const currentUserId = overrideCurrentUserId || context.currentUserId;
+  const committeeId = overrideCommitteeId;
+
   const [tasks, setTasks] = useState([]);
   const [events, setEvents] = useState([]);
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  if (!canManageTasks(userRole) && userRole !== 'system_admin') {
+  const canManage = overrideCanManage !== undefined ? overrideCanManage : (canManageTasks(userRole) || userRole === 'system_admin');
+
+  if (!isCommitteeMode && !canManage) {
     return <Navigate to={`/clubs/${club?.id || ''}`} replace />;
   }
 
@@ -54,19 +63,20 @@ const ManageTasksView = () => {
 
   useEffect(() => {
     fetchData();
-  }, [club.id]);
+  }, [club?.id, committeeId]);
 
   const fetchData = async () => {
+    if (!club) return;
     try {
       setLoading(true);
       const [fetchedTasks, fetchedEvents, fetchedMembers] = await Promise.all([
-        clubsApi.getClubTasks(club.id),
+        isCommitteeMode ? clubsApi.getCommitteeTasks(club.id, committeeId) : clubsApi.getClubTasks(club.id),
         clubsApi.getClubEvents(club.id),
-        clubsApi.getClubMembers(club.id)
+        isCommitteeMode ? clubsApi.getCommitteeMembers(committeeId) : clubsApi.getClubMembers(club.id)
       ]);
-      setTasks(fetchedTasks);
+      setTasks(fetchedTasks || []);
       setEvents(fetchedEvents.filter(e => e.status === 'scheduled' || e.status === 'ongoing'));
-      setMembers(fetchedMembers);
+      setMembers(fetchedMembers || []);
     } catch (err) {
       console.error(err);
       setError('Failed to load tasks data.');
@@ -84,6 +94,7 @@ const ManageTasksView = () => {
     
     try {
       if (editingTaskId) {
+        // ... (no updateTask supports committee_id right now but it's not strictly needed since the task is already created)
         await clubsApi.updateTask(editingTaskId, {
           event_id: newEventId,
           assignee_membership_id: newAssigneeId,
@@ -91,7 +102,7 @@ const ManageTasksView = () => {
           due_at: newDueAt
         }, currentUserId);
       } else {
-        await clubsApi.createTask(newEventId, newAssigneeId, currentUserId, newDescription, newDueAt);
+        await clubsApi.createTask(newEventId, newAssigneeId, currentUserId, newDescription, newDueAt, isCommitteeMode ? committeeId : null);
       }
       setShowForm(false);
       setEditingTaskId(null);
@@ -101,7 +112,7 @@ const ManageTasksView = () => {
       setNewDueAt('');
       fetchData();
     } catch (err) {
-      alert('Failed to save task');
+      alert(`Failed to save task: ${err.response?.data?.message || err.message}`);
     }
   };
 
@@ -125,7 +136,10 @@ const ManageTasksView = () => {
   };
 
   // Filter members that the current user is allowed to assign tasks to
-  const assignableMembers = members.filter(m => canAssignTaskTo(userRole, m.role_in_club));
+  const assignableMembers = members.filter(m => {
+    const roleInClub = m.membership?.role_in_club || m.role_in_club;
+    return isCommitteeMode ? true : canAssignTaskTo(userRole, roleInClub);
+  });
 
   if (loading) return <div className={styles.loading}>Loading tasks...</div>;
   if (error) return <div className={styles.error}>{error}</div>;
@@ -139,12 +153,14 @@ const ManageTasksView = () => {
           <h2>Manage Tasks</h2>
           <p>Delegate responsibilities and track progress</p>
         </div>
-        <Button icon={showForm ? "mdi:close" : "mdi:plus"} onClick={() => showForm ? setShowForm(false) : openForm()}>
-          {showForm ? 'Cancel' : 'Assign Task'}
-        </Button>
+        {canManage && (
+          <Button icon={showForm ? "mdi:close" : "mdi:plus"} onClick={() => showForm ? setShowForm(false) : openForm()}>
+            {showForm ? 'Cancel' : 'Assign Task'}
+          </Button>
+        )}
       </header>
 
-      {showForm && (
+      {showForm && canManage && (
         <div className={styles.modalOverlay}>
           <div className={styles.modal}>
             <form className={styles.createForm} onSubmit={handleCreateTask}>
@@ -168,10 +184,14 @@ const ManageTasksView = () => {
                     onChange={val => setNewAssigneeId(val)}
                     options={[
                       { value: "", label: "Select Member..." },
-                      ...assignableMembers.filter(m => m.id != null).map(m => ({
-                        value: m.id,
-                        label: `${m.user.full_name} (${getRoleLabel(m.role_in_club)})`
-                      }))
+                      ...assignableMembers.map(m => {
+                        const val = isCommitteeMode ? m.membership?.id : m.id;
+                        const role = isCommitteeMode ? m.membership?.role_in_club : m.role_in_club;
+                        return {
+                          value: val,
+                          label: `${m.user?.full_name || m.user?.first_name} (${getRoleLabel(role)})`
+                        };
+                      }).filter(o => o.value != null)
                     ]}
                   />
                   {assignableMembers.length === 0 && (
@@ -247,7 +267,7 @@ const ManageTasksView = () => {
               {
                 header: 'Actions',
                 cell: (row) => {
-                  const isAssigner = String(row.assigned_by) === String(currentUserId);
+                  const isAssigner = canManage || String(row.assigner?.id) === String(currentUserId);
                   if (row.status === 'pending_review' && isAssigner) {
                     return (
                       <div className={styles.actionButtons}>

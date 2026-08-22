@@ -183,7 +183,7 @@ const SectionHeader = ({ icon, iconColor, label, count }) => (
 );
 
 const MyEventsView = ({ onRegister, searchQuery, setSearchQuery, isVerified, myEvents, timeFilter, setTimeFilter }) => {
-  const [activeTab, setActiveTab] = useState('registered');
+  const [activeTab, setActiveTab] = useState('all');
   
   const searchFiltered = myEvents.filter(ev => {
     const q = searchQuery.toLowerCase();
@@ -286,10 +286,10 @@ const EventsList = ({ events, title, subtitle, onRegister, searchQuery, setSearc
         />
         
         <div className={styles.filterRow}>
-          <SectionHeader icon={cfg.icon} iconColor={cfg.color} label={cfg.label} count={finalEvents.length} />
+          <SectionHeader icon={cfg.icon} iconColor={cfg.color} label={cfg.label} count={timeFiltered.length} />
         </div>
 
-        <EventGrid events={finalEvents} onRegister={onRegister} emptyMessage="No events found in this category." />
+        <EventGrid events={timeFiltered} onRegister={onRegister} emptyMessage="No events found in this category." />
       </div>
     </div>
   );

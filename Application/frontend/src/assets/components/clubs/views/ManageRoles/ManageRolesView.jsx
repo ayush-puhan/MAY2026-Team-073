@@ -60,7 +60,7 @@ const ManageRolesView = () => {
 
   const handleRoleChange = async (membershipId, newRole) => {
     try {
-      await clubsApi.updateMemberRole(membershipId, newRole, currentUserId);
+      await clubsApi.updateMemberRole(club.id, membershipId, newRole, currentUserId);
       fetchMembers();
     } catch (err) {
       alert("Failed to update role");

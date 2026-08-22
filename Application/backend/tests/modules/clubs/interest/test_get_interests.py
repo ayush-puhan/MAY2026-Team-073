@@ -4,22 +4,19 @@ from app.database.models import *
 import app.modules.clubs.core.interests  as interest_module
 
 def test_get_interests_success(
-    client,
+    client,active_user,auth_headers
 ):
     InterestFactory(name="Sports")
     InterestFactory(name="Music")
     InterestFactory(name="Technology")
 
     response = client.get(
-        "/api/interests"
+        "/api/interests",
+        headers=auth_headers(active_user.email)
     )
-
     assert response.status_code == 200
-
     body = response.get_json()
-
     assert len(body) == 3
-
     assert [item["name"] for item in body] == [
         "Music",
         "Sports",
@@ -27,10 +24,11 @@ def test_get_interests_success(
     ]
 
 def test_get_interests_empty(
-    client,
+    client,active_user,auth_headers
 ):
     response = client.get(
-        "/api/interests"
+        "/api/interests",
+        headers=auth_headers(active_user.email)
     )
     assert response.status_code == 200
     body = response.get_json()
@@ -38,7 +36,7 @@ def test_get_interests_empty(
 
 
 def test_get_interests_ordered_by_name(
-    client,
+    client,active_user,auth_headers
 ):
     InterestFactory(name="Zoology")
     InterestFactory(name="Art")
@@ -46,7 +44,8 @@ def test_get_interests_ordered_by_name(
     InterestFactory(name="Biology")
 
     response = client.get(
-        "/api/interests"
+        "/api/interests",
+        headers=auth_headers(active_user.email)
     )
     assert response.status_code == 200
     body = response.get_json()
@@ -61,11 +60,12 @@ def test_get_interests_ordered_by_name(
 
 def test_get_interests_database_error(
     client,
-    db_error
+    db_error,active_user,auth_headers
 ):
     db_error(interest_module)
     response = client.get(
-        "/api/interests"
+        "/api/interests",
+        headers=auth_headers(active_user.email)
     )
     assert response.status_code == 500
     body = response.get_json()

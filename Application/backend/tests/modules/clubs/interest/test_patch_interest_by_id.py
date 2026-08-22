@@ -5,13 +5,14 @@ import app.modules.clubs.core.interests  as interest_module
 
 
 def test_update_interest_success(
-    client,
+    client,auth_headers,active_user
 ):
     interest = InterestFactory(
         name="Sports"
     )
     response = client.patch(
         f"/api/interests/{interest.id}",
+        headers=auth_headers(active_user.email),
         json={
             "name": "Football"
         },
@@ -22,10 +23,11 @@ def test_update_interest_success(
     assert body["name"] == "Football"
 
 def test_update_interest_not_found(
-    client,
+    client,auth_headers,active_user
 ):
     response = client.patch(
         "/api/interests/999999",
+        headers=auth_headers(active_user.email),
         json={
             "name": "Football"
         },
@@ -36,13 +38,14 @@ def test_update_interest_not_found(
 
 
 def test_update_interest_name(
-    client,
+    client,auth_headers,active_user
 ):
     interest = InterestFactory(
         name="Sports"
     )
     response = client.patch(
         f"/api/interests/{interest.id}",
+        headers=auth_headers(active_user.email),
         json={
             "name": "Music"
         },
@@ -53,47 +56,29 @@ def test_update_interest_name(
 
 
 def test_update_interest_empty_json(
-    client,
+    client,auth_headers,active_user
 ):
     interest = InterestFactory(
         name="Sports"
     )
     response = client.patch(
         f"/api/interests/{interest.id}",
+        headers=auth_headers(active_user.email),
         json={},
     )
-    assert response.status_code == 200
+    assert response.status_code == 400
     body = response.get_json()
-    assert body["id"] == interest.id
-    assert body["name"] == "Sports"
-
-
-def test_update_interest_ignores_unknown_fields(
-    client,
-):
-    interest = InterestFactory(
-        name="Sports"
-    )
-    response = client.patch(
-        f"/api/interests/{interest.id}",
-        json={
-            "description": "Outdoor activity",
-        },
-    )
-    assert response.status_code == 200
-    body = response.get_json()
-    assert body["id"] == interest.id
-    assert body["name"] == "Sports"
-
+    assert "Nothing to update" in body["message"] 
 
 
 def test_update_interest_query_database_error(
     client,
-    db_error,
+    db_error,auth_headers,active_user
 ):
     db_error(interest_module)
     response = client.patch(
         "/api/interests/1",
+        headers=auth_headers(active_user.email),
         json={
             "name": "Football"
         },
@@ -104,17 +89,18 @@ def test_update_interest_query_database_error(
 
 
 def test_update_interest_empty_name_current_behavior(
-    client,
+    client,auth_headers,active_user
 ):
     interest = InterestFactory(
         name="Sports"
     )
     response = client.patch(
         f"/api/interests/{interest.id}",
+        headers=auth_headers(active_user.email),
         json={
             "name": ""
         },
     )
-    assert response.status_code == 200
+    assert response.status_code == 400
     body = response.get_json()
-    assert body["name"] == ""
+    assert "Interest name cannot be empty" in body["message"]

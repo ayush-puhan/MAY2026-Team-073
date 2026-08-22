@@ -4,10 +4,11 @@ from app.database.models import *
 import app.modules.clubs.core.interests  as interest_module
 
 def test_create_interest_success(
-    client,
+    client,auth_headers,active_user
 ):
     response = client.post(
         "/api/interests",
+        headers=auth_headers(active_user.email),
         json={
             "name": "Sports"
         },
@@ -18,10 +19,11 @@ def test_create_interest_success(
 
 
 def test_create_interest_missing_data(
-    client,
+    client,auth_headers,active_user
 ):
     response = client.post(
         "/api/interests",
+        headers=auth_headers(active_user.email),
         json={},
     )
     assert response.status_code == 400
@@ -29,10 +31,11 @@ def test_create_interest_missing_data(
     assert body["message"] == "Interest name is required"
 
 def test_create_interest_missing_name(
-    client,
+    client,auth_headers,active_user
 ):
     response = client.post(
         "/api/interests",
+        headers=auth_headers(active_user.email),
         json={
             "description": "Something"
         },
@@ -46,10 +49,11 @@ def test_create_interest_missing_name(
 
 
 def test_create_interest_empty_name(
-    client,
+    client,auth_headers,active_user
 ):
     response = client.post(
         "/api/interests",
+        headers=auth_headers(active_user.email),
         json={
             "name": ""
         },
@@ -60,13 +64,14 @@ def test_create_interest_empty_name(
 
 
 def test_create_interest_duplicate(
-    client,
+    client,auth_headers,active_user
 ):
     InterestFactory(
         name="Sports"
     )
     response = client.post(
         "/api/interests",
+        headers=auth_headers(active_user.email),
         json={
             "name": "Sports"
         },
@@ -77,11 +82,12 @@ def test_create_interest_duplicate(
 
 def test_create_interest_query_database_error(
     client,
-    db_error
+    db_error,auth_headers,active_user
 ):
     db_error(interest_module)
     response = client.post(
         "/api/interests",
+        headers=auth_headers(active_user.email),
         json={
             "name": "Sports"
         },

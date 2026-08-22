@@ -7,6 +7,7 @@ import app.modules.clubs.members.transfer_presidency  as tp_module
 def test_update_task_status_success(
     client,
     auth_headers,
+    mock_resolve_club_id
 ):
     university = UniversityFactory()
     club = ClubFactory(
@@ -32,6 +33,7 @@ def test_update_task_status_success(
         assigner=event.creator
     )
     headers = auth_headers(user.email)
+    mock_resolve_club_id(user)
     response = client.patch(
         f"/api/volunteer-tasks/{task.id}/status",
         headers=headers,
@@ -48,6 +50,7 @@ def test_update_task_status_success(
 def test_update_task_status_missing_status(
     client,
     auth_headers,
+    mock_resolve_club_id
 ):
     university = UniversityFactory()
     club = ClubFactory(
@@ -73,6 +76,7 @@ def test_update_task_status_missing_status(
         assigner=event.creator
     )
     headers = auth_headers(user.email)
+    mock_resolve_club_id(user)
     response = client.patch(
         f"/api/volunteer-tasks/{task.id}/status",
         headers=headers,
@@ -121,6 +125,7 @@ def test_update_task_status_task_not_found(
 def test_update_task_status_other_users_task(
     client,
     auth_headers,
+    mock_resolve_club_id
 ):
     university = UniversityFactory()
     club = ClubFactory(
@@ -156,6 +161,7 @@ def test_update_task_status_other_users_task(
         assigner=event.creator
     )
     headers = auth_headers(current_user.email)
+    mock_resolve_club_id(current_user)
     response = client.patch(
         f"/api/volunteer-tasks/{task.id}/status",
         headers=headers,
@@ -173,6 +179,7 @@ def test_update_task_status_other_users_task(
 def test_update_task_status_invalid_status(
     client,
     auth_headers,
+    mock_resolve_club_id
 ):
     university = UniversityFactory()
     club = ClubFactory(
@@ -208,6 +215,7 @@ def test_update_task_status_invalid_status(
         assigner=event.creator
     )
     headers = auth_headers(task_owner.email)
+    mock_resolve_club_id(task_owner)
     response = client.patch(
         f"/api/volunteer-tasks/{task.id}/status",
         headers=headers,

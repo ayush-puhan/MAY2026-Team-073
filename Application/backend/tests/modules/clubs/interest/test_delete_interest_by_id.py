@@ -4,13 +4,14 @@ from app.database.models import *
 import app.modules.clubs.core.interests  as interest_module
 
 def test_delete_interest_success(
-    client,
+    client,active_user,auth_headers
 ):
     interest = InterestFactory(
         name="Sports"
     )
     response = client.delete(
-        f"/api/interests/{interest.id}"
+        f"/api/interests/{interest.id}",
+        headers= auth_headers(active_user.email)
     )
     assert response.status_code == 200
     body = response.get_json()
@@ -20,10 +21,11 @@ def test_delete_interest_success(
 
 
 def test_delete_interest_not_found(
-    client,
+    client,active_user,auth_headers
 ):
     response = client.delete(
-        "/api/interests/999999"
+        "/api/interests/999999",
+        headers= auth_headers(active_user.email)
     )
     assert response.status_code == 404
     body = response.get_json()
@@ -32,11 +34,12 @@ def test_delete_interest_not_found(
 
 def test_delete_interest_query_database_error(
     client,
-    db_error,
+    db_error,active_user,auth_headers
 ):
     db_error(interest_module)
     response = client.delete(
-        "/api/interests/1"
+        "/api/interests/1",
+        headers= auth_headers(active_user.email)
     )
     assert response.status_code == 500
     body = response.get_json()
@@ -45,18 +48,20 @@ def test_delete_interest_query_database_error(
 
 
 def test_delete_interest_record_removed(
-    client,
+    client,active_user,auth_headers
 ):
     interest = InterestFactory(
         name="Sports"
     )
     interest_id = interest.id
     delete_response = client.delete(
-        f"/api/interests/{interest_id}"
+        f"/api/interests/{interest_id}",
+        headers= auth_headers(active_user.email)
     )
     assert delete_response.status_code == 200
     get_response = client.get(
-        f"/api/interests/{interest_id}"
+        f"/api/interests/{interest_id}",
+        headers= auth_headers(active_user.email)
     )
     assert get_response.status_code == 404
     body = get_response.get_json()

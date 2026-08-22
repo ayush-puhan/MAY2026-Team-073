@@ -5,13 +5,14 @@ import app.modules.clubs.core.interests  as interest_module
 
 
 def test_get_interest_success(
-    client,
+    client,active_user,auth_headers
 ):
     interest = InterestFactory(
         name="Sports"
     )
     response = client.get(
-        f"/api/interests/{interest.id}"
+        f"/api/interests/{interest.id}",
+        headers=auth_headers(active_user.email)
     )
     assert response.status_code == 200
     body = response.get_json()
@@ -21,10 +22,11 @@ def test_get_interest_success(
 
 
 def test_get_interest_not_found(
-    client,
+    client,active_user,auth_headers
 ):
     response = client.get(
-        "/api/interests/999999"
+        "/api/interests/999999",
+        headers=auth_headers(active_user.email)
     )
     assert response.status_code == 404
     body = response.get_json()
@@ -33,12 +35,13 @@ def test_get_interest_not_found(
 
 def test_get_interest_database_error(
     client,
-    db_error
+    db_error,active_user,auth_headers
 ):
     
     db_error(interest_module)
     response = client.get(
-        "/api/interests/1"
+        "/api/interests/1",
+        headers=auth_headers(active_user.email)
     )
     assert response.status_code == 500
     body = response.get_json()

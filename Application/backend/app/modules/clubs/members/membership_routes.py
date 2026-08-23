@@ -48,7 +48,7 @@ def serialize_membership(member):
 
 
 
-def serialize_user_club(member):
+def serialize_user_club(member, db=None):
     """
     Response format:
     GET /api/users/<user_id>/clubs
@@ -56,20 +56,23 @@ def serialize_user_club(member):
 
     club = member.club
 
-
     # derived member count
-    member_count = 0
-
-    with get_session() as db:
-
-        member_count = (
-            db.query(ClubMembership)
+    def _get_count(session):
+        return (
+            session.query(ClubMembership)
             .filter(
                 ClubMembership.club_id == club.id,
                 ClubMembership.status == MembershipStatus.APPROVED
             )
             .count()
         )
+
+    if db is not None:
+        member_count = _get_count(db)
+    else:
+        with get_session() as session:
+            member_count = _get_count(session)
+
 
 
     return {
@@ -138,7 +141,7 @@ class UserClubResource(Resource):
 
 
                 return [
-                    serialize_user_club(member)
+                    serialize_user_club(member, db=db)
                     for member in memberships
                 ], 200
         except Exception as e:

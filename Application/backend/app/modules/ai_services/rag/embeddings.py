@@ -79,9 +79,46 @@ class HashEmbeddingProvider:
         return [self._embed_one(t) for t in texts]
 
 
+class GoogleGenAIEmbeddingProvider:
+    """Zero-RAM semantic embedding using the Gemini API.
+    Perfect for Render Free Tier to avoid PyTorch OOM crashes.
+    """
+
+    name = "google-genai"
+
+    def __init__(self, model_name: str = "models/text-embedding-004"):
+        import google.generativeai as genai
+        import os
+        
+        self.model_name = model_name
+        self.dimension = 768
+        genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
+
+    def embed(self, texts: "list[str]") -> "list[list[float]]":
+        import google.generativeai as genai
+        result = genai.embed_content(
+            model=self.model_name,
+            content=texts,
+            task_type="retrieval_document"
+        )
+        return result['embedding']
+
+
 def get_default_embedding_provider() -> EmbeddingProvider:
-    """Sentence-Transformers if installed and loadable, else the hash fallback."""
+    """Use Gemini Embeddings for Zero-RAM, high-quality RAG on Render."""
     try:
-        return SentenceTransformerEmbeddingProvider()
+        import google.generativeai
+        import os
+        if os.environ.get("GEMINI_API_KEY"):
+            return GoogleGenAIEmbeddingProvider()
+    except ImportError:
+        pass
+        
+    try:
+        # Avoid loading PyTorch on Render Free Tier
+        if not os.environ.get("RENDER"):
+            return SentenceTransformerEmbeddingProvider()
     except Exception:
-        return HashEmbeddingProvider()
+        pass
+        
+    return HashEmbeddingProvider()

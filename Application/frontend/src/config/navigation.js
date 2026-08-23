@@ -1,4 +1,4 @@
-﻿import { dashboardIcons } from '../assets/icons/registry';
+import { dashboardIcons } from '../assets/icons/registry';
 import { checkIsVerified } from '../utils/verification';
 
 // "?"? Club Role Hierarchy (index = rank, higher = more permissions) "?"?
@@ -38,7 +38,8 @@ export const ADMIN_NAV = [
   { name: 'Announcements', path: '/admin-dashboard/announcements', icon: dashboardIcons.announcements },
   { name: 'Support Management',  path: '/admin-dashboard/support',  icon: dashboardIcons.helpdesk },
   { name: 'University Management', path: '/admin-dashboard/settings', icon: dashboardIcons.settings },
-  { name: 'Audit & Activity',    path: '/admin-dashboard/audit',    icon: dashboardIcons.auditLogs }
+  // { name: 'Audit & Activity',    path: '/admin-dashboard/audit',    icon: dashboardIcons.auditLogs },
+  { name: 'AI Assistant', path: '/admin-dashboard/ai', icon: dashboardIcons.aiAssistant }
 ];
 
 export const UNIVERSITY_ADMIN_NAV = [
@@ -49,6 +50,7 @@ export const UNIVERSITY_ADMIN_NAV = [
   { name: 'Student Reports',  path: '/university-admin-dashboard/reports', icon: dashboardIcons.studentReports },
   
   { name: 'Emergency Reports', path: '/university-admin-dashboard/emergencies', icon: dashboardIcons.emergencyAlert },
+  { name: 'AI Assistant', path: '/university-admin-dashboard/ai', icon: dashboardIcons.aiAssistant },
   ...getGlobalBottomNav('/university-admin-dashboard')
 ];
 
@@ -57,6 +59,7 @@ export const FACULTY_ADVISOR_NAV = [
   { name: 'Advised Clubs',    path: '/faculty-advisor-dashboard/clubs', icon: dashboardIcons.advisedClubs },
   { name: 'Event Approvals',  path: '/faculty-advisor-dashboard/events', icon: dashboardIcons.eventApprovals },
   { name: 'Expense Approvals',  path: '/faculty-advisor-dashboard/reports', icon: dashboardIcons.studentReports },
+  { name: 'AI Assistant', path: '/faculty-advisor-dashboard/ai', icon: dashboardIcons.aiAssistant },
   ...getGlobalBottomNav('/faculty-advisor-dashboard')
 ];
 

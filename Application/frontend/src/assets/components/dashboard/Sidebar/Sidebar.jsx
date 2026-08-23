@@ -41,9 +41,6 @@ export const Sidebar = ({ links = [] }) => {
             onClick={(e) => {
               if (link.path === '#') {
                 e.preventDefault();
-              } else if (link.path.endsWith('/ai')) {
-                e.preventDefault();
-                showInfo('AI Assistant coming soon!');
               }
             }}
             data-tooltip={link.name}

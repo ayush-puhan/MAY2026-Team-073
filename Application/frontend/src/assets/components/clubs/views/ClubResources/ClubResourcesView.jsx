@@ -123,7 +123,7 @@ export const ClubResourcesView = ({ isCommitteeMode, committeeId, overrideClub, 
         <div className={layoutStyles.workspaceHeader} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
             <h1 className={styles.headerTitle} style={{ fontSize: '1.5rem', fontWeight: 700, margin: '0 0 0.5rem 0' }}>Club Resources</h1>
-            <p className={styles.headerSubtitle} style={{ color: 'var(--muted-foreground)', margin: 0 }}>Important documents, links, and meeting minutes for {club.name}.</p>
+            <p className={styles.headerSubtitle} style={{ color: 'var(--muted-foreground)', margin: 0 }}>Important documents, links, and meeting minutes for {club?.name || 'this committee'}.</p>
           </div>
           {canManage && (
             <Button onClick={() => setIsModalOpen(true)} icon="mdi:plus">

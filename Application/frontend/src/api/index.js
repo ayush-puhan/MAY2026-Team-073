@@ -65,3 +65,6 @@ import { emergencyApi as emergencyMockApi } from './mockbackendApis/emergencyApi
 import { emergencyApi as emergencyRealApi } from './backendApis/emergencyApis/emergency';
 export const emergencyApi = USE_MOCK ? emergencyMockApi : emergencyRealApi;
 
+import { aiApi } from './backendApis/aiApis/ai';
+export { aiApi };
+

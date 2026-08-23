@@ -16,6 +16,7 @@ import { UniversityAnalytics } from '../../../assets/components/universityAdmin/
 import { GlobalCalendar } from '../../../assets/components/calendar/GlobalCalendar/GlobalCalendar';
 import { EmergencyDashboard } from '../../../assets/components/universityAdmin/EmergencyDashboard/EmergencyDashboard';
 import { NotificationsView } from '../../../assets/components/notifications/NotificationsView/NotificationsView';
+import { AIChatbot } from '../../../assets/components/ai/AIChatbot/AIChatbot';
 
 export const UniversityAdminDashboard = () => {
   const { user } = useSession();
@@ -40,6 +41,7 @@ export const UniversityAdminDashboard = () => {
           
           <Route path="emergencies/*" element={<EmergencyDashboard />} />
           <Route path="calendar/*" element={<GlobalCalendar />} />
+          <Route path="ai/*" element={<AIChatbot />} />
           <Route path="notifications" element={<NotificationsView />} />
           
           <Route path="*" element={<Navigate to="" replace />} />

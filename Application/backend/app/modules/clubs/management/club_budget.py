@@ -113,7 +113,7 @@ class BudgetListResource(Resource):
                 club_id = request.args.get("club_id")
                 query = session.query(Budget)
 
-                if club_id:
+                if club_id and club_id not in ("undefined", "null"):
                     query = query.filter(Budget.club_id == int(club_id))
 
                 budgets = query.all()

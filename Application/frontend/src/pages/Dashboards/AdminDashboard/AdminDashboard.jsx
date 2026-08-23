@@ -14,6 +14,7 @@ import { AuditLogs } from '../../../assets/components/admin/AuditLogs/AuditLogs'
 import { AnnouncementCenter } from '../../../assets/components/announcements/AnnouncementCenter/AnnouncementCenter';
 import { GlobalCalendar } from '../../../assets/components/calendar/GlobalCalendar/GlobalCalendar';
 import { NotificationsView } from '../../../assets/components/notifications/NotificationsView/NotificationsView';
+import { AIChatbot } from '../../../assets/components/ai/AIChatbot/AIChatbot';
 
 import styles from './AdminDashboard.module.css';
 
@@ -37,6 +38,7 @@ export const AdminDashboard = () => {
           <Route path="audit/*" element={<AuditLogs />} />
           <Route path="announcements/*" element={<AnnouncementCenter />} />
           <Route path="calendar/*" element={<GlobalCalendar />} />
+          <Route path="ai/*" element={<AIChatbot />} />
           <Route path="notifications" element={<NotificationsView />} />
           
           <Route path="*" element={<Navigate to="" replace />} />

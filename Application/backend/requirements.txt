@@ -33,3 +33,6 @@ celery==5.4.0
 # ---------- Optional ----------
 huggingface-hub==0.34.4
 tokenizers==0.21.4
+
+# For PostgreSQL on Render
+psycopg2-binary>=2.9.9

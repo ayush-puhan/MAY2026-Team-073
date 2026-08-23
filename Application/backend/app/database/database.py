@@ -12,9 +12,11 @@ from sqlalchemy import create_engine, event
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session, sessionmaker
 
+import os
+
 DB_DIR = Path(__file__).resolve().parent
 DB_PATH = DB_DIR / "clubconnect.db"
-DATABASE_URL = f"sqlite:///{DB_PATH}"
+DATABASE_URL = os.environ.get("DATABASE_URL", f"sqlite:///{DB_PATH}")
 
 engine: Engine = create_engine(DATABASE_URL, echo=False, future=True)
 

@@ -14,6 +14,7 @@ import { EventsHub } from '../../../assets/components/events/EventsHub/EventsHub
 import { ClubsHub } from '../../../assets/components/clubs/ClubsHub/ClubsHub';
 import { RewardsHub } from "./RewardsHub";
 import { NotificationsView } from "../../../assets/components/notifications/NotificationsView/NotificationsView";
+import { AIChatbot } from "../../../assets/components/ai/AIChatbot/AIChatbot";
 import styles from "./StudentDashboard.module.css";
 
 export const StudentDashboard = () => {
@@ -53,7 +54,7 @@ export const StudentDashboard = () => {
   if (!user) return null;
 
   const sidebarLinks = getNavForUser(user);
-  const noPadding = location.pathname.includes('/events') || location.pathname.includes('/rewards') || location.pathname.includes('/calendar') || location.pathname.includes('/clubs');
+  const noPadding = location.pathname.includes('/events') || location.pathname.includes('/rewards') || location.pathname.includes('/calendar') || location.pathname.includes('/clubs') || location.pathname.includes('/ai');
 
   return (
     <DashboardLayout title="Campus Home" user={user} sidebarLinks={sidebarLinks} noPadding={noPadding}>
@@ -71,6 +72,7 @@ export const StudentDashboard = () => {
           <Route path="events/*" element={<EventsHub />} />
           <Route path="clubs/*" element={<ClubsHub />} />
           <Route path="rewards/*" element={<RewardsHub />} />
+          <Route path="ai/*" element={<AIChatbot />} />
           <Route path="notifications" element={<NotificationsView />} />
           
           <Route path="*" element={<Navigate to="" replace />} />

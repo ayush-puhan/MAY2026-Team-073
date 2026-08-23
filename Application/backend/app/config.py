@@ -30,7 +30,7 @@ class Config:
     # Groq/OpenRouter fallback providers are explicitly deferred to a later
     # phase and are not referenced anywhere yet.
     GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
-    GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
+    GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-3.6-flash")
 
     # Directory holding the always-injected System Documents and the
     # on-demand RAG Documents used by the AI module's prompt builder /

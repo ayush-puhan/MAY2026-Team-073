@@ -279,23 +279,23 @@ class UpdateMemberRoleResource(Resource):
         "event_coordinator",
         "volunteer_coordinator"
     )
-    def patch(self, membershipId):
+    def patch(self, club_id, id):
         try:
             data = request.get_json(silent=True)
 
             if not data:
                 return {"message": "Request body required."}, 400
 
-            new_role = data.get("role")
+            new_role = data.get("role") or data.get("role_in_club")
 
             if not new_role:
-                return {"message": "role is required."}, 400
+                return {"message": "role (or role_in_club) is required."}, 400
 
             with get_session() as db:
 
                 membership = (
                     db.query(ClubMembership)
-                    .filter(ClubMembership.id == membershipId)
+                    .filter(ClubMembership.id == id)
                     .first()
                 )
 

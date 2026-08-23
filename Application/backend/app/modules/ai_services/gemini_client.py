@@ -116,7 +116,6 @@ def generate_response(prompt: str, model_name: "str | None" = None) -> str:
     # max_output_tokens as a safety net.
     debug = os.environ.get("GEMINI_DEBUG") == "1"
     config = genai.types.GenerateContentConfig(
-        thinking_config=genai.types.ThinkingConfig(thinking_budget=0),
         max_output_tokens=2048,
     )
 

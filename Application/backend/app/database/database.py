@@ -18,7 +18,7 @@ DB_DIR = Path(__file__).resolve().parent
 DB_PATH = DB_DIR / "clubconnect.db"
 DATABASE_URL = os.environ.get("DATABASE_URL", f"sqlite:///{DB_PATH}")
 
-engine: Engine = create_engine(DATABASE_URL, echo=False, future=True)
+engine: Engine = create_engine(DATABASE_URL, echo=False, future=True, pool_pre_ping=True)
 
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False, future=True)
 
@@ -38,6 +38,7 @@ def init_engine() -> None:
     from .base import Base
 
     Base.metadata.create_all(bind=engine)
+    engine.dispose()  # Close the connection so Gunicorn workers do not share the SSL socket!
 
 
 @contextmanager

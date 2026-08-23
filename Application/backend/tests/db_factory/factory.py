@@ -137,7 +137,7 @@ class BudgetFactory(BaseFactory):
     period_end = factory.LazyAttribute(
         lambda obj: obj.period_start + timedelta(days=30)
     )
-    allocated_amount = 10000.00
+    allocated_amount = 100000
     status = BudgetStatus.DRAFT
     creator = None
     created_at = factory.LazyFunction(datetime.utcnow)

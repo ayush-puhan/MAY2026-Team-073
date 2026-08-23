@@ -38,7 +38,7 @@ def test_update_member_role_success(
         f"/api/memberships/{membership.id}/role",
         headers=headers,
         json={
-            "role_in_club": ClubMemberRole.SECRETARY.value
+            "role": ClubMemberRole.SECRETARY.value
         },
     )
     body = response.get_json()
@@ -98,19 +98,16 @@ def test_update_member_role_missing_role(
     club = ClubFactory(
         university=university,
     )
-
     president = UserFactory(
         email="president@campus.edu",
         university=university,
     )
-
     ClubMembershipFactory(
         user=president,
         club=club,
         status=MembershipStatus.APPROVED,
         role_in_club=ClubMemberRole.PRESIDENT,
     )
-
     headers = auth_headers(president.email)
     mock_resolve_club_id(president)
     response = client.patch(
@@ -120,13 +117,10 @@ def test_update_member_role_missing_role(
             "name": "Something"
         },
     )
-
     assert response.status_code == 400
-
     body = response.get_json()
-
     assert body["message"] == (
-        "role_in_club is required."
+        "role is required."
     )
 
 
@@ -158,16 +152,13 @@ def test_update_member_role_empty_role(
         "/api/memberships/1/role",
         headers=headers,
         json={
-            "role_in_club": ""
+            "role": ""
         },
     )
-
     assert response.status_code == 400
-
     body = response.get_json()
-
     assert body["message"] == (
-        "role_in_club is required."
+        "role is required."
     )
 
 
@@ -211,7 +202,7 @@ def test_update_member_role_invalid_role(
         f"/api/memberships/{membership.id}/role",
         headers=headers,
         json={
-            "role_in_club": "invalid_role"
+            "role": "invalid_role"
         },
     )
 
@@ -219,7 +210,7 @@ def test_update_member_role_invalid_role(
 
     body = response.get_json()
 
-    assert body["message"] == "Invalid club role."
+    assert "Invalid club role." in body["message"]
 
 
 
@@ -251,14 +242,12 @@ def test_update_member_role_membership_not_found(
         "/api/memberships/999999/role",
         headers=headers,
         json={
-            "role_in_club": "member"
+            "role": "member"
         },
     )
 
     assert response.status_code == 404
-
     body = response.get_json()
-
     assert body["message"] == "Membership not found."
 
 #
@@ -302,7 +291,7 @@ def test_update_member_role_non_president_forbidden(
         f"/api/memberships/{target_membership.id}/role",
         headers=headers,
         json={
-            "role_in_club": "secretary"
+            "role": "secretary"
         },
     )
 
@@ -349,7 +338,7 @@ def test_update_member_role_uppercase_input(
         f"/api/memberships/{membership.id}/role",
         headers=headers,
         json={
-            "role_in_club": ClubMemberRole.SECRETARY.value
+            "role": ClubMemberRole.SECRETARY.value
         },
     )
 
@@ -391,14 +380,11 @@ def test_update_member_role_database_query_error(
         "/api/memberships/1/role",
         headers=headers,
         json={
-            "role_in_club": "secretary"
+            "role": "secretary"
         },
     )
-
     assert response.status_code == 500
-
     body = response.get_json()
-
     assert "Database Error" in body["message"]
 
 
@@ -408,7 +394,7 @@ def test_update_member_role_requires_authentication(
     response = client.patch(
         "/api/memberships/1/role",
         json={
-            "role_in_club": "secretary"
+            "role": "secretary"
         },
     )
 

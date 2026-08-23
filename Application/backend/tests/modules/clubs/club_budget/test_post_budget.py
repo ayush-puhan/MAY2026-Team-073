@@ -132,6 +132,7 @@ def test_create_committee_budget_success(
 
     assert response.status_code == 201
     body = response.get_json()
+    #assert body["message"] == "ak"
     assert body["club_id"] == club.id
     assert body["committee_id"] == committee.id
     assert body["parent_budget_id"] == parent_budget.id

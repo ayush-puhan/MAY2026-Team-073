@@ -9,8 +9,8 @@ def test_get_all_clubs_success(
     client,
     auth_headers,
 ):
-    user = UserFactory()
     university = UniversityFactory()
+    user = UserFactory(university=university)
     club1 = ClubFactory(
         university=university,
     )
@@ -37,32 +37,25 @@ def test_get_clubs_filter_by_university(
     client,
     auth_headers,
 ):
-    user = UserFactory()
 
     university1 = UniversityFactory()
     university2 = UniversityFactory()
 
+    user = UserFactory(university=university1)
     club1 = ClubFactory(
         university=university1,
     )
-
-    ClubFactory(
+    club2 = ClubFactory(
         university=university2,
     )
-
     headers = auth_headers(user.email)
-
     response = client.get(
         f"/api/clubs?university_id={university1.id}",
         headers=headers,
     )
-
     assert response.status_code == 200
-
     body = response.get_json()
-
     assert len(body) == 1
-
     assert body[0]["id"] == club1.id
     assert body[0]["university"]["id"] == university1.id
 
@@ -71,8 +64,8 @@ def test_get_club_approved_member_count(
     client,
     auth_headers,
 ):
-    user = UserFactory()
     university = UniversityFactory()
+    user = UserFactory(university=university)
     club = ClubFactory(
         university=university,
     )
@@ -115,10 +108,10 @@ def test_get_club_university_details(
     client,
     auth_headers,
 ):
-    user = UserFactory()
     university = UniversityFactory(
         name="IIT Example",
     )
+    user = UserFactory(university=university)
     club = ClubFactory(
         university=university,
     )
@@ -140,8 +133,8 @@ def test_get_club_interests(
     client,
     auth_headers,
 ):
-    user = UserFactory()
     university = UniversityFactory()
+    user = UserFactory(university=university)
     club = ClubFactory(university=university)
 
     interest1 = InterestFactory(name="Technology")
@@ -180,8 +173,8 @@ def test_get_club_serialization(
     client,
     auth_headers,
 ):
-    user = UserFactory()
     university = UniversityFactory()
+    user = UserFactory(university=university)
     club = ClubFactory(
         university=university,
         name="Coding Club",

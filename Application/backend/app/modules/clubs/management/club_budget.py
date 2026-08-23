@@ -163,7 +163,8 @@ class BudgetListResource(Resource):
                             "message": "Insufficient main budget"
                         }, 400
 
-                    parent_budget.allocated_amount -= float(data["allocated_amount"])
+                    #parent_budget.allocated_amount -= float(data["allocated_amount"])
+                    parent_budget.allocated_amount = float(parent_budget.allocated_amount) -  float(data["allocated_amount"])
                     
                     budget = Budget(
                         club_id=club_id,

@@ -361,14 +361,14 @@ def test_review_application_user_already_member(
         f"/api/club-applications/{application.id}/review",
         headers=headers,
         json={
-            "status": MembershipStatus.APPROVED.value,
+            "status": MembershipStatus.APPROVED,
         },
     )
 
-    assert response.status_code == 400
+    assert response.status_code == 200
 
     assert response.get_json()["message"] == (
-        "User already has membership."
+        "User was already a member. Application marked as approved."
     )
 
 

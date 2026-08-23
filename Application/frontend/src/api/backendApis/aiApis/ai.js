@@ -8,7 +8,7 @@ export const aiApi = {
    * @returns {{ status, response, user_context, detected_intent, authorized, sql_context, rag_context, cache_hit }}
    */
   chat: async (message) => {
-    const res = await api.post('/ai/chat', { message }, { timeout: 30000 });
+    const res = await api.post('/ai/chat', { message }, { timeout: 60000 });
     return res;
   },
 
@@ -27,7 +27,7 @@ export const aiApi = {
    * @param {string} reportType - One of: student_activity, attendance, membership, reward, support_ticket, volunteer, club_activity, budget, emergency_summary
    */
   generateReport: async (reportType) => {
-    const res = await api.post('/ai/reports', { report_type: reportType }, { timeout: 30000 });
+    const res = await api.post('/ai/reports', { report_type: reportType }, { timeout: 60000 });
     return res;
   },
 
@@ -36,7 +36,7 @@ export const aiApi = {
    * Financial analytics with chart data. Role-restricted.
    */
   financialAnalytics: async () => {
-    const res = await api.post('/ai/analytics/financial', {}, { timeout: 30000 });
+    const res = await api.post('/ai/analytics/financial', {}, { timeout: 60000 });
     return res;
   },
 
@@ -45,7 +45,7 @@ export const aiApi = {
    * Performance analytics scoped to user role.
    */
   performanceAnalytics: async () => {
-    const res = await api.post('/ai/analytics/performance', {}, { timeout: 30000 });
+    const res = await api.post('/ai/analytics/performance', {}, { timeout: 60000 });
     return res;
   },
 
@@ -56,7 +56,7 @@ export const aiApi = {
    * @param {string} details - Optional free-text context
    */
   generateContent: async (contentType, details = '') => {
-    const res = await api.post('/ai/content', { content_type: contentType, details }, { timeout: 30000 });
+    const res = await api.post('/ai/content', { content_type: contentType, details }, { timeout: 60000 });
     return res;
   }
 };

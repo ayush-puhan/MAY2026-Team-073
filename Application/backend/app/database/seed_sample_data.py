@@ -129,15 +129,23 @@ def seed_users() -> None:
 
 
 def seed_remaining_tables() -> None:
-    """Execute sample_data.sql for every table other than users."""
-    conn = sqlite3.connect(DB_PATH)
-    try:
-        conn.execute("PRAGMA foreign_keys = ON")
-        conn.executescript(SAMPLE_DATA_SQL.read_text())
-        conn.commit()
-        print("Loaded remaining sample data (clubs, events, finance, academics, etc.).")
-    finally:
-        conn.close()
+    """Execute seed_data_postgres.sql for every table other than users."""
+    from sqlalchemy import text
+    from .database import engine
+    
+    sql_path = Path(__file__).parent.parent.parent / 'migration_scripts' / 'seed_data_postgres.sql'
+    sql_statements = sql_path.read_text(encoding="utf-8").split(";")
+    
+    with engine.begin() as conn:
+        for stmt in sql_statements:
+            stmt = stmt.strip()
+            if stmt and not stmt.startswith("PRAGMA") and not stmt.startswith("BEGIN TRANSACTION"):
+                # if running against sqlite locally, strip the ON CONFLICT because of boolean false vs 0 issues
+                if engine.dialect.name == "sqlite":
+                     stmt = stmt.replace("ON CONFLICT (id) DO NOTHING", "")
+                     stmt = stmt.replace("false", "0")
+                conn.execute(text(stmt))
+    print("Loaded remaining sample data from seed_data_postgres.sql.")
 
 
 def seed_auth_sessions() -> None:

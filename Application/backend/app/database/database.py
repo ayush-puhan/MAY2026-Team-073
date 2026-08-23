@@ -26,9 +26,10 @@ SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False, futu
 @event.listens_for(engine, "connect")
 def _enable_sqlite_foreign_keys(dbapi_connection, connection_record):
     """Enable SQLite foreign-key constraint enforcement on every new connection."""
-    cursor = dbapi_connection.cursor()
-    cursor.execute("PRAGMA foreign_keys = ON")
-    cursor.close()
+    if engine.dialect.name == "sqlite":
+        cursor = dbapi_connection.cursor()
+        cursor.execute("PRAGMA foreign_keys = ON")
+        cursor.close()
 
 
 def init_engine() -> None:

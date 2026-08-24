@@ -27,6 +27,17 @@ from app.modules.clubs.management.club_budget import budget_bp
 from app.modules.clubs.members.transfer_presidency import transfer_presidency_bp
 from app.modules.emergency_report.routes import  em_report
 from app.modules.calendar.calendar_routes import calendar_bp
+from flask import Blueprint
+
+# ----------------------------------------------------
+# Health Check Endpoint for Uptime Bots
+# ----------------------------------------------------
+health_bp = Blueprint('health', __name__)
+
+@health_bp.route('/health', methods=['GET'])
+def health_check():
+    return {"status": "awake", "database": "warm"}, 200
+
 # ----------------------------------------------------
 # ClubConnect AI Module
 # Integrated by AI Backend
@@ -38,6 +49,7 @@ def register_api_paths(app):
     # Register the auth blueprint which contains its own Api setup
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
     app.register_blueprint(users_bp, url_prefix='/api/users')
+    app.register_blueprint(health_bp, url_prefix='/api')
     app.register_blueprint(student_bp, url_prefix='/api/student')
     # Clubs-related api
     app.register_blueprint(club_bp, url_prefix="/api/clubs")

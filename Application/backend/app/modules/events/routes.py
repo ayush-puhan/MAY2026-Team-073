@@ -145,7 +145,11 @@ class EventListResource(Resource):
             status = request.args.get("status")
 
             with get_session() as session:
-                query = session.query(Event).join(Club, Event.club_id == Club.id)
+                from sqlalchemy.orm import joinedload
+                query = session.query(Event).options(
+                    joinedload(Event.club).joinedload(Club.university),
+                    joinedload(Event.event_sessions)
+                ).join(Club, Event.club_id == Club.id)
 
                 if club_id:
                     parsed = _int_or_400(club_id, "club_id")
@@ -317,8 +321,10 @@ class EventRegistrationResource(Resource):
                 # Check if the user is authorized (event coordinator, president, or uni admin)
                 # For simplicity, we just check if they are in the club or is uni admin
                 # Actually, let's just return the list of users who are registered
+                from sqlalchemy.orm import joinedload
                 registrations = (
                     session.query(EventRegistration)
+                    .options(joinedload(EventRegistration.user))
                     .filter_by(event_id=event_id)
                     .all()
                 )
@@ -488,7 +494,19 @@ class UserEventsResource(Resource):
                 return user_id
 
             with get_session() as session:
-                registrations = session.query(EventRegistration).filter_by(user_id=user_id).all()
+                from sqlalchemy.orm import joinedload
+                registrations = (
+                    session.query(EventRegistration)
+                    .options(
+                        joinedload(EventRegistration.event)
+                        .joinedload(Event.club)
+                        .joinedload(Club.university),
+                        joinedload(EventRegistration.event)
+                        .joinedload(Event.event_sessions)
+                    )
+                    .filter_by(user_id=user_id)
+                    .all()
+                )
                 return [serialize_event(r.event) for r in registrations], 200
         except Exception as e:
             return {'message'  :  f"Error  :  {e}"}, 500

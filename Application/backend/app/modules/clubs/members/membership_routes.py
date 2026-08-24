@@ -168,9 +168,11 @@ class ClubMembersResource(Resource):
 
 
             with get_session() as db:
+                from sqlalchemy.orm import joinedload
 
                 query = (
                     db.query(ClubMembership)
+                    .options(joinedload(ClubMembership.user))
                     .filter(
                         ClubMembership.status == MembershipStatus.APPROVED
                     )
@@ -203,9 +205,11 @@ class ClubMembershipRequestsResource(Resource):
     def get(self, club_id):
         try:
             with get_session() as db:
+                from sqlalchemy.orm import joinedload
 
                 requests = (
                     db.query(ClubMembership)
+                    .options(joinedload(ClubMembership.user))
                     .filter(
                         ClubMembership.club_id == club_id,
                         ClubMembership.status == MembershipStatus.PENDING

@@ -63,7 +63,10 @@ class ClubApplicationsResource(Resource):
         try:
             status = request.args.get("status")
             with get_session() as db:
-                query = (db.query(ClubJoinApplication).filter(ClubJoinApplication.club_id == club_id))
+                from sqlalchemy.orm import joinedload
+                query = (db.query(ClubJoinApplication)
+                    .options(joinedload(ClubJoinApplication.club), joinedload(ClubJoinApplication.user))
+                    .filter(ClubJoinApplication.club_id == club_id))
 
                 if status:
                     try:
@@ -85,7 +88,10 @@ class UserClubApplicationsResource(Resource):
     def get(self, user_id):
         try:
             with get_session() as db:
-                applications = (db.query(ClubJoinApplication).filter(ClubJoinApplication.user_id == user_id).all())
+                from sqlalchemy.orm import joinedload
+                applications = (db.query(ClubJoinApplication)
+                    .options(joinedload(ClubJoinApplication.club), joinedload(ClubJoinApplication.user))
+                    .filter(ClubJoinApplication.user_id == user_id).all())
                 return [serialize_application(application) for application in applications], 200
         except Exception as e:
             return {'message'  :  f"ERROR  :  {e}"}, 500

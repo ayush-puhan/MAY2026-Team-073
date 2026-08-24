@@ -291,9 +291,11 @@ class SupportTicketResource(Resource):
     def get(self):
         try:
             with get_session() as db:
+                from sqlalchemy.orm import joinedload
 
                 tickets = (
                     db.query(SupportTicket)
+                    .options(joinedload(SupportTicket.assigned_agent))
                     .filter(
                         SupportTicket.raised_by == g.current_user.id
                     )

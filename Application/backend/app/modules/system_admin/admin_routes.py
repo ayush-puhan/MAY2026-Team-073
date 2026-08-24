@@ -305,7 +305,11 @@ def admin_user_get_all_users():
     """
     try : 
         with get_session() as db:
-            users = db.query(User).outerjoin(User.department).outerjoin(User.university).all()   
+            from sqlalchemy.orm import joinedload
+            users = db.query(User).options(
+                joinedload(User.department),
+                joinedload(User.university)
+            ).all()
             result = [
                 {
                     "id" : user.id,

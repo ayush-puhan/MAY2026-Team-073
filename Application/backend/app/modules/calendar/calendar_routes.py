@@ -329,8 +329,15 @@ class CalendarEventsResource(Resource):
                 return club_id
 
         with get_session() as session:
+            from sqlalchemy.orm import joinedload
+            from app.database.models import Club
             query = (
                 session.query(EventSession)
+                .options(
+                    joinedload(EventSession.event)
+                    .joinedload(Event.club)
+                    .joinedload(Club.university)
+                )
                 .join(Event, EventSession.event_id == Event.id)
                 .join(Event.club)
             )
@@ -385,6 +392,19 @@ class CalendarEventsResource(Resource):
                 )
             }
 
+            registered_sessions = (
+                session.query(EventSession)
+                .join(Event, EventSession.event_id == Event.id)
+                .join(
+                    EventRegistration,
+                    EventRegistration.event_id == Event.id,
+                )
+                .filter(
+                    EventRegistration.user_id == g.current_user.id
+                )
+                .all()
+            )
+
             response = []
 
             for current_session in event_sessions:
@@ -395,40 +415,19 @@ class CalendarEventsResource(Resource):
                     in registered_event_ids
                 )
 
-                """
-                A conflict exists when another session belonging
-                to an event registered by the current user overlaps
-                this session.
-                """
-                conflicting_session = (
-                    session.query(EventSession)
-                    .join(
-                        Event,
-                        EventSession.event_id == Event.id,
-                    )
-                    .join(
-                        EventRegistration,
-                        EventRegistration.event_id == Event.id,
-                    )
-                    .filter(
-                        EventRegistration.user_id
-                        == g.current_user.id,
-                        EventSession.id != current_session.id,
-                        EventSession.start_at
-                        < current_session.end_at,
-                        EventSession.end_at
-                        > current_session.start_at,
-                    )
-                    .first()
-                )
+                has_conflict = False
+                for reg_session in registered_sessions:
+                    if reg_session.id != current_session.id:
+                        if (reg_session.start_at < current_session.end_at and 
+                            reg_session.end_at > current_session.start_at):
+                            has_conflict = True
+                            break
 
                 response.append(
                     serialize_calendar_session(
                         current_session,
                         is_registered=is_registered,
-                        has_conflict=(
-                            conflicting_session is not None
-                        ),
+                        has_conflict=has_conflict
                     )
                 )
 

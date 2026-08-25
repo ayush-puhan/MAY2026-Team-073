@@ -272,21 +272,37 @@ class CommitteeMemberResource(Resource):
                 # Serialize response
                 # --------------------------------------------
 
+                # Batch fetch all memberships and users in one query
+                membership_ids = [link.membership_id for link in links]
+                if membership_ids:
+                    club_members = (
+                        db.query(ClubMembership)
+                        .filter(ClubMembership.id.in_(membership_ids))
+                        .all()
+                    )
+                    membership_map = {cm.id: cm for cm in club_members}
+
+                    user_ids = [cm.user_id for cm in club_members]
+                    users = (
+                        db.query(User)
+                        .filter(User.id.in_(user_ids))
+                        .all()
+                    )
+                    user_map = {u.id: u for u in users}
+                else:
+                    membership_map = {}
+                    user_map = {}
+
                 members = []
 
                 for link in links:
 
-                    club_member = (
-                        db.query(ClubMembership)
-                        .filter_by(id=link.membership_id)
-                        .first()
-                    )
+                    club_member = membership_map.get(link.membership_id)
 
                     if not club_member:
                         continue
 
-
-                    user = db.query(User).filter_by(id=club_member.user_id).first()
+                    user = user_map.get(club_member.user_id)
 
                     members.append({
                         "committee_membership": (

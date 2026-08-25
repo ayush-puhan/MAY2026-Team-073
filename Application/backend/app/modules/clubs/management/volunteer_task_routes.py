@@ -137,8 +137,15 @@ class ClubTasksResource(Resource):
 
 
 
+                    from sqlalchemy.orm import joinedload
+
                     tasks = (
                         db.query(VolunteerAssignment)
+                        .options(
+                            joinedload(VolunteerAssignment.assignee_membership).joinedload(ClubMembership.user),
+                            joinedload(VolunteerAssignment.event),
+                            joinedload(VolunteerAssignment.assigner),
+                        )
                         .filter(
                             VolunteerAssignment.assignee_membership_id
                             ==
@@ -165,8 +172,15 @@ class ClubTasksResource(Resource):
                 current_user = g.current_user
 
 
+                from sqlalchemy.orm import joinedload
+
                 tasks = (
                     db.query(VolunteerAssignment)
+                    .options(
+                        joinedload(VolunteerAssignment.assignee_membership).joinedload(ClubMembership.user),
+                        joinedload(VolunteerAssignment.event),
+                        joinedload(VolunteerAssignment.assigner),
+                    )
                     .join(Event)
                     .filter(
                         Event.club_id == club_id

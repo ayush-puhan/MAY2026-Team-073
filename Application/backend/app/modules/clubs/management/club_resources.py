@@ -158,6 +158,7 @@ class CommitteeResourcesResource(Resource):
         "secretary",
         "president",
         "faculty_advisor",
+        "event_coordinator"
     )
     def get(self, committeeId):
         try:

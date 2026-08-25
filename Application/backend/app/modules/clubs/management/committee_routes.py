@@ -164,7 +164,7 @@ class CommitteeMemberResource(Resource):
             # Case 1:
             # /committee_memberships?committeeId=3
             if committeeId is None:
-                committee_id = request.args.get("committeeId")
+                committeeId = request.args.get("committeeId")
 
             club_id = request.args.get("club_id")
 
@@ -174,9 +174,9 @@ class CommitteeMemberResource(Resource):
                 # --------------------------------------------
                 # Get members of a specific committee
                 # --------------------------------------------
-                if committee_id:
+                if committeeId:
 
-                    committee_id = int(committee_id)
+                    committee_id = int(committeeId)
 
                     committee = (
                         db.query(Committee)

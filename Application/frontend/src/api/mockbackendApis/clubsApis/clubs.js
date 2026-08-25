@@ -411,7 +411,7 @@ export const clubsApi = {
     // Note: mock backend deletes usually need id. We might have to get and delete one by one.
     const existing = await api.get(`/club_interests?club_id=${clubId}`);
     for (const e of existing) {
-      await api.delete(`/club_interests/${e.id}`);
+      await api.del(`/club_interests/${e.id}`);
     }
 
     for (const interestId of interestIds) {
@@ -619,7 +619,7 @@ export const clubsApi = {
   },
 
   deleteTask: async (taskId) => {
-    return await api.delete(`/volunteer_assignments/${taskId}`);
+    return await api.del(`/volunteer_assignments/${taskId}`);
   },
 
   updateTask: async (taskId, updates, updatedBy) => {
@@ -1054,7 +1054,7 @@ export const clubsApi = {
       const existingLinks = await api.get(`/club_sponsors?event_id=${eventId}`);
       if (existingLinks) {
         for (const link of existingLinks) {
-          await api.delete(`/club_sponsors/${link.id}`);
+          await api.del(`/club_sponsors/${link.id}`);
         }
       }
       
@@ -1165,7 +1165,7 @@ export const clubsApi = {
   },
 
   removeCommitteeMember: async (committeeMemberId) => {
-    await api.delete(`/committee_memberships/${committeeMemberId}`);
+    await api.del(`/committee_memberships/${committeeMemberId}`);
     return { success: true };
   },
 
@@ -1261,7 +1261,7 @@ export const clubsApi = {
 
   // ── Phase 2: Application Management & Role Transfer ──
   withdrawApplication: async (membershipId) => {
-    return await api.delete(`/club_memberships/${membershipId}`);
+    return await api.del(`/club_memberships/${membershipId}`);
   },
 
   transferPresidency: async (clubId, currentPresidentMembershipId, newPresidentMembershipId) => {
@@ -1478,7 +1478,7 @@ export const clubsApi = {
     if (String(doc.club_id) !== String(clubId)) {
       throw new Error("Document does not belong to this club.");
     }
-    await api.delete(`/documents/${resourceId}`);
+    await api.del(`/documents/${resourceId}`);
     await logAudit(userId, 'DELETE_RESOURCE', `Deleted club resource: ${doc.title}`, { club_id: clubId, document_id: resourceId });
   },
 

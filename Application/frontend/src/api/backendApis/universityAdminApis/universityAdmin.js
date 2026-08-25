@@ -1,4 +1,4 @@
-﻿import { api } from '../../api';
+import { api } from '../../api';
 
 export const universityAdminApi = {
   getStats: async () => api.get('/university-admin/stats'),

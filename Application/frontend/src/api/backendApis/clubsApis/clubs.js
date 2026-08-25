@@ -58,7 +58,7 @@ export const clubsApi = {
     return await api.post(`/committees/${committeeId}/members`, { membership_id: membershipId, role });
   },
   removeCommitteeMember: async (committeeMembershipId) => {
-    return await api.delete(`/committee-memberships/${committeeMembershipId}`);
+    return await api.del(`/committee-memberships/${committeeMembershipId}`);
   },
   updateCommitteeMemberRole: async (committeeMembershipId, role) => {
     return await api.patch(`/committee-memberships/${committeeMembershipId}`, { role });
@@ -217,7 +217,7 @@ export const clubsApi = {
   },
 
   removeMember: async (clubId, membershipId, removedBy) => {
-    const res = await api.delete(`/clubs/${clubId}/memberships/${membershipId}`);
+    const res = await api.del(`/clubs/${clubId}/memberships/${membershipId}`);
     return res;
   },
 

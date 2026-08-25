@@ -5,7 +5,7 @@ from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity
 
 from app.database.session_manager import validate_stored_token
 from app.database.database import get_session
-from app.database.models import User, ClubMembership, Event, AttendanceRecord, VolunteerAssignment, Budget,ClubJoinApplication, Committee, Club
+from app.database.models import User, ClubMembership, Event, AttendanceRecord, VolunteerAssignment, Budget,ClubJoinApplication, Committee, Club,CommitteeMembership
 from app.database.enums import MembershipStatus, UserRole
 
 
@@ -173,7 +173,16 @@ def resolve_club_id(db, kwargs):
 
         if membership:
             return membership.club_id
+    committee_membership_id = _to_int(kwargs.get("committeeMembershipId"))
+    if committee_membership_id is not None:
+        committee_membership = (
+            db.query(CommitteeMembership)
+            .filter_by(id=committee_membership_id)
+            .first()
+        )
 
+        if committee_membership:
+            return committee_membership.committee.club_id
     # Check for application ID in kwargs
 
     application_id = _to_int(kwargs.get("applicationId"))

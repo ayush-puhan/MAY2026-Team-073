@@ -186,7 +186,7 @@ class EventListResource(Resource):
             return {'message'  :  f"Error  :  {e}"}, 500
 
     @require_auth
-    @require_club_role("event_coordinator", "president")
+    @require_club_role("event_coordinator", "president","secretary")
     def post(self):
         try:
             data = _json_data()
@@ -252,7 +252,7 @@ class EventDetailResource(Resource):
         except Exception as e:
             return {'message'  :  f"Error  :  {e}"}, 500
     @require_auth
-    @require_club_role("event_coordinator", "president")
+    @require_club_role("event_coordinator", "president","secretary")
     def patch(self, event_id):
         try:
             data = _json_data()

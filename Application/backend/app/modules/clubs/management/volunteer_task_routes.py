@@ -214,6 +214,7 @@ class CreateVolunteerTaskResource(Resource):
         "volunteer_coordinator",
         "president",
         "vice_president",
+        "secretary"
     )
     def post(self):
         try:

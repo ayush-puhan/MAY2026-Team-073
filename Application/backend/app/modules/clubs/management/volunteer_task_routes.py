@@ -367,6 +367,212 @@ class CreateVolunteerTaskResource(Resource):
                 return serialize_task(task), 201
         except Exception as e:
             return {'message'  :  f"Error  :  {e}"}, 500
+
+
+    method_decorators = [
+        require_auth
+    ]
+
+    @require_club_role(
+        "event_coordinator",
+        "volunteer_coordinator",
+        "president",
+        "vice_president",
+        "secretary"
+    )
+    def patch(self, taskId):
+        try:
+            data = request.get_json()
+
+            print("UPDATE TASK REQUEST:", data)
+
+            if not data:
+                return {
+                    "message": "Request body is required"
+                }, 400
+
+            with get_session() as db:
+
+                # --------------------------------------------
+                # Find existing task
+                # --------------------------------------------
+                task = (
+                    db.query(VolunteerAssignment)
+                    .filter(
+                        VolunteerAssignment.id == taskId
+                    )
+                    .first()
+                )
+
+                print("TASK:", task)
+
+                if not task:
+                    return {
+                        "message": "Volunteer task not found"
+                    }, 404
+
+
+                # --------------------------------------------
+                # Update assignee if provided
+                # --------------------------------------------
+                if "assignee_membership_id" in data:
+
+                    membership = (
+                        db.query(ClubMembership)
+                        .filter(
+                            ClubMembership.id ==
+                            data["assignee_membership_id"]
+                        )
+                        .first()
+                    )
+
+                    print(
+                        "NEW ASSIGNEE MEMBERSHIP:",
+                        membership
+                    )
+
+                    if not membership:
+                        return {
+                            "message":
+                            "Membership ID does not exist"
+                        }, 400
+
+                    # Get event associated with task
+                    event = (
+                        db.query(Event)
+                        .filter(
+                            Event.id == task.event_id
+                        )
+                        .first()
+                    )
+
+                    if not event:
+                        return {
+                            "message": "Event not found"
+                        }, 404
+
+                    # Assignee must belong to same club
+                    if membership.club_id != event.club_id:
+                        return {
+                            "message":
+                            "Assignee does not belong to event club"
+                        }, 400
+
+                    # Assignee membership must be approved
+                    if membership.status != MembershipStatus.APPROVED:
+                        return {
+                            "message":
+                            "Assignee membership is not approved"
+                        }, 400
+
+                    task.assignee_membership_id = (
+                        data["assignee_membership_id"]
+                    )
+
+
+                # --------------------------------------------
+                # Update task description
+                # --------------------------------------------
+                if "task_description" in data:
+
+                    if not data["task_description"]:
+                        return {
+                            "message":
+                            "task_description cannot be empty"
+                        }, 400
+
+                    task.task_description = (
+                        data["task_description"]
+                    )
+
+
+                # --------------------------------------------
+                # Update due date
+                # --------------------------------------------
+                if "due_at" in data:
+
+                    # Allow clearing due date
+                    if data["due_at"] is None:
+                        task.due_at = None
+
+                    else:
+                        try:
+                            task.due_at = datetime.fromisoformat(
+                                data["due_at"]
+                            )
+
+                        except (ValueError, TypeError):
+                            return {
+                                "message":
+                                "Invalid due_at format"
+                            }, 400
+
+
+                # --------------------------------------------
+                # Update committee
+                # --------------------------------------------
+                if "committee_id" in data:
+                    task.committee_id = data["committee_id"]
+
+
+                # --------------------------------------------
+                # Update event
+                # --------------------------------------------
+                if "event_id" in data:
+
+                    event = (
+                        db.query(Event)
+                        .filter(
+                            Event.id == data["event_id"]
+                        )
+                        .first()
+                    )
+
+                    if not event:
+                        return {
+                            "message": "Event not found"
+                        }, 404
+
+                    # If assignee is not being changed, validate
+                    # existing assignee against the new event.
+                    membership = (
+                        db.query(ClubMembership)
+                        .filter(
+                            ClubMembership.id ==
+                            task.assignee_membership_id
+                        )
+                        .first()
+                    )
+
+                    if membership and (
+                        membership.club_id != event.club_id
+                    ):
+                        return {
+                            "message":
+                            "Assignee does not belong to event club"
+                        }, 400
+
+                    task.event_id = data["event_id"]
+
+
+                # --------------------------------------------
+                # Save changes
+                # --------------------------------------------
+                db.commit()
+                db.refresh(task)
+
+                print("TASK UPDATED:", task.id)
+
+                return serialize_task(task), 200
+
+        except Exception as e:
+            print("UPDATE TASK ERROR:", e)
+
+            return {
+                "message": f"Error: {e}"
+            }, 500
+
+
 # -------------------------------------------------
 # UPDATE TASK STATUS
 # PATCH /api/volunteer-tasks/<id>/status
@@ -513,7 +719,8 @@ api.add_resource(
 
 api.add_resource(
     CreateVolunteerTaskResource,
-    "/volunteer-tasks"
+    "/volunteer-tasks",
+    "/volunteer-tasks/<int:taskId>"
 )
 
 

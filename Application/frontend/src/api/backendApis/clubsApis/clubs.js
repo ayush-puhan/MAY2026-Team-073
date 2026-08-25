@@ -252,6 +252,10 @@ export const clubsApi = {
     const res = await api.patch(`/volunteer-tasks/${taskId}`, updates);
     return res;
   },
+  deleteTask: async (taskId) => {
+    const res = await api.del(`/volunteer-tasks/${taskId}`);
+    return res;
+  },
 
   updateTaskStatus: async (taskId, newStatus, userId) => {
     const res = await api.patch(`/volunteer-tasks/${taskId}/status`, { status: newStatus });

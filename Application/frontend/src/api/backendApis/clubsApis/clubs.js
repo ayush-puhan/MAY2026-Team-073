@@ -248,6 +248,10 @@ export const clubsApi = {
     });
     return res;
   },
+  updateTask: async (taskId, updates, currentUserId) => {
+    const res = await api.patch(`/volunteer-tasks/${taskId}`, updates);
+    return res;
+  },
 
   updateTaskStatus: async (taskId, newStatus, userId) => {
     const res = await api.patch(`/volunteer-tasks/${taskId}/status`, { status: newStatus });

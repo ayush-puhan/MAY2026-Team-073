@@ -158,7 +158,9 @@ class CommitteeResourcesResource(Resource):
         "secretary",
         "president",
         "faculty_advisor",
-        "event_coordinator"
+        "event_coordinator",
+        "vice_president",
+        "volunteer_coordinator"
     )
     def get(self, committeeId):
         try:
@@ -188,7 +190,9 @@ class CommitteeResourcesResource(Resource):
         "co_head",
         "member",
         "president",
-        "faculty_advisor"
+        "faculty_advisor",
+        "vice_president",
+        "volunteer_coordinator"
     )
     def post(self, committeeId):
         try:
@@ -236,7 +240,9 @@ class CommitteeResourceDeleteResource(Resource):
         "head",
         "co_head",
         "president",
-        "faculty_advisor"
+        "faculty_advisor",
+        "vice_president",
+        "volunteer_coordinator"
     )
     def delete(self, committeeId, id):
         try:

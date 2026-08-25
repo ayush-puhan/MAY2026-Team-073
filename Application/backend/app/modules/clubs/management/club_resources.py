@@ -159,13 +159,13 @@ class CommitteeResourcesResource(Resource):
         "president",
         "faculty_advisor",
     )
-    def get(self, committee_id):
+    def get(self, committeeId):
         try:
             with get_session() as db:
 
                 committee = (
                     db.query(Committee)
-                    .filter(Committee.id == committee_id)
+                    .filter(Committee.id == committeeId)
                     .first()
                 )
                 if not committee:
@@ -173,7 +173,7 @@ class CommitteeResourcesResource(Resource):
 
                 resources = (
                     db.query(Document)
-                    .filter(Document.committee_id == committee_id)
+                    .filter(Document.committee_id == committeeId)
                     .order_by(Document.created_at.desc())
                     .all()
                 )
@@ -189,7 +189,7 @@ class CommitteeResourcesResource(Resource):
         "president",
         "faculty_advisor"
     )
-    def post(self, committee_id):
+    def post(self, committeeId):
         try:
             data = request.get_json()
             if not data:
@@ -211,7 +211,7 @@ class CommitteeResourcesResource(Resource):
                 document = Document(
                     owner_id=owner_id,
                     club_id=club_id,
-                    committee_id=committee_id,
+                    committee_id=committeeId,
                     event_id=None,
                     title=title,
                     file_url=file_url,
@@ -237,14 +237,14 @@ class CommitteeResourceDeleteResource(Resource):
         "president",
         "faculty_advisor"
     )
-    def delete(self, committee_id, id):
+    def delete(self, committeeId, id):
         try:
             with get_session() as db:
                 document = (
                     db.query(Document)
                     .filter(
                         Document.id == id,
-                        Document.committee_id == committee_id,
+                        Document.committee_id == committeeId,
                     )
                     .first()
                 )
@@ -278,10 +278,10 @@ api.add_resource(
 
 api.add_resource(
     CommitteeResourcesResource,
-    "/committees/<int:committee_id>/resources",
+    "/committees/<int:committeeId>/resources",
 )
 
 api.add_resource(
     CommitteeResourceDeleteResource,
-    "/committees/<int:committee_id>/resources/<int:id>",
+    "/committees/<int:committeeId>/resources/<int:id>",
 )

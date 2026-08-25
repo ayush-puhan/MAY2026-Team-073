@@ -217,7 +217,7 @@ export const clubsApi = {
   },
 
   removeMember: async (clubId, membershipId, removedBy) => {
-    const res = await api.(`/clubs/${clubId}/memberships/${membershipId}`);
+    const res = await api.del(`/clubs/${clubId}/memberships/${membershipId}`);
     return res;
   },
 

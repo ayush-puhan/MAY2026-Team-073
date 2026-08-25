@@ -573,6 +573,46 @@ class CreateVolunteerTaskResource(Resource):
             }, 500
 
 
+    method_decorators = [
+        require_auth
+    ]
+
+    @require_club_role(
+        "event_coordinator",
+        "volunteer_coordinator",
+        "president",
+        "vice_president",
+        "secretary"
+    )
+    def delete(self, taskId):
+        try:
+            with get_session() as db:
+
+                task = (
+                    db.query(VolunteerAssignment)
+                    .filter(
+                        VolunteerAssignment.id == taskId
+                    )
+                    .first()
+                )
+
+                if not task:
+                    return {
+                        "message": "Volunteer task not found"
+                    }, 404
+
+                db.delete(task)
+                db.commit()
+
+                return {
+                    "message": "Volunteer task deleted successfully"
+                }, 200
+
+        except Exception as e:
+            return {
+                "message": f"Error: {e}"
+            }, 500
+
 # -------------------------------------------------
 # UPDATE TASK STATUS
 # PATCH /api/volunteer-tasks/<id>/status

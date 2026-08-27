@@ -105,7 +105,8 @@ class BudgetListResource(Resource):
     @require_club_role_or_faculty_advisor(
         ClubMemberRole.TREASURER,
         ClubMemberRole.PRESIDENT,
-        ClubMemberRole.VICE_PRESIDENT
+        ClubMemberRole.VICE_PRESIDENT,
+        ClubMemberRole.SECRETARY
     )
     def get(self):
         try:
@@ -125,7 +126,8 @@ class BudgetListResource(Resource):
     @require_auth
     @require_club_role_or_faculty_advisor(
         ClubMemberRole.TREASURER,
-        ClubMemberRole.PRESIDENT
+        ClubMemberRole.PRESIDENT,
+        ClubMemberRole.SECRETARY
     )
     def post(self):
         try:
@@ -213,7 +215,8 @@ class BudgetUpdateResource(Resource):
     @require_auth
     @require_club_role_or_faculty_advisor(
         ClubMemberRole.TREASURER,
-        ClubMemberRole.PRESIDENT
+        ClubMemberRole.PRESIDENT,
+        ClubMemberRole.SECRETARY
     )
 
     def patch(self, budget_id: int):
@@ -257,7 +260,8 @@ class ExpenseListResource(Resource):
         ClubMemberRole.MEMBER,
         ClubMemberRole.TREASURER,
         ClubMemberRole.PRESIDENT,
-        ClubMemberRole.VICE_PRESIDENT
+        ClubMemberRole.VICE_PRESIDENT,
+        ClubMemberRole.SECRETARY
     )
     def get(self):
         try:
@@ -281,7 +285,8 @@ class ExpenseListResource(Resource):
     @require_auth
     @require_club_role(
         ClubMemberRole.TREASURER,
-        ClubMemberRole.PRESIDENT
+        ClubMemberRole.PRESIDENT,
+        ClubMemberRole.SECRETARY
     )
     def post(self):
         try:
@@ -336,7 +341,8 @@ class ExpenseUpdateResource(Resource):
     @require_auth
     @require_club_role(
         ClubMemberRole.TREASURER,
-        ClubMemberRole.PRESIDENT
+        ClubMemberRole.PRESIDENT,
+        ClubMemberRole.SECRETARY
     )
 
     def patch(self, expense_id: int):

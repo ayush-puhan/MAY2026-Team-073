@@ -159,12 +159,12 @@ class CommitteeListResource(Resource):
 class CommitteeMemberResource(Resource):
 
     @require_auth
-    def get(self, committee_id=None):
+    def get(self, committeeId=None):
         try:
             # Case 1:
-            # /committee_memberships?committee_id=3
-            if committee_id is None:
-                committee_id = request.args.get("committee_id")
+            # /committee_memberships?committeeId=3
+            if committeeId is None:
+                committeeId = request.args.get("committeeId")
 
             club_id = request.args.get("club_id")
 
@@ -174,9 +174,9 @@ class CommitteeMemberResource(Resource):
                 # --------------------------------------------
                 # Get members of a specific committee
                 # --------------------------------------------
-                if committee_id:
+                if committeeId:
 
-                    committee_id = int(committee_id)
+                    committee_id = int(committeeId)
 
                     committee = (
                         db.query(Committee)
@@ -336,7 +336,7 @@ class CommitteeMemberResource(Resource):
 
 
     @require_auth
-    def post(self, committee_id):
+    def post(self, committeeId):
         try:
             data = request.get_json() or {}
 
@@ -352,7 +352,7 @@ class CommitteeMemberResource(Resource):
 
                 committee = (
                     db.query(Committee)
-                    .filter_by(id=committee_id)
+                    .filter_by(id=committeeId)
                     .first()
                 )
 
@@ -403,7 +403,7 @@ class CommitteeMemberResource(Resource):
                 existing = (
                     db.query(CommitteeMembership)
                     .filter(
-                        CommitteeMembership.committee_id == committee_id,
+                        CommitteeMembership.committee_id == committeeId,
                         CommitteeMembership.membership_id == membership_id
                     )
                     .first()
@@ -422,7 +422,7 @@ class CommitteeMemberResource(Resource):
                     }, 400
 
                 committee_member = CommitteeMembership(
-                    committee_id=committee_id,
+                    committee_id=committeeId,
                     membership_id=membership_id,
                     role=role_enum,
                     joined_at=datetime.utcnow()
@@ -585,7 +585,7 @@ api.add_resource(
 
 api.add_resource(
     CommitteeMemberResource,
-    "/committees/<int:committee_id>/members",
+    "/committees/<int:committeeId>/members",
     "/committee_memberships"
 )
 

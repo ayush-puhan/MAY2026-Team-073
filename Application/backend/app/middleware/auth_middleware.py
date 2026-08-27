@@ -141,7 +141,7 @@ def resolve_club_id(db, kwargs):
             return {"message": "Application not found"}, 404
         return application.club_id
 
-    committee_id = kwargs.get("committee_id") or request.args.get("committee_id") or json_data.get("committee_id")
+    committee_id = kwargs.get("committeeId") or request.args.get("committeeId") or json_data.get("committeeId")
     committee_id = _to_int(committee_id)
     if committee_id is not None:
         from app.database.models import Committee
@@ -150,7 +150,7 @@ def resolve_club_id(db, kwargs):
             return {"message": "Committee not found"}, 404
         return committee.club_id
 
-    task_id = kwargs.get("id")
+    task_id = kwargs.get("taskId") or request.args.get("taskId") or json_data.get("taskId")
     task_id = _to_int(task_id)
     if task_id is not None:
         task = db.query(VolunteerAssignment).filter_by(id=task_id).first()

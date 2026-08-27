@@ -248,6 +248,14 @@ export const clubsApi = {
     });
     return res;
   },
+  updateTask: async (taskId, updates, currentUserId) => {
+    const res = await api.patch(`/volunteer-tasks/${taskId}`, updates);
+    return res;
+  },
+  deleteTask: async (taskId) => {
+    const res = await api.del(`/volunteer-tasks/${taskId}`);
+    return res;
+  },
 
   updateTaskStatus: async (taskId, newStatus, userId) => {
     const res = await api.patch(`/volunteer-tasks/${taskId}/status`, { status: newStatus });
@@ -367,7 +375,7 @@ export const clubsApi = {
     return res;
   },
 
-  deleteClubResource: async (clubId, resourceId) => {
+  ClubResource: async (clubId, resourceId) => {
     const res = await api.del(
       `/clubs/${clubId}/resources/${resourceId}`
     );

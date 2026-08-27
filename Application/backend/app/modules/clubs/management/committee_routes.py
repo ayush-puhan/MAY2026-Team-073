@@ -450,6 +450,10 @@ class CommitteeMemberResource(Resource):
 class CommitteeMembershipResource(Resource):
 
     @require_auth
+    @require_club_role(
+        "president",
+        "vice_president",
+    )
     def patch(self, membership_id):
         try:
             data = request.get_json() or {}
@@ -495,10 +499,7 @@ class CommitteeMembershipResource(Resource):
                         "message": "You are not a member of this club"
                     }, 403
 
-                if current_user_membership.role_in_club != ClubMemberRole.PRESIDENT:
-                    return {
-                        "message": "Only the President can update committee roles"
-                    }, 403
+                
 
                 try:
                     committee_member.role = CommitteeRole(role)
@@ -522,6 +523,10 @@ class CommitteeMembershipResource(Resource):
 
 
     @require_auth
+    @require_club_role(
+        "president",
+        "vice_president",
+    )
     def delete(self, membership_id):
         try:
             with get_session() as db:
@@ -558,10 +563,7 @@ class CommitteeMembershipResource(Resource):
                         "message": "You are not a member of this club"
                     }, 403
 
-                if current_user_membership.role_in_club != ClubMemberRole.PRESIDENT:
-                    return {
-                        "message": "Only the President can remove committee members"
-                    }, 403
+                
 
                 db.delete(committee_member)
                 db.commit()
@@ -591,5 +593,5 @@ api.add_resource(
 
 api.add_resource(
     CommitteeMembershipResource,
-    "/committee-memberships/<int:membership_id>"
+    "/committee-memberships/<int:committeeMembershipId>"
 )

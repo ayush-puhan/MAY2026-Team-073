@@ -355,22 +355,27 @@ class CalendarEventsResource(Resource):
                 )
 
             if show_public:
-                query = query.filter(
-                    Event.is_public.is_(True)
-                )
-            else:
                 """
-                When show_public is false or omitted, return:
+                When show_public is true, return:
                 - public events
-                - events where the current user is registered
+                - private events where the current user is registered
                 """
                 query = query.filter(
                     or_(
                         Event.is_public.is_(True),
                         Event.registrations.any(
-                            EventRegistration.user_id
-                            == g.current_user.id
+                            EventRegistration.user_id == g.current_user.id
                         ),
+                    )
+                )
+            else:
+                """
+                When show_public is false, return:
+                - ONLY events where the current user is registered
+                """
+                query = query.filter(
+                    Event.registrations.any(
+                        EventRegistration.user_id == g.current_user.id
                     )
                 )
 

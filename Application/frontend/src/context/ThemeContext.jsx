@@ -60,8 +60,8 @@ export const ThemeProvider = ({ children }) => {
         offsetY = 15;
       }
       
-      x += offsetX;
-      y += offsetY;
+      // x += offsetX;
+      // y += offsetY;
 
     } else if (e && typeof e.clientX !== 'undefined' && typeof e.clientY !== 'undefined') {
       x = e.clientX;
